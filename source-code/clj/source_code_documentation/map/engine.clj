@@ -20,7 +20,6 @@
   ;
   ; @param (map) state
   ; @param (map) options
-  ; {}
   ;
   ; @return (map)
   [state {:keys [filename-pattern source-paths]}]
