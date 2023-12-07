@@ -1,6 +1,6 @@
 
 (ns source-code-documentation.core.patterns
-    (:require [regex.api :as regex]))
+    (:require [fruits.regex.api :as regex]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

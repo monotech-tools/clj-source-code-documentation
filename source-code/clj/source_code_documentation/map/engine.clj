@@ -1,11 +1,11 @@
 
 (ns source-code-documentation.map.engine
-    (:require [source-code-map.api :as source-code-map]
-              [io.api :as io]
-              [map.api :as map]
-              [vector.api :as vector]
-              [regex.api :as regex]
-              [source-code-documentation.core.config :as core.config]))
+    (:require [fruits.map.api                        :as map]
+              [fruits.regex.api                      :as regex]
+              [fruits.vector.api                     :as vector]
+              [io.api                                :as io]
+              [source-code-documentation.core.config :as core.config]
+              [source-code-map.api                   :as source-code-map]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

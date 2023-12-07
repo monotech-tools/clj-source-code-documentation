@@ -1,6 +1,6 @@
 
 (ns source-code-documentation.read.engine
-    (:require [map.api :as map]
+    (:require [fruits.map.api                       :as map]
               [source-code-documentation.read.utils :as read.utils]))
 
 ;; ----------------------------------------------------------------------------

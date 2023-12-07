@@ -1,7 +1,7 @@
 
 (ns source-code-documentation.read.utils
-    (:require [string.api :as string]
-              [regex.api :as regex]))
+    (:require [fruits.regex.api  :as regex]
+              [fruits.string.api :as string]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

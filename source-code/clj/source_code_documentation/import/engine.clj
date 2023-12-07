@@ -1,9 +1,9 @@
 
 (ns source-code-documentation.import.engine
-    (:require [map.api :as map]
-              [vector.api :as vector]
-              [source-code-documentation.import.utils :as import.utils]
-              [io.api :as io]))
+    (:require [fruits.map.api                         :as map]
+              [fruits.vector.api                      :as vector]
+              [io.api                                 :as io]
+              [source-code-documentation.import.utils :as import.utils]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

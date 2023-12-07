@@ -1,11 +1,11 @@
 
 (ns source-code-documentation.core.engine
-    (:require [source-code-documentation.core.prototypes :as core.prototypes]
-              [source-code-documentation.core.patterns :as core.patterns]
-              [source-code-documentation.import.engine :as import.engine]
-              [source-code-documentation.read.engine :as read.engine]
-              [source-code-documentation.map.engine :as map.engine]
-              [validator.api :as v]))
+    (:require [source-code-documentation.core.patterns   :as core.patterns]
+              [source-code-documentation.core.prototypes :as core.prototypes]
+              [source-code-documentation.import.engine   :as import.engine]
+              [source-code-documentation.map.engine      :as map.engine]
+              [source-code-documentation.read.engine     :as read.engine]
+              [validator.api                             :as v]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
