@@ -5,14 +5,15 @@
               [source-code-documentation.import.engine   :as import.engine]
               [source-code-documentation.map.engine      :as map.engine]
               [source-code-documentation.read.engine     :as read.engine]
-              [validator.api                             :as v]))
+              [validator.api                             :as v]
+              [source-code-documentation.process.engine :as process.engine]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn generate-documentation!
   ; @warning
-  ; The 'generate-documentation!' function deletes the output directory before exporting the documentation files!
+  ; The 'generate-documentation!' function ereases the output directory before exporting the documentation files!
   ;
   ; @param (map) options
   ; {:author (string)(opt)
@@ -35,16 +36,17 @@
   ;
   ; @usage
   ; (generate-documentation! {:author           "Author"
-  ;                           :code-dirs        ["submodules/my-repository/source-code"]
-  ;                           :filename-pattern "[a-z\-]\.clj"
-  ;                           :output-dir       "submodules/my-repository/documentation"
+  ;                           :filename-pattern "[a-z\_]\.clj"
   ;                           :lib-name         "My library"
+  ;                           :output-path      "submodules/my-repository/documentation"
+  ;                           :source-paths     ["submodules/my-repository/source-code"]
   ;                           :website          "https://github.com/author/my-repository"})
   ;
   ; @return (?)
   [options]
   (if (v/valid? options {:pattern* core.patterns/OPTIONS-PATTERN})
       (let [options (core.prototypes/options-prototype options)]
-           (-> {} (map.engine/map-source-paths options)
+           (-> {} (map.engine/map-source-paths       options)
                   (import.engine/import-source-files options)
-                  (read.engine/read-imported-files   options)))))
+                  (read.engine/read-imported-files   options)
+                  (process.engine/process-read-files options)))))

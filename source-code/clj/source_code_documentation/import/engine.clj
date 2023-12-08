@@ -31,6 +31,10 @@
   ; @return (map)
   [state _]
   (letfn [(f0 [filename file-data] (if (-> file-data :create-documentation?)
-                                       (-> filename (import-source-file file-data))
-                                       (-> file-data)))]
-         (map/->values state f0 {:provide-key? true})))
+                                       (-> filename (import-source-file file-data)
+                                                    ; TEMP
+                                                    (dissoc :ns-map))))]
+                                       ;(-> file-data)))]
+         (-> (map/->values state f0 {:provide-key? true})
+             ; TEMP
+             (map/remove-values-by nil?))))

@@ -6,22 +6,24 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn last-coherent-comment-rows
+(defn last-coherent-comment-row-group
   ; @ignore
   ;
   ; @param (string) n
   ;
   ; @return (strings in vector)
   [n]
-  (letfn [(f0 [result row-content] (conj result (string/trim row-content)))]
+  (letfn [(f0 [       %] (regex/re-match? % #"^[\s\t]{0,}\;"))  ; Returns TRUE if the given value is a comment row.
+          (f1 [       %] (regex/re-match? % #"\n[\s\t]{0,}\;")) ; Returns TRUE if the given value contains any comment rows.
+          (f2 [result %] (conj result (string/trim %)))]        ; Trims the given value (comment row) then appends it to the result vector.
          (loop [observed-part n result []]
                (let [row-ends-at (or (string/first-dex-of observed-part "\n") (count observed-part))
                      row-content (string/keep-range observed-part 0 (->  row-ends-at))
                      rest-part   (string/keep-range observed-part   (inc row-ends-at))]
-                    (cond (string/empty?   observed-part)                                     (-> result)
-                          (regex/re-match? row-content #"^[\s\t]{0,}\;")     (recur rest-part (-> result (f0 row-content)))
-                          (regex/re-match? rest-part   #"\n[\s\t]{0,}\;")    (recur rest-part (-> []))
-                          :rest-part-does-not-contain-further-commented-rows (recur rest-part (-> result)))))))
+                    (cond (-> observed-part string/empty?) (-> result)
+                          (-> row-content f0)              (-> rest-part (recur (f2 result row-content)))
+                          (-> rest-part   f1)              (-> rest-part (recur []))
+                          :no-further-comment-rows-found   (-> rest-part (recur result)))))))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -34,20 +36,20 @@
   ;
   ; @return (strings in vector)
   [file-content {:keys [bounds]}]
-  (-> file-content (string/keep-range 0 (first bounds))
-                   (string/after-last-occurence "\n\n" {:return? false})
-                   (string/trim-end) ; <- Removes indent (if any) before the def.
-                   (last-coherent-comment-rows)))
+  (-> file-content (string/keep-range 0 (first bounds))                       ; <- Keeps the part of the file content from its beginning to the start position of the def.
+                   (string/trim-end)                                          ; <- Removes the indent (if any) that precedes the def.
+                   (regex/after-last-match #"\n[\s\t]{0,}\n" {:return? false}) ; <- Keeps the part after the last empty row.
+                   (last-coherent-comment-row-group)))                        ; <- Extracts the last coherent comment row group.
 
 (defn defn-header
-      ; @ignore
-      ;
-      ; @param (string) file-content
-      ; @param (map) defn
-      ;
-      ; @return (strings in vector)
-      [file-content {:keys [bounds]}]
-      (-> file-content (string/keep-range (first bounds) (last bounds))
-                       (regex/before-first-match #"(?<=\n[\s\t]{1,})\[|(?<=\n[\s\t]{1,})\(") ; <- Before first non-commented and non-quoted argument list.
-                       (string/trim-end)                                                     ; <- Removes indent (if any) before the argument list.
-                       (last-coherent-comment-rows)))
+  ; @ignore
+  ;
+  ; @param (string) file-content
+  ; @param (map) defn
+  ;
+  ; @return (strings in vector)
+  [file-content {:keys [bounds]}]
+  (-> file-content (string/keep-range (first bounds) (last bounds))                      ; <- Keeps the part of the file content from the start position of the defn to its end position.
+                   (regex/before-first-match #"(?<=\n[\s\t]{1,})\[|(?<=\n[\s\t]{1,})\(") ; <- Cuts the part from the first (non-commented and non-quoted) argument list.
+                   (string/trim-end)                                                     ; <- Removes the indent (if any) that precedes the argument list.
+                   (last-coherent-comment-row-group)))                                   ; <- Extracts the last coherent comment row group.
