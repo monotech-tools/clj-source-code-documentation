@@ -28,6 +28,17 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn def-value
+  ; @ignore
+  ;
+  ; @param (string) file-content
+  ; @param (map) def
+  ;
+  ; @return (string)
+  [file-content {:keys [value]}]
+  (string/keep-range file-content (-> value :bounds first)
+                                  (-> value :bounds second)))
+
 (defn def-header
   ; @ignore
   ;
@@ -36,10 +47,10 @@
   ;
   ; @return (strings in vector)
   [file-content {:keys [bounds]}]
-  (-> file-content (string/keep-range 0 (first bounds))                       ; <- Keeps the part of the file content from its beginning to the start position of the def.
-                   (string/trim-end)                                          ; <- Removes the indent (if any) that precedes the def.
+  (-> file-content (string/keep-range 0 (first bounds))                        ; <- Keeps the part of the file content from its beginning - to the start position of the def.
+                   (string/trim-end)                                           ; <- Removes the indent (if any) that precedes the def.
                    (regex/after-last-match #"\n[\s\t]{0,}\n" {:return? false}) ; <- Keeps the part after the last empty row.
-                   (last-coherent-comment-row-group)))                        ; <- Extracts the last coherent comment row group.
+                   (last-coherent-comment-row-group)))                         ; <- Extracts the last coherent comment row group.
 
 (defn defn-header
   ; @ignore
@@ -49,7 +60,7 @@
   ;
   ; @return (strings in vector)
   [file-content {:keys [bounds]}]
-  (-> file-content (string/keep-range (first bounds) (last bounds))                      ; <- Keeps the part of the file content from the start position of the defn to its end position.
-                   (regex/before-first-match #"(?<=\n[\s\t]{1,})\[|(?<=\n[\s\t]{1,})\(") ; <- Cuts the part from the first (non-commented and non-quoted) argument list.
-                   (string/trim-end)                                                     ; <- Removes the indent (if any) that precedes the argument list.
-                   (last-coherent-comment-row-group)))                                   ; <- Extracts the last coherent comment row group.
+  (-> file-content (string/keep-range (first bounds) (last bounds))                        ; <- Keeps the part of the file content from the start position of the defn - to its end position.
+                   (regex/before-first-match #"(?<=\n[\s\t]{1,})\[|(?<=\n[\s\t]{1,})\(\[") ; <- Cuts the part from the first (non-commented and non-quoted) argument list.
+                   (string/trim-end)                                                       ; <- Removes the indent (if any) that precedes the argument list.
+                   (last-coherent-comment-row-group)))                                     ; <- Extracts the last coherent comment row group.

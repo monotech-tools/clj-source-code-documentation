@@ -1,7 +1,6 @@
 
 (ns source-code-documentation.import.engine
-    (:require [fruits.map.api                         :as map]
-              [fruits.vector.api                      :as vector]
+    (:require [fruits.vector.api                      :as vector]
               [io.api                                 :as io]
               [source-code-documentation.import.utils :as import.utils]))
 
@@ -11,30 +10,33 @@
 (defn import-source-file
   ; @ignore
   ;
-  ; @param (string) filepath
+  ; @param (maps in vector) state
+  ; @param (map) options
   ; @param (map) file-data
   ;
-  ; @return (map)
-  [filepath {{:keys [defs defns]} :ns-map :as file-data}]
+  ; @return (maps in vector)
+  [_ _ {{:keys [defs defns]} :ns-map :keys [filepath] :as file-data}]
   (if-let [file-content (io/read-file filepath {:warn? true})]
-          (letfn [(f2 [_ %] [(:name %) (import.utils/def-header  file-content %)])
-                  (f3 [_ %] [(:name %) (import.utils/defn-header file-content %)])]
-                 (-> file-data (update :headers merge (vector/to-map defs  f2))
-                               (update :headers merge (vector/to-map defns f3))))))
+          (letfn [(f0 [_ %] [(:name %) (import.utils/def-header  file-content %)])
+                  (f1 [_ %] [(:name %) (import.utils/defn-header file-content %)])
+                  (f2 [  %] (-> % :value :type (= :symbol)))
+                  (f3 [  %] (-> % (assoc-in [:value :symbol] (import.utils/def-value file-content %))))]
+                 (-> file-data (update-in [:headers] merge (vector/to-map defs  f0))
+                               (update-in [:headers] merge (vector/to-map defns f1))
+                               (update-in [:ns-map :defs] vector/update-items-by f2 f3))))) ; <- Reading symbol type values of defs is required (for creating redirection traces).
 
 (defn import-source-files
   ; @ignore
   ;
-  ; @param (map) state
+  ; @description
+  ; - Imports headers for defs and defns from all source files within the given source directories.
+  ; - Although the documentation generator creates documentation only for files that match the provided (or default)
+  ;   filename pattern, to handle redirections, the documentation generator requires importing headers from all available source files.
+  ;
+  ; @param (maps in vector) state
   ; @param (map) options
   ;
-  ; @return (map)
-  [state _]
-  (letfn [(f0 [filename file-data] (if (-> file-data :create-documentation?)
-                                       (-> filename (import-source-file file-data)
-                                                    ; TEMP
-                                                    (dissoc :ns-map))))]
-                                       ;(-> file-data)))]
-         (-> (map/->values state f0 {:provide-key? true})
-             ; TEMP
-             (map/remove-values-by nil?))))
+  ; @return (maps in vector)
+  [state options]
+  (letfn [(f0 [file-data] (import-source-file state options file-data))]
+         (vector/->items state f0)))

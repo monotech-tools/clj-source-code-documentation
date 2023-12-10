@@ -6,7 +6,9 @@
               [source-code-documentation.map.engine      :as map.engine]
               [source-code-documentation.read.engine     :as read.engine]
               [validator.api                             :as v]
-              [source-code-documentation.process.engine :as process.engine]))
+              [source-code-documentation.trace.engine :as trace.engine]
+              [source-code-documentation.process.engine :as process.engine]
+              [source-code-documentation.resolve.engine :as resolve.engine]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -38,15 +40,17 @@
   ; (generate-documentation! {:author           "Author"
   ;                           :filename-pattern "[a-z\_]\.clj"
   ;                           :lib-name         "My library"
-  ;                           :output-path      "submodules/my-repository/documentation"
-  ;                           :source-paths     ["submodules/my-repository/source-code"]
+  ;                           :output-path      "documentation"
+  ;                           :source-paths     ["source-code"]
   ;                           :website          "https://github.com/author/my-repository"})
   ;
   ; @return (?)
   [options]
   (if (v/valid? options {:pattern* core.patterns/OPTIONS-PATTERN})
-      (let [options (core.prototypes/options-prototype options)]
-           (-> {} (map.engine/map-source-paths       options)
-                  (import.engine/import-source-files options)
-                  (read.engine/read-imported-files   options)
-                  (process.engine/process-read-files options)))))
+      (let [options (core.prototypes/options-prototype   options)]
+           (-> [] (map.engine/map-source-paths           options)
+                  (import.engine/import-source-files     options)
+                  (read.engine/read-imported-files       options)
+                  (trace.engine/trace-imported-files     options)
+                  (process.engine/process-imported-files options)
+                  (resolve.engine/resolve-imported-files options)))))

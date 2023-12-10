@@ -1,6 +1,6 @@
 
 (ns source-code-documentation.read.engine
-    (:require [fruits.map.api                       :as map]
+    (:require [fruits.vector.api :as vector]
               [source-code-documentation.read.utils :as read.utils]))
 
 ;; ----------------------------------------------------------------------------
@@ -9,22 +9,26 @@
 (defn read-imported-file
   ; @ignore
   ;
-  ; @param (string) filepath
+  ; @param (maps in vector) state
+  ; @param (map) options
   ; @param (map) file-data
   ;
-  ; @return (map)
-  [filepath file-data]
-  (-> file-data (update :headers map/->values read.utils/read-header)))
+  ; @return (maps in vector)
+  [_ _ file-data]
+  (update file-data :headers map/->values read.utils/read-header))
 
 (defn read-imported-files
   ; @ignore
   ;
-  ; @param (map) state
+  ; @description
+  ; - Reads imported headers of defs and defns from all source files within the given source directories.
+  ; - Although the documentation generator creates documentation only for files that match the provided (or default)
+  ;   filename pattern, to handle redirections, the documentation generator requires reading headers from all available source files.
+  ;
+  ; @param (maps in vector) state
   ; @param (map) options
   ;
-  ; @return (map)
-  [state _]
-  (letfn [(f0 [filepath file-data] (if (-> file-data :create-documentation?)
-                                       (-> filepath (read-imported-file file-data))
-                                       (-> file-data)))]
-         (map/->values state f0 {:provide-key? true})))
+  ; @return (maps in vector)
+  [state options]
+  (letfn [(f0 [file-data] (read-imported-file state options file-data))]
+         (vector/->items state f0)))

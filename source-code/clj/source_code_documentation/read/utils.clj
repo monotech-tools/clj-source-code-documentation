@@ -23,18 +23,21 @@
   ; @example
   ; (read-header-block ["; @param (map)(opt) my-map"  "; {...}"])
   ; =>
-  ; {:type :param :meta ["map" "opt"] :value "my-map"    :additional [" {...}"]}
+  ; {:type :param :meta ["map" "opt"] :value "my-map" :additional [" {...}"] :indent 1}
   ;
   ; @return (map)
   [n]
-  (letfn [(f0 [       %] (regex/re-first  % #"(?<=\;[\s\t]{0,}\@)[a-z]{1,}"))   ; <-
-          (f2 [       %] (regex/re-all    % #"(?<=\()[^()]+(?=\))"))            ; <- Returns all meta values
-          (fx [       %] (regex/re-first  % #"(?<=[\s\t]{1,})[a-z]+$"))         ; <- Returns the value (if anyy)
-          (fy [       %] (count (regex/re-first % #"(?<=\;)[\s\t]{0,}(?=\@)"))) ; <- Returns the block indent length
-          (fz [indent %] %)
-          (f4 [result %] (cond (-> result :type nil?) {:type (f0 %) :meta (f2 %) :value (fx %) :indent (fy %)}
-                               :else (update result :additional vector/conj-item (fz (:indent result) %))))]
-         (reduce f4 {} n)))
+  (letfn [(f0 [       %] (keyword (regex/re-first % #"(?<=\;[\s\t]{0,}\@)[a-z]{1,}"))) ; <- Returns the block type derived from the given comment row.
+          (f1 [       %]          (regex/re-all   % #"(?<=\()[^()]+(?=\))"))           ; <- Returns the meta values (if any) derived from the given comment row.
+          (f2 [       %]          (regex/re-first % #"(?<=[\s\t]{1,})[a-z]+$"))        ; <- Returns the block value (if any) derived from the given comment row.
+          (f3 [       %] (count   (regex/re-first % #"(?<=\;)[\s\t]{0,}(?=\@)")))      ; <- Returns the block indent length derived from the given comment row.
+          (f4 [result %] (:indent result) %) ; TODO
+          (f5 [result %] (if (-> result empty?)
+                             (-> result (merge {:type (f0 %) :indent (f3 %)}
+                                               (if-let [meta  (f1 %)] {:meta  meta})
+                                               (if-let [value (f2 %)] {:value value})))
+                             (-> result (update :additional vector/conj-item (f4 result %)))))]
+         (reduce f5 {} n)))
 
 (defn read-header-blocks
   ; @ignore

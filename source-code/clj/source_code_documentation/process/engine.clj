@@ -1,30 +1,27 @@
 
 (ns source-code-documentation.process.engine
-    (:require [fruits.map.api :as map]
+    (:require [fruits.vector.api :as vector]
               [source-code-documentation.process.utils :as process.utils]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn process-read-file
+(defn process-imported-file
   ; @ignore
   ;
-  ; @param (string) filepath
+  ; @param (maps in vector) state
+  ; @param (map) options
   ; @param (map) file-data
   ;
-  ; @return (map)
-  [filepath file-data]
-  (-> file-data (update :headers map/->values process.utils/process-header)))
+  ; @return (maps in vector)
+  [_ _ file-data])
 
-(defn process-read-files
+(defn process-imported-files
   ; @ignore
   ;
-  ; @param (map) state
+  ; @param (maps in vector) state
   ; @param (map) options
   ;
-  ; @return (map)
-  [state _]
-  (letfn [(f0 [filepath file-data] (if (-> file-data :create-documentation?)
-                                       (-> filepath (process-read-file file-data))
-                                       (-> file-data)))]
-         (map/->values state f0 {:provide-key? true})))
+  ; @return (maps in vector)
+  [state options]
+  state)
