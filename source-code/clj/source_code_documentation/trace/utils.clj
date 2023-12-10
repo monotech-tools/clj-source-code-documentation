@@ -14,7 +14,7 @@
   ; Returns the value of a specific def declaration in case its type is symbol (symbol type def declaration values are imported).
   ;
   ; @param (map) file-data
-  ; @param (string) declaration-name
+  ; @param (string) def*-name
   ;
   ; @example
   ; (def-value-symbol {:ns-map {:defs [{:name "my-function" :value {:symbol "another-namespace/another-function"}}]}})
@@ -23,15 +23,15 @@
   ; "another-namespace/another-function"
   ;
   ; @return (string)
-  [file-data declaration-name]
-  (letfn [(f0 [%] (-> % :name (= declaration-name)))]
+  [file-data def*-name]
+  (letfn [(f0 [%] (-> % :name (= def*-name)))]
          (-> file-data :ns-map :defs (vector/first-match f0) :value :symbol)))
 
 (defn def-value-symbol-namespace
   ; @ignore
   ;
   ; @param (map) file-data
-  ; @param (string) declaration-name
+  ; @param (string) def*-name
   ;
   ; @example
   ; (def-value-symbol-namespace {:ns-map {:defs [{:name "my-function" :value {:symbol "another-namespace/another-function"}}]}})
@@ -40,8 +40,8 @@
   ; "another-namespace"
   ;
   ; @return (string)
-  [file-data declaration-name]
-  (-> file-data (def-value-symbol declaration-name)
+  [file-data def*-name]
+  (-> file-data (def-value-symbol def*-name)
                 (string/before-first-occurence "/" {:return? false})
                 (string/use-nil)))
 
@@ -49,7 +49,7 @@
   ; @ignore
   ;
   ; @param (map) file-data
-  ; @param (string) declaration-name
+  ; @param (string) def*-name
   ;
   ; @example
   ; (def-value-symbol-name {:ns-map {:defs [{:name "my-function" :value {:symbol "another-namespace/another-function"}}]}})
@@ -58,8 +58,8 @@
   ; "another-function"
   ;
   ; @return (string)
-  [file-data declaration-name]
-  (-> file-data (def-value-symbol declaration-name)
+  [file-data def*-name]
+  (-> file-data (def-value-symbol def*-name)
                 (string/after-last-occurence "/" {:return? true})
                 (string/use-nil)))
 
@@ -73,7 +73,7 @@
   ; Returns the namespace of the given redirection pointer.
   ;
   ; @param (map) file-data
-  ; @param (string) declaration-name
+  ; @param (string) def*-name
   ; @param (string) pointer
   ;
   ; @example
@@ -102,7 +102,7 @@
   ; Returns the name of the given redirection pointer.
   ;
   ; @param (map) file-data
-  ; @param (string) declaration-name
+  ; @param (string) def*-name
   ; @param (string) pointer
   ;
   ; @example
@@ -144,7 +144,7 @@
   ; - Replaces the '*' wildcard character with the file namespace.
   ;
   ; @param (map) file-data
-  ; @param (string) declaration-name
+  ; @param (string) def*-name
   ; @param (string) pointer
   ;
   ; @example
@@ -155,10 +155,10 @@
   ; "another-namespace"
   ;
   ; @return (string)
-  [file-data declaration-name pointer]
+  [file-data def*-name pointer]
   (let [file-namespace (-> file-data :ns-map :declaration :name)]
-       (-> (or (pointer-namespace          file-data declaration-name pointer)
-               (def-value-symbol-namespace file-data declaration-name)
+       (-> (or (pointer-namespace          file-data def*-name pointer)
+               (def-value-symbol-namespace file-data def*-name)
                (-> file-namespace))
            (regex/replace-match #"^\*$" file-namespace))))
 
@@ -172,7 +172,7 @@
   ; - Replaces the '*' wildcard character with the declaration name.
   ;
   ; @param (map) file-data
-  ; @param (string) declaration-name
+  ; @param (string) def*-name
   ; @param (string) pointer
   ;
   ; @example
@@ -183,17 +183,17 @@
   ; "another-function"
   ;
   ; @return (string)
-  [file-data declaration-name pointer]
-  (-> (or (pointer-name          file-data declaration-name pointer)
-          (def-value-symbol-name file-data declaration-name)
-          (-> declaration-name))
-      (regex/replace-match #"^\*$" declaration-name)))
+  [file-data def*-name pointer]
+  (-> (or (pointer-name          file-data def*-name pointer)
+          (def-value-symbol-name file-data def*-name)
+          (-> def*-name))
+      (regex/replace-match #"^\*$" def*-name)))
 
 (defn derive-pointer
   ; @ignore
   ;
   ; @param (map) file-data
-  ; @param (string) declaration-name
+  ; @param (string) def*-name
   ; @param (string) pointer
   ;
   ; @example
@@ -204,10 +204,10 @@
   ; :another-namespace/another-function
   ;
   ; @return (namespaced keyword)
-  [file-data declaration-name declaration-header-block]
-  (let [pointer (-> declaration-header-block :meta first)]
-       (keyword (derive-pointer-namespace file-data declaration-name pointer)
-                (derive-pointer-name      file-data declaration-name pointer))))
+  [file-data def*-name def*-header-block]
+  (let [pointer (-> def*-header-block :meta first)]
+       (keyword (derive-pointer-namespace file-data def*-name pointer)
+                (derive-pointer-name      file-data def*-name pointer))))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -216,7 +216,7 @@
   ; @ignore
   ;
   ; @param (map) file-data
-  ; @param (string) declaration-name
+  ; @param (string) def*-name
   ; @param (namespaced pointer) pointer
   ;
   ; @usage

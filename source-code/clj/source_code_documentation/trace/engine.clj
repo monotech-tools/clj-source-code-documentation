@@ -6,42 +6,42 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn trace-declaration-header-redirection
+(defn trace-def*-header-redirection
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (string) declaration-name
-  ; @param (map) declaration-header-block
+  ; @param (string) def*-name
+  ; @param (map) def*-header-block
   ;
   ; @return (map)
-  [_ _ file-data declaration-name declaration-header-block]
-  (let [pointer (trace.utils/derive-pointer                 file-data declaration-name declaration-header-block)
-        pointer (trace.utils/invoke-pointer-namespace-alias file-data declaration-name pointer)]
-       (assoc declaration-header-block :pointer pointer)))
+  [_ _ file-data def*-name def*-header-block]
+  (let [pointer (trace.utils/derive-pointer                 file-data def*-name def*-header-block)
+        pointer (trace.utils/invoke-pointer-namespace-alias file-data def*-name pointer)]
+       (assoc def*-header-block :pointer pointer)))
 
-(defn trace-declaration-header
+(defn trace-def*-header
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (string) declaration-name
-  ; @param (maps in vector) declaration-header
+  ; @param (string) def*-name
+  ; @param (maps in vector) def*-header
   ;
   ; @example
-  ; (trace-declaration-header [...] {...} {...}
-  ;                           "my-function"
-  ;                           [{:type :redirect :meta ["..."] :indent 1}])
+  ; (trace-def*-header [...] {...} {...}
+  ;                    "my-function"
+  ;                    [{:type :redirect :meta ["..."] :indent 1}])
   ; =>
   ; [{:type :redirect :meta ["..."] :indent 1}]
   ;
   ; @return (maps in vector)
-  [state options file-data declaration-name declaration-header]
+  [state options file-data def*-name def*-header]
   (letfn [(f0 [%] (-> % :type (= :redirect)))
-          (f1 [%] (trace-declaration-header-redirection state options file-data declaration-name %))]
-         (vector/->items-by declaration-header f0 f1)))
+          (f1 [%] (trace-def*-header-redirection state options file-data def*-name %))]
+         (vector/->items-by def*-header f0 f1)))
 
 (defn trace-imported-file
   ; @ignore
@@ -52,7 +52,7 @@
   ;
   ; @return (maps in vector)
   [state options {:keys [headers] :as file-data}]
-  (letfn [(f0 [declaration-name declaration-header] (trace-declaration-header state options file-data declaration-name declaration-header))]
+  (letfn [(f0 [def*-name def*-header] (trace-def*-header state options file-data def*-name def*-header))]
          (update file-data :headers map/->values f0 {:provide-key? true})))
 
 (defn trace-imported-files

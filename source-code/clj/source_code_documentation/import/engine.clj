@@ -1,7 +1,7 @@
 
 (ns source-code-documentation.import.engine
-    (:require [fruits.vector.api                      :as vector]
-              [io.api                                 :as io]
+    (:require [fruits.vector.api :as vector]
+              [io.api :as io]
               [source-code-documentation.import.utils :as import.utils]))
 
 ;; ----------------------------------------------------------------------------
@@ -23,15 +23,15 @@
                   (f3 [  %] (-> % (assoc-in [:value :symbol] (import.utils/def-value file-content %))))]
                  (-> file-data (update-in [:headers] merge (vector/to-map defs  f0))
                                (update-in [:headers] merge (vector/to-map defns f1))
-                               (update-in [:ns-map :defs] vector/update-items-by f2 f3))))) ; <- Reading symbol type values of defs is required (for creating redirection traces).
+                               (update-in [:ns-map :defs] vector/update-items-by f2 f3))))) ; <- Importing symbol type values of defs is required (for creating redirection traces).
 
 (defn import-source-files
   ; @ignore
   ;
   ; @description
-  ; - Imports headers for defs and defns from all source files within the given source directories.
+  ; - Imports the headers of defs and defns (from all source files within the given source directories).
   ; - Although the documentation generator creates documentation only for files that match the provided (or default)
-  ;   filename pattern, to handle redirections, the documentation generator requires importing headers from all available source files.
+  ;   filename pattern, to handle header redirections, the documentation generator requires importing headers from all available source files.
   ;
   ; @param (maps in vector) state
   ; @param (map) options

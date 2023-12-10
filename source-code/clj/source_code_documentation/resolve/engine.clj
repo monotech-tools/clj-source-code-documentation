@@ -13,22 +13,24 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (string) declaration-name
-  ; @param (map) declaration-header-block
+  ; @param (string) def*-name
+  ; @param (map) def*-header-block
   ;
   ; @return (map)
-  [state _ file-data declaration-name declaration-header-block]
-  (let [redirection-namespace (-> declaration-header-block :pointer namespace)
-        redirection-name      (-> declaration-header-block :pointer name)]
+  [state _ file-data def*-name def*-header-block]
+  (let [redirection-namespace (-> def*-header-block :pointer namespace)
+        redirection-name      (-> def*-header-block :pointer name)]
        (letfn [(f0 [%] (-> % :ns-map :declaration :name (= redirection-namespace)))]
-              (if-let [target-file-data (map/first-matching-value state f0)]
+              (if-let [target-file-data (vector/first-match state f0)]
                       (if-let [target-headers (-> target-file-data :headers (get redirection-name))]
                               (do
-                                (println declaration-name)
-                                (println target-headers))))))
+                                (println (-> file-data :ns-map :declaration :name))
+                                (println def*-name)
+                                (println target-headers)
+                                (println))))))
               ;(println redirection-namespace redirection-name)))
 
-  declaration-header-block)
+  def*-header-block)
 
 (defn resolve-header-redirections
   ; @ignore
@@ -36,8 +38,8 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (string) declaration-name
-  ; @param (maps in vector) declaration-header
+  ; @param (string) def*-name
+  ; @param (maps in vector) def*-header
   ;
   ; @example
   ; (resolve-header-redirections [...] {...} {...}
@@ -47,10 +49,10 @@
   ; [{:type :redirect :meta ["..."] :indent 1}]
   ;
   ; @return (maps in vector)
-  [state options file-data declaration-name declaration-header]
+  [state options file-data def*-name def*-header]
   (letfn [(f0 [%] (-> % :type (= :redirect)))
-          (f1 [%] (resolve-header-redirection state options file-data declaration-name %))]
-         (vector/->items-by declaration-header f0 f1)))
+          (f1 [%] (resolve-header-redirection state options file-data def*-name %))]
+         (vector/->items-by def*-header f0 f1)))
 
 (defn resolve-imported-file
   ; @ignore
@@ -61,8 +63,8 @@
   ;
   ; @return (maps in vector)
   [state options {:keys [headers] :as file-data}]
-  (letfn [(f0 [declaration-name declaration-header]
-              (resolve-header-redirections state options file-data declaration-name declaration-header))]
+  (letfn [(f0 [def*-name def*-header]
+              (resolve-header-redirections state options file-data def*-name def*-header))]
          (update file-data :headers map/->values f0 {:provide-key? true})))
 
 (defn resolve-imported-files
