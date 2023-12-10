@@ -1,7 +1,6 @@
 
 (ns source-code-documentation.read.engine
     (:require [fruits.vector.api :as vector]
-              [fruits.map.api :as map]
               [source-code-documentation.read.utils :as read.utils]))
 
 ;; ----------------------------------------------------------------------------
@@ -16,7 +15,7 @@
   ;
   ; @return (maps in vector)
   [_ _ file-data]
-  (update file-data :headers map/->values read.utils/read-header))
+  (update file-data :headers vector/->items read.utils/read-header))
 
 (defn read-imported-files
   ; @ignore
@@ -31,5 +30,5 @@
   ;
   ; @return (maps in vector)
   [state options]
-  (letfn [(f0 [file-data] (read-imported-file state options file-data))]
+  (letfn [(f0 [%] (read-imported-file state options %))]
          (vector/->items state f0)))

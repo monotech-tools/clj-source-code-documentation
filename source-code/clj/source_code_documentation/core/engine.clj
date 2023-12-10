@@ -7,8 +7,8 @@
               [source-code-documentation.read.engine     :as read.engine]
               [validator.api                             :as v]
               [source-code-documentation.trace.engine :as trace.engine]
-              [source-code-documentation.process.engine :as process.engine]
-              [source-code-documentation.resolve.engine :as resolve.engine]))
+              [source-code-documentation.resolve.engine :as resolve.engine]
+              [source-code-documentation.print.engine :as print.engine]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -26,7 +26,7 @@
   ;  :previews-path (string)(opt)
   ;  :print-format (keyword)(opt)
   ;   :html, :md
-  ;   Default: :md
+  ;   Default: :html
   ;  :print-options (keywords in vector)(opt)
   ;   [:code, :credit, :description, :example, :param, :preview, :require, :return, :usage, :warning]
   ;   Default: [:code :credit :description :example :param :preview :require :return :usage :warning]
@@ -52,5 +52,5 @@
                   (import.engine/import-source-files     options)
                   (read.engine/read-imported-files       options)
                   (trace.engine/trace-imported-files     options)
-                  (process.engine/process-imported-files options)
-                  (resolve.engine/resolve-imported-files options)))))
+                  (resolve.engine/resolve-imported-files options)
+                  (print.engine/print-documentation!     options)))))

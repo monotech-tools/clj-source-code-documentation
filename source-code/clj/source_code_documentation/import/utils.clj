@@ -9,7 +9,7 @@
 (defn last-coherent-comment-row-group
   ; @ignore
   ;
-  ; @param (string) n
+  ; @param (string) header
   ;
   ; @example
   ; (last-coherent-comment-row-group "\n; Row #1\n(let []); Row #2\n; Row #3")
@@ -18,11 +18,11 @@
   ;  "; Row #3"]
   ;
   ; @return (strings in vector)
-  [n]
+  [header]
   (letfn [(f0 [       %] (regex/re-match? % #"^[\s\t]{0,}\;"))  ; <- Returns TRUE if the given value is a comment row.
           (f1 [       %] (regex/re-match? % #"\n[\s\t]{0,}\;")) ; <- Returns TRUE if the given value contains any comment rows.
           (f2 [result %] (conj result (string/trim %)))]        ; <- Trims the given value (comment row) then appends it to the result vector.
-         (loop [observed-part n result []]
+         (loop [observed-part header result []]
                (let [row-ends-at (or (string/first-dex-of observed-part "\n") (count observed-part))
                      row-content (string/keep-range observed-part 0 (->  row-ends-at))
                      rest-part   (string/keep-range observed-part   (inc row-ends-at))]

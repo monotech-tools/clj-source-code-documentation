@@ -21,7 +21,7 @@
   ;  :source-paths (strings in vector)}
   [options]
   (merge {:filename-pattern core.config/DEFAULT-FILENAME-PATTERN
-          :print-format     :md
+          :print-format     :html
           :print-options    [:code :credit :description :example :param :preview :require :return :usage :warning]}
          (-> options (update :output-path   io/valid-absolute-path)
                      (update :previews-path io/valid-absolute-path)

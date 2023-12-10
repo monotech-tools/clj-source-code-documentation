@@ -1,7 +1,6 @@
 
 (ns source-code-documentation.resolve.engine
     (:require [source-code-documentation.resolve.utils :as resolve.utils]
-              [fruits.map.api :as map]
               [fruits.vector.api :as vector]))
 
 ;; ----------------------------------------------------------------------------
@@ -13,24 +12,19 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (string) def*-name
-  ; @param (map) def*-header-block
+  ; @param (map) header
+  ; @param (map) header-block
   ;
-  ; @return (map)
-  [state _ file-data def*-name def*-header-block]
-  (let [redirection-namespace (-> def*-header-block :pointer namespace)
-        redirection-name      (-> def*-header-block :pointer name)]
-       (letfn [(f0 [%] (-> % :ns-map :declaration :name (= redirection-namespace)))]
-              (if-let [target-file-data (vector/first-match state f0)]
-                      (if-let [target-headers (-> target-file-data :headers (get redirection-name))]
-                              (do
-                                (println (-> file-data :ns-map :declaration :name))
-                                (println def*-name)
-                                (println target-headers)
-                                (println))))))
-              ;(println redirection-namespace redirection-name)))
-
-  def*-header-block)
+  ; @return (maps in vector)
+  [state _ _ _ {:keys [pointer]}]
+  (let [redirection-namespace (namespace pointer) redirection-name (name pointer)]
+       (letfn [(f0 [%] (-> % :ns-map :declaration :name (= redirection-namespace)))
+               (f1 [%] (-> % :name                      (= redirection-name)))
+               (f2 [%] (-> % (vector/first-match f0)))
+               (f3 [%] (-> % (vector/first-match f1)))]
+              (if-let [target-header (-> state f2 :headers f3)]
+                      (-> target-header :blocks)
+                      [{:type :error :description :unresolved-redirection-error :pointer pointer}]))))
 
 (defn resolve-header-redirections
   ; @ignore
@@ -38,21 +32,32 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (string) def*-name
-  ; @param (maps in vector) def*-header
+  ; @param (map) header
   ;
   ; @example
   ; (resolve-header-redirections [...] {...} {...}
-  ;                              "my-function"
-  ;                              [{:type :redirect :meta ["..."] :indent 1}])
+  ;                              {:name   "my-function"
+  ;                               :blocks [{:type :redirect    :meta       ["another-namespace/another-function"]                              :indent 1}
+  ;                                        {:type :description :additional ["This is the original description of the 'my-function' function."] :indent 1}]})
   ; =>
-  ; [{:type :redirect :meta ["..."] :indent 1}]
+  ; {:name   "my-function"
+  ;  :blocks [{:type :description :additional ["This description is from the redirected header of the 'another-function' function."] :indent 1}
+  ;           {:type :description :additional ["This is the original description of the 'my-function' function."]                    :indent 1}]}
   ;
   ; @return (maps in vector)
-  [state options file-data def*-name def*-header]
-  (letfn [(f0 [%] (-> % :type (= :redirect)))
-          (f1 [%] (resolve-header-redirection state options file-data def*-name %))]
-         (vector/->items-by def*-header f0 f1)))
+  [state options file-data {:keys [blocks name] :as header}]
+
+
+  (letfn [(f0 [      %] (-> % :type (= :redirect)))
+          (f1 [      %] (-> file-data :ns-map :declaration :name) (keyword %))
+          (f2 [trace %] (-> % (vector/->items-by f0 #(f3 trace %))))
+          (f3 [trace %] (if (vector/contains-item? trace (:pointer %))
+                            (let [trace (conj trace (:pointer %))]
+                                 (throw (Exception. (str "Circular redirection error.\n" trace))))
+                            (let [trace (conj trace (:pointer %))]
+                                 (f2 trace (resolve-header-redirection state options file-data header %)))))]
+         (let [initial-trace [(f1 name)]]
+              (assoc header :blocks (-> initial-trace (f2 blocks) vector/flat-items)))))
 
 (defn resolve-imported-file
   ; @ignore
@@ -62,10 +67,9 @@
   ; @param (map) file-data
   ;
   ; @return (maps in vector)
-  [state options {:keys [headers] :as file-data}]
-  (letfn [(f0 [def*-name def*-header]
-              (resolve-header-redirections state options file-data def*-name def*-header))]
-         (update file-data :headers map/->values f0 {:provide-key? true})))
+  [state options file-data]
+  (letfn [(f0 [%] (resolve-header-redirections state options file-data %))]
+         (update file-data :headers vector/->items f0)))
 
 (defn resolve-imported-files
   ; @ignore
@@ -75,5 +79,5 @@
   ;
   ; @return (maps in vector)
   [state options]
-  (letfn [(f0 [file-data] (resolve-imported-file state options file-data))]
+  (letfn [(f0 [%] (resolve-imported-file state options %))]
          (vector/->items state f0)))
