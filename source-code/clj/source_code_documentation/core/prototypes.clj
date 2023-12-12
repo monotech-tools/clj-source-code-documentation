@@ -25,4 +25,4 @@
           :print-options    [:code :credit :description :example :param :preview :require :return :usage :warning]}
          (-> options (update :output-path   io/valid-absolute-path)
                      (update :previews-path io/valid-absolute-path)
-                     (update :source-paths  #(vector/->items % io/valid-absolute-path)))))
+                     (update :source-paths  vector/->items io/valid-absolute-path))))

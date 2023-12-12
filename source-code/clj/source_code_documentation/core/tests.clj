@@ -1,5 +1,5 @@
 
-(ns source-code-documentation.core.patterns
+(ns source-code-documentation.core.tests
     (:require [fruits.regex.api :as regex]))
 
 ;; ----------------------------------------------------------------------------
@@ -11,17 +11,28 @@
 ; https://github.com/bithandshake/cljc-validator
 ;
 ; @constant (map)
-(def OPTIONS-PATTERN
+(def OPTIONS-TEST
      {:author           {:opt* true
-                         :f*   string?
-                         :not* empty?
-                         :e*   ":author must be a nonempty string!"}
+                         :f*   map?
+                         :e*   ":author must be a map!"
+                         :name    {:opt* true
+                                   :f*   string?
+                                   :e*   ":name must be a string!"}
+                         :website {:opt* true
+                                   :f*   string?
+                                   :e*   ":name must be a string!"}}
       :filename-pattern {:opt* true
                          :f*   regex/pattern?
                          :e*   ":filename-pattern must be a regex pattern!"}
-      :lib-name         {:f*   string?
-                         :not* empty?
-                         :e*   ":lib-name must be a nonempty string!"}
+      :library          {:opt* true
+                         :f*   map?
+                         :e*   ":library must be a map!"
+                         :name    {:opt* true
+                                   :f*   string?
+                                   :e*   ":name must be a string!"}
+                         :website {:opt* true
+                                   :f*   string?
+                                   :e*   ":name must be a string!"}}
       :output-path      {:f*   string?
                          :not* empty?
                          :e*   ":output-path must be a nonempty string!"}
@@ -39,8 +50,4 @@
                          :e*   ":print-options must be a nonempty vector with keyword items!"}
       :source-paths     {:and* [vector? #(every? string? %)]
                          :not* empty?
-                         :e*   ":source-paths must be a nonempty vector with string items!"}
-      :website          {:opt* true
-                         :f*   string?
-                         :not* empty?
-                         :e*   ":website must be a nonempty string!"}})
+                         :e*   ":source-paths must be a nonempty vector with string items!"}})

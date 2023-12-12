@@ -1,7 +1,8 @@
 
 (ns source-code-documentation.resolve.engine
     (:require [source-code-documentation.resolve.utils :as resolve.utils]
-              [fruits.vector.api :as vector]))
+              [fruits.vector.api :as vector]
+              [io.api :as io]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -16,13 +17,18 @@
   ; @param (map) header-block
   ;
   ; @return (maps in vector)
-  [state _ _ _ {:keys [pointer]}]
-  (let [redirection-namespace (namespace pointer) redirection-name (name pointer)]
-       (letfn [(f0 [%] (-> % :ns-map :declaration :name (= redirection-namespace)))
-               (f1 [%] (-> % :name                      (= redirection-name)))
-               (f2 [%] (-> % (vector/first-match f0)))
-               (f3 [%] (-> % (vector/first-match f1)))]
-              (if-let [target-header (-> state f2 :headers f3)]
+  [state _ file-data _ {:keys [pointer]}]
+  (let [redirection-namespace (namespace pointer)
+        redirection-name      (name pointer)
+        source-extension      (-> file-data :filepath io/filepath->extension)]
+       (letfn [(f0 [%] (-> % :ns-map :declaration :name       (= redirection-namespace)))
+               (f1 [%] (-> % :filepath io/filepath->extension (= source-extension)))
+               (f2 [%] (-> % :filepath io/filepath->extension (= "cljc")))
+               (f3 [%] (-> % :name                            (= redirection-name)))
+               (f4 [%] (and (f0 %) (or (f1 %) (f2 %))))
+               (f5 [%] (-> % (vector/first-match f4)))
+               (f6 [%] (-> % (vector/first-match f3)))]
+              (if-let [target-header (-> state f5 :headers f6)]
                       (-> target-header :blocks)
                       [{:type :error :description :unresolved-redirection-error :pointer pointer}]))))
 
@@ -46,8 +52,6 @@
   ;
   ; @return (maps in vector)
   [state options file-data {:keys [blocks name] :as header}]
-
-
   (letfn [(f0 [      %] (-> % :type (= :redirect)))
           (f1 [      %] (-> file-data :ns-map :declaration :name) (keyword %))
           (f2 [trace %] (-> % (vector/->items-by f0 #(f3 trace %))))
@@ -58,6 +62,9 @@
                                  (f2 trace (resolve-header-redirection state options file-data header %)))))]
          (let [initial-trace [(f1 name)]]
               (assoc header :blocks (-> initial-trace (f2 blocks) vector/flat-items)))))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn resolve-imported-file
   ; @ignore

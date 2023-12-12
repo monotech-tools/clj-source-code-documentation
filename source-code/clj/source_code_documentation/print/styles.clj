@@ -38,7 +38,11 @@ body {
 .list-block-link,
 .list-block-link:active,
 .list-block-link:hover,
-.list-block-link:visited {
+.list-block-link:visited,
+#library-website,
+#library-website:active,
+#library-website:hover,
+#library-website:visited {
   color:           #0088cc;
   display:         block;
   font-size:       14px;
@@ -49,7 +53,36 @@ body {
 .list-block-link:hover {
   background-color: #f0f0f0 }
 
+#library-name {
+  font-weight:    600;
+  line-height:    24px;
+  text-transform: uppercase
+}
+
 /*** Labels, links ***/
+
+/*** Bars ***/
+
+#top-bar {
+  background-color: #ffffff;
+  border-bottom:    1px solid #e0e0e0;
+  height:           60px;
+  left:             0;
+  position:         fixed;
+  top:              0;
+  width:            100% }
+
+#library-website {
+  position: absolute;
+  right:    18px;
+  top:      18px }
+
+#library-name {
+  left:     18px;
+  position: absolute;
+  top:      18px }
+
+/*** Bars ***/
 
 /*** Lists ***/
 
@@ -58,10 +91,10 @@ body {
   display:        flex;
   flex-direction: column;
  -gap:            12px;
-  height:         100vh;
+  height:         calc(100vh - 60px);
   left:           0;
   position:       fixed;
-  top:            0;
+  top:            60px;
   width:          240px }
 
 #symbol-list {
@@ -69,10 +102,10 @@ body {
   display:        flex;
   flex-direction: column;
  -gap:            12px;
-  height:         100vh;
+  height:         calc(100vh - 60px);
   left:           240px;
   position:       fixed;
-  top:            0;
+  top:            60px;
   width:          240px }
 
 .sidelist-scroll-container {
@@ -81,7 +114,12 @@ body {
 }
 
 #header-list {
-  padding-left: 480px;
+  padding-left: 528px;
+  padding-top:  60px;
+}
+
+.header-list--header {
+  padding-top: 60px;
 }
 
 /*** Lists ***/

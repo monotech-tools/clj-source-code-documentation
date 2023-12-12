@@ -1,6 +1,6 @@
 
 (ns source-code-documentation.core.engine
-    (:require [source-code-documentation.core.patterns   :as core.patterns]
+    (:require [source-code-documentation.core.tests :as core.tests]
               [source-code-documentation.core.prototypes :as core.prototypes]
               [source-code-documentation.import.engine   :as import.engine]
               [source-code-documentation.map.engine      :as map.engine]
@@ -18,10 +18,14 @@
   ; The 'generate-documentation!' function ereases the output directory before exporting the documentation files!
   ;
   ; @param (map) options
-  ; {:author (string)(opt)
+  ; {:author (map)(opt)
+  ;   {:name (string)(opt)
+  ;    :website (string)(opt)}
   ;  :filename-pattern (regex pattern)(opt)
   ;   Default: #"[a-z\_\d]{1,}\.clj[cs]{0,1}"
-  ;  :lib-name (string)
+  ;  :library (map)(opt)}
+  ;   {:name (string)(opt)
+  ;    :website (string)(opt)}
   ;  :output-path (string)
   ;  :previews-path (string)(opt)
   ;  :print-format (keyword)(opt)
@@ -31,22 +35,22 @@
   ;   [:code, :credit, :description, :example, :param, :preview, :require, :return, :usage, :warning]
   ;   Default: [:code :credit :description :example :param :preview :require :return :usage :warning]
   ;  :source-paths (strings in vector)
-  ;  :website (string)(opt)}
+  ;  :version (string)(opt)}
   ;
   ; @usage
   ; (generate-documentation! {...})
   ;
   ; @usage
-  ; (generate-documentation! {:author           "Author"
+  ; (generate-documentation! {:author           {:name "Author" :website "https://author.com"}
   ;                           :filename-pattern "[a-z\_]\.clj"
-  ;                           :lib-name         "My library"
+  ;                           :library          {:name "My library" :website"https://github.com/author/my-repository"}
   ;                           :output-path      "documentation"
   ;                           :source-paths     ["source-code"]
-  ;                           :website          "https://github.com/author/my-repository"})
+  ;                           :version          "1.0.0.0"})
   ;
   ; @return (?)
   [options]
-  (if (v/valid? options {:pattern* core.patterns/OPTIONS-PATTERN})
+  (if (v/valid? options core.tests/OPTIONS-TEST {:prefix "options"})
       (let [options (core.prototypes/options-prototype   options)]
            (-> [] (map.engine/map-source-paths           options)
                   (import.engine/import-source-files     options)
