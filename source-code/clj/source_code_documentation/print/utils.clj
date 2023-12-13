@@ -37,6 +37,22 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn page-print-path
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) file-data
+  ;
+  ; @return (string)
+  [state {:keys [output-path] :as options} file-data]
+  (let [extension     (-> file-data :filepath io/filepath->extension)
+        namespace-uri (namespace-uri state options file-data extension)]
+       (str output-path namespace-uri)))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn filter-namespaces
   ; @ignore
   ;
