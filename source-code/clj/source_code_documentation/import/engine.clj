@@ -17,13 +17,17 @@
   ; @return (maps in vector)
   [_ _ {{:keys [defs defns]} :ns-map :keys [filepath] :as file-data}]
   (if-let [file-content (io/read-file filepath {:warn? true})]
-          (letfn [(f0 [%] {:name (:name %) :blocks (import.utils/def-header  file-content %)})
-                  (f1 [%] {:name (:name %) :blocks (import.utils/defn-header file-content %)})
-                  (f2 [%] (-> % :value :type (= :symbol)))
-                  (f3 [%] (-> % (assoc-in [:value :symbol] (import.utils/def-value file-content %))))]
-                 (-> file-data (update-in [:ns-map :defs] vector/update-items-by f2 f3) ; <- Importing symbol type values of defs is required (for creating redirection traces).
+          (letfn [(f0 [%] {:name (:name %) :blocks (import.utils/def-header       file-content %)})
+                  (f1 [%] {:name (:name %) :blocks (import.utils/defn-header      file-content %)})
+                  (f2 [%] {:name (:name %) :body   (import.utils/def-source-code  file-content %)})
+                  (f3 [%] {:name (:name %) :body   (import.utils/defn-source-code file-content %)})
+                  (f4 [%] (-> % :value :type (= :symbol)))
+                  (f5 [%] (-> % (assoc-in [:value :symbol] (import.utils/def-value file-content %))))]
+                 (-> file-data (update-in [:ns-map :defs] vector/update-items-by f4 f5) ; <- Importing symbol type values of defs is required (for creating redirection traces).
                                (update-in [:headers]      vector/concat-items (vector/->items defs  f0))
-                               (update-in [:headers]      vector/concat-items (vector/->items defns f1))))))
+                               (update-in [:headers]      vector/concat-items (vector/->items defns f1))
+                               (update-in [:source-codes] vector/concat-items (vector/->items defs  f2))
+                               (update-in [:source-codes] vector/concat-items (vector/->items defns f3))))))
 
 (defn import-source-files
   ; @ignore

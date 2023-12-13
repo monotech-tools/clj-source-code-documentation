@@ -40,14 +40,6 @@
                          :f*   string?
                          :not* empty?
                          :e*   ":previews-path must be a nonempty string!"}
-      :print-format     {:opt* true
-                         :f*   keyword?
-                         :or*  [#(= % :html) #(= % :md)]
-                         :e*   ":print-format must be ':html' or ':md'!"}
-      :print-options    {:opt* true
-                         :and* [vector? #(every? keyword? %)]
-                         :not* empty?
-                         :e*   ":print-options must be a nonempty vector with keyword items!"}
       :source-paths     {:and* [vector? #(every? string? %)]
                          :not* empty?
                          :e*   ":source-paths must be a nonempty vector with string items!"}})

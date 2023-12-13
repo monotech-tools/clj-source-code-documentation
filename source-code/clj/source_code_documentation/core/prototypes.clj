@@ -14,15 +14,11 @@
   ;
   ; @return (map)
   ; {:filename-pattern (regex pattern)
-  ;  :print-format (keyword)
-  ;  :print-options (keywords in vector)
   ;  :output-path (string)
   ;  :previews-path (string)
   ;  :source-paths (strings in vector)}
   [options]
-  (merge {:filename-pattern core.config/DEFAULT-FILENAME-PATTERN
-          :print-format     :html
-          :print-options    [:code :credit :description :example :param :preview :require :return :usage :warning]}
+  (merge {:filename-pattern core.config/DEFAULT-FILENAME-PATTERN}
          (-> options (update :output-path   io/valid-absolute-path)
                      (update :previews-path io/valid-absolute-path)
                      (update :source-paths  vector/->items io/valid-absolute-path))))

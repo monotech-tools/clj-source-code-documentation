@@ -69,3 +69,26 @@
   (-> file-content (string/keep-range (first bounds) (last bounds))              ; <- Keeps the part of the file content from the start position of the defn - to its end position.
                    (regex/before-first-match #"\n[\s\t]{1,}\[|\n[\s\t]{1,}\(\[") ; <- Cuts the part from the first (non-commented and non-quoted) argument list.
                    (last-coherent-comment-row-group)))                           ; <- Extracts the last coherent comment row group.
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn def-source-code
+  ; @ignore
+  ;
+  ; @param (string) file-content
+  ; @param (map) def
+  ;
+  ; @return (string)
+  [file-content {:keys [bounds]}]
+  (string/keep-range file-content (first bounds) (last bounds)))
+
+(defn defn-source-code
+  ; @ignore
+  ;
+  ; @param (string) file-content
+  ; @param (map) defn
+  ;
+  ; @return (string)
+  [file-content {:keys [bounds]}]
+  (string/keep-range file-content (first bounds) (last bounds)))

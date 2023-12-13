@@ -82,13 +82,13 @@
   [header-blocks]
   (letfn [(f0 [%] (regex/re-match? % #"^[\s\t]{0,}\;[\s\t]{0,}\@")) ; <- Returns TRUE if the given comment row is a header block type row.
           (f1 [%] (regex/re-match? % #"^[\s\t]{0,}\;[\s\t]{0,}$"))  ; <- Returns TRUE if the given comment row is an empty comment row.
-          (f2 [[in-block? result] row-content]
-              (cond (-> row-content f0) [true  (-> result (vector/conj-item [row-content]))] ; <- Header block type rows always starts a new header block.
-                    (-> row-content f1) [false (-> result)]                                  ; <- An empty comment row always closes the previous block.
-                    (-> in-block? not)  [false (-> result)]                                  ; <- The comment row is ignored if no header block is opened.
-                    :additional-row     [true  (-> result (vector/update-last-item vector/conj-item row-content))]))]
-         (let [[_ result] (reduce f2 [false []] header-blocks)]
-              (-> result))))
+          (f2 [%] (vector/empty?   %))                              ; <- Returns TRUE if the given result vector is empty (no block has been opened yet).
+          (f3 [result row-content]
+              (cond (-> row-content f0)  (-> result (vector/conj-item [               row-content]))
+                    (-> row-content f1)  (-> result (vector/conj-item ["; @separator" row-content]))
+                    (-> result      f2)  (-> result (vector/conj-item ["; @undefined" row-content]))
+                    :additional-row      (-> result (vector/update-last-item vector/conj-item row-content))))]
+         (reduce f3 [] header-blocks)))
 
 (defn read-header
   ; @ignore

@@ -14,7 +14,7 @@
 ;; ----------------------------------------------------------------------------
 
 (defn generate-documentation!
-  ; @warning
+  ; @important
   ; The 'generate-documentation!' function ereases the output directory before exporting the documentation files!
   ;
   ; @param (map) options
@@ -28,12 +28,6 @@
   ;    :website (string)(opt)}
   ;  :output-path (string)
   ;  :previews-path (string)(opt)
-  ;  :print-format (keyword)(opt)
-  ;   :html, :md
-  ;   Default: :html
-  ;  :print-options (keywords in vector)(opt)
-  ;   [:code, :credit, :description, :example, :param, :preview, :require, :return, :usage, :warning]
-  ;   Default: [:code :credit :description :example :param :preview :require :return :usage :warning]
   ;  :source-paths (strings in vector)
   ;  :version (string)(opt)}
   ;
