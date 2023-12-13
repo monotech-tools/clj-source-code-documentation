@@ -26,4 +26,5 @@
        (when-let [file-data (second state)]
                  (io/write-file! (str (:output-path options) "/test2.html") (print.assemble/assemble-page state options file-data)
                                  {:create? true}))
+                                 
        (print.assemble/assemble-page state options (second state))))
