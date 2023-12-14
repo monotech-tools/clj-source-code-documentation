@@ -12,10 +12,10 @@
   ; @param (string) header
   ;
   ; @example
-  ; (last-coherent-comment-row-group "\n; Row #1\n(let []); Row #2\n; Row #3")
+  ; (last-coherent-comment-row-group "\n ; Commented row #1\n Non-commented row\n ; Commented row #2\n ; Commented row #3")
   ; =>
-  ; ["; Row #2"
-  ;  "; Row #3"]
+  ; [" ; Commented row #2"
+  ;  " ; Commented row #3"]
   ;
   ; @return (strings in vector)
   [header]
@@ -37,8 +37,16 @@
 (defn def-value
   ; @ignore
   ;
+  ; @description
+  ; Returns the value of a specific def declaration.
+  ;
   ; @param (string) file-content
   ; @param (map) def
+  ;
+  ; @example
+  ; (def-value "... (def my-constant :my-value) ..." {...})
+  ; =>
+  ; ":my-value"
   ;
   ; @return (string)
   [file-content {:keys [value]}]
@@ -48,8 +56,16 @@
 (defn def-header
   ; @ignore
   ;
+  ; @description
+  ; Returns the comment header of a specific def declaration.
+  ;
   ; @param (string) file-content
   ; @param (map) def
+  ;
+  ; @example
+  ; (defn-header "... \n; @constant (keyword)\n(def my-constant :my-value) ..." {...})
+  ; =>
+  ; "; @constant (keyword)"
   ;
   ; @return (strings in vector)
   [file-content {:keys [bounds]}]
@@ -61,8 +77,16 @@
 (defn defn-header
   ; @ignore
   ;
+  ; @description
+  ; Returns the comment header of a specific defn declaration.
+  ;
   ; @param (string) file-content
   ; @param (map) defn
+  ;
+  ; @example
+  ; (defn-header "... (defn my-function\n; @param (map) my-param\n [my-param] ...) ..." {...})
+  ; =>
+  ; "; @param (map) my-param"
   ;
   ; @return (strings in vector)
   [file-content {:keys [bounds]}]
@@ -76,8 +100,16 @@
 (defn def-source-code
   ; @ignore
   ;
+  ; @description
+  ; Returns the source code of a specific def declaration.
+  ;
   ; @param (string) file-content
   ; @param (map) def
+  ;
+  ; @example
+  ; (def-source-code "... (def my-constant [] ...) ..." {...})
+  ; =>
+  ; "(def my-constant :my-value)"
   ;
   ; @return (string)
   [file-content {:keys [bounds]}]
@@ -86,8 +118,16 @@
 (defn defn-source-code
   ; @ignore
   ;
+  ; @description
+  ; Returns the source code of a specific defn declaration.
+  ;
   ; @param (string) file-content
   ; @param (map) defn
+  ;
+  ; @example
+  ; (defn-source-code "... (defn my-function [] ...) ..." {...})
+  ; =>
+  ; "(defn my-function [] ...)"
   ;
   ; @return (string)
   [file-content {:keys [bounds]}]

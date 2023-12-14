@@ -202,6 +202,19 @@ a:visited {
 
 
 
+/*** Cover ***/
+
+#credits {
+  align-items:    center;
+  display:        flex;
+  flex-direction: column;
+  margin-left:    240px;
+  padding-top:    120px }
+
+/*** Cover ***/
+
+
+
 /*** Doc header list ***/
 
 #doc-header-list--wrapper {

@@ -97,6 +97,20 @@ Headers can be linked into each other with the `@redirect` marker.
   [bar])  
 ```
 
+
+
+```
+; @link
+ebbol lehet tobb
+redirectbol egy lehet és az a source-code-ot is átirányitja
+```
+
+
+
+
+
+
+
 ```
 ; @redirect
 ; Imports the header of the 'foo' declaration from the 'bar' namespace.

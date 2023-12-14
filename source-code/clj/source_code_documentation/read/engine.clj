@@ -23,7 +23,7 @@
   ; @description
   ; - Reads the imported headers of defs and defns (from all source files within the given source directories).
   ; - Although the documentation generator creates documentation only for files that match the provided (or default)
-  ;   filename pattern, to handle header redirections, the documentation generator requires reading headers from all available source files.
+  ;   filename pattern, to handle header links and redirections, it requires reading headers from all available source files.
   ;
   ; @param (maps in vector) state
   ; @param (map) options

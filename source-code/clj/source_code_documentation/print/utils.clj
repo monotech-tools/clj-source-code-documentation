@@ -20,7 +20,7 @@
   [_ _ _ header]
   (-> header :name hiccup/value (string/prepend "#")))
 
-(defn namespace-uri
+(defn namespace-path
   ; @ignore
   ;
   ; @param (maps in vector) state
@@ -34,6 +34,19 @@
                                            (string/prepend "/" extension "/")
                                            (string/append ".html")))
 
+(defn namespace-uri
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) file-data
+  ; @param (string) extension
+  ;
+  ; @return (string)
+  [state {:keys [base-uri] :as options} file-data extension]
+  (let [namespace-path (namespace-path state options file-data extension)]
+       (str base-uri namespace-path)))
+
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
@@ -46,9 +59,19 @@
   ;
   ; @return (string)
   [state {:keys [output-path] :as options} file-data]
-  (let [extension     (-> file-data :filepath io/filepath->extension)
-        namespace-uri (namespace-uri state options file-data extension)]
-       (str output-path namespace-uri)))
+  (let [extension      (-> file-data :filepath io/filepath->extension)
+        namespace-path (namespace-path state options file-data extension)]
+       (str output-path namespace-path)))
+
+(defn cover-print-path
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ;
+  ; @return (string)
+  [state {:keys [output-path] :as options}]
+  (str output-path "/index.html"))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

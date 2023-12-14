@@ -70,7 +70,7 @@
   ; @ignore
   ;
   ; @description
-  ; Returns the namespace of the given redirection pointer.
+  ; Returns the namespace of the given link / redirection pointer.
   ;
   ; @param (map) file-data
   ; @param (map) header
@@ -99,7 +99,7 @@
   ; @ignore
   ;
   ; @description
-  ; Returns the name of the given redirection pointer.
+  ; Returns the name of the given link / redirection pointer.
   ;
   ; @param (map) file-data
   ; @param (map) header
@@ -138,7 +138,7 @@
   ; @ignore
   ;
   ; @description
-  ; - Derives the namespace from the given redirection pointer.
+  ; - Derives the namespace from the given link / redirection pointer.
   ; - Uses the namespace from the declaration's symbol type value (if any, and the declaration is a def) as a fallback.
   ; - Uses the file namespace as a second fallback.
   ; - Replaces the '*' wildcard character with the file namespace.
@@ -166,7 +166,7 @@
   ; @ignore
   ;
   ; @description
-  ; - Derives the name from the given redirection pointer.
+  ; - Derives the name from the given link / redirection pointer.
   ; - Uses the name from the declaration's symbol type value (if any, and the declaration is a def) as a fallback.
   ; - Uses the declaration name as a second fallback.
   ; - Replaces the '*' wildcard character with the declaration name.
