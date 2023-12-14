@@ -106,6 +106,12 @@ redirectbol egy lehet és az a source-code-ot is átirányitja
 ```
 
 
+```
+; @preview (my-screenshot.png)
+; (my-function :my-param)
+; =>
+; "My return value"
+```
 
 
 

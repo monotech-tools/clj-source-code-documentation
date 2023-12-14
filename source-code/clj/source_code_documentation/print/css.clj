@@ -168,7 +168,7 @@ a:visited {
 
 
 
-/*** Namespace list, symbol list ***/
+/*** Namespace list, declaration list ***/
 
 #namespace-list {
   border-right:   1px solid #e0e0e0;
@@ -181,7 +181,7 @@ a:visited {
   top:            60px;
   width:          240px }
 
-#symbol-list {
+#declaration-list {
   border-right:   1px solid #e0e0e0;
   display:        flex;
   flex-direction: column;
@@ -198,7 +198,7 @@ a:visited {
 .namespace-list--container {
   margin-bottom: 12px }
 
-/*** Namespace list, symbol list ***/
+/*** Namespace list, declaration list ***/
 
 
 
@@ -270,5 +270,9 @@ a:visited {
   line-height:      16px;
   margin:           0;
   padding:          12px 8px }
+
+.doc-header--preview-image {
+  max-height: 360px;
+  max-width:  640px }
 
 /*** Doc header ***/")

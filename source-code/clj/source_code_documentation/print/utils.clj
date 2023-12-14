@@ -14,11 +14,11 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ;
   ; @return (string)
-  [_ _ _ header]
-  (-> header :name hiccup/value (string/prepend "#")))
+  [_ _ _ declaration]
+  (-> declaration :name hiccup/value (string/prepend "#")))
 
 (defn namespace-path
   ; @ignore
@@ -46,6 +46,18 @@
   [state {:keys [base-uri] :as options} file-data extension]
   (let [namespace-path (namespace-path state options file-data extension)]
        (str base-uri namespace-path)))
+
+(defn preview-image-uri
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) header-block
+  ;
+  ; @return (string)
+  [_ {:keys [previews-uri]} header-block]
+  (let [preview-path (-> header-block :meta first)]
+       (str previews-uri "/" preview-path)))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

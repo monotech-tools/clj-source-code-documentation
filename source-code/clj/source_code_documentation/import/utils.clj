@@ -97,7 +97,7 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn def-source-code
+(defn def-body
   ; @ignore
   ;
   ; @description
@@ -107,7 +107,7 @@
   ; @param (map) def
   ;
   ; @example
-  ; (def-source-code "... (def my-constant [] ...) ..." {...})
+  ; (def-body "... (def my-constant [] ...) ..." {...})
   ; =>
   ; "(def my-constant :my-value)"
   ;
@@ -115,7 +115,7 @@
   [file-content {:keys [bounds]}]
   (string/keep-range file-content (first bounds) (last bounds)))
 
-(defn defn-source-code
+(defn defn-body
   ; @ignore
   ;
   ; @description
@@ -125,7 +125,7 @@
   ; @param (map) defn
   ;
   ; @example
-  ; (defn-source-code "... (defn my-function [] ...) ..." {...})
+  ; (defn-body "... (defn my-function [] ...) ..." {...})
   ; =>
   ; "(defn my-function [] ...)"
   ;

@@ -29,7 +29,7 @@
   ;    :version (string)(opt)
   ;    :website (string)(opt)}
   ;  :output-path (string)
-  ;  :previews-path (string)(opt)
+  ;  :previews-uri (string)(opt)
   ;  :source-paths (strings in vector)}
   ;
   ; @usage
@@ -40,6 +40,7 @@
   ;                           :filename-pattern "[a-z\_]\.clj"
   ;                           :library          {:name "my-library" :version "1.0.0" :website "https://github.com/author/my-library"}
   ;                           :output-path      "docs"
+  ;                           :previews-uri     "https://github.com/author/my-library/blob/main/previews"
   ;                           :source-paths     ["source-code"]})
   [options]
   (if (v/valid? options core.tests/OPTIONS-TEST {:prefix "options"})

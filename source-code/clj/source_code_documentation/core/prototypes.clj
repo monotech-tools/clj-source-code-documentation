@@ -17,11 +17,11 @@
   ; {:base-uri (string)
   ;  :filename-pattern (regex pattern)
   ;  :output-path (string)
-  ;  :previews-path (string)
+  ;  :previews-uri (string)
   ;  :source-paths (strings in vector)}
   [options]
   (merge {:filename-pattern core.config/DEFAULT-FILENAME-PATTERN}
-         (-> options (update :base-uri      uri/valid-url)
-                     (update :output-path   io/valid-absolute-path)
-                     (update :previews-path io/valid-absolute-path)
-                     (update :source-paths  vector/->items io/valid-absolute-path))))
+         (-> options (update :base-uri     uri/valid-url)
+                     (update :output-path  io/valid-absolute-path)
+                     (update :previews-uri uri/valid-url)
+                     (update :source-paths vector/->items io/valid-absolute-path))))

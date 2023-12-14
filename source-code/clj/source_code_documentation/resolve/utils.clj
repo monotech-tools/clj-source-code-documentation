@@ -9,18 +9,18 @@
   ; @ignore
   ;
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ;
   ; @example
   ; (create-pointer {:ns-map {:declaration {:name "my-namespace"}}}
-  ;                 {:name "my-function" :blocks [...]})
+  ;                 {:name "my-function" :header [...]})
   ; =>
   ; :my-namespace/my-function
   ;
   ; @return (namespaced keyword)
-  [file-data header]
+  [file-data declaration]
   (keyword (-> file-data :ns-map :declaration :name)
-           (-> header :name)))
+           (-> declaration :name)))
 
 (defn update-trace
   ; @ignore
@@ -38,6 +38,3 @@
   (if (vector/contains-item? trace pointer)
       (let [trace (conj trace pointer)] (throw (Exception. (str "Circular pointer error.\n" trace))))
       (let [trace (conj trace pointer)] (-> trace))))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------

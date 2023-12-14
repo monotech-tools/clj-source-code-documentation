@@ -16,7 +16,7 @@
   ; @description
   ; - Maps namespaces from all CLJ, CLJC, and CLJS source files within the given source directories.
   ; - Although the documentation generator creates documentation only for files that match the provided (or default)
-  ;   filename pattern, to handle header links and redirections, it requires mapping of namespaces in all available source files.
+  ;   filename pattern, to handle links and redirections, it requires mapping of namespaces in all available source files.
   ;
   ; @param (vector) state
   ; @param (map) options

@@ -21,7 +21,7 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ; @param (map) header-block
   ;
   ; @return (hiccup)
@@ -38,7 +38,7 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ; @param (map) header-block
   ;
   ; @return (hiccup)
@@ -55,7 +55,7 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ; @param (map) header-block
   ;
   ; @return (hiccup)
@@ -72,7 +72,7 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ; @param (map) header-block
   ;
   ; @return (hiccup)
@@ -86,29 +86,13 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-doc-header-separator
-  ; @ignore
-  ;
-  ; @param (maps in vector) state
-  ; @param (map) options
-  ; @param (map) file-data
-  ; @param (map) header
-  ; @param (map) header-block
-  ;
-  ; @return (hiccup)
-  [_ _ _ _ _]
-  [:div {:class :doc-header--separator}])
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
 (defn assemble-doc-header-param-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ; @param (map) header-block
   ;
   ; @return (hiccup)
@@ -121,13 +105,32 @@
               [:span {:class [:text--micro :color--muted]}
                      (case (-> header-block :meta second) "opt" "optional" "req" "required" "required")]]])
 
+(defn assemble-doc-header-preview-block
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) file-data
+  ; @param (map) declaration
+  ; @param (map) header-block
+  ;
+  ; @return (hiccup)
+  [state options _ _ header-block]
+  (let [preview-image-uri (print.utils/preview-image-uri state options header-block)]
+       [:div {:class :doc-header--block}
+             [:div {:class :doc-header--block-label}
+                   [:span {:class [:text--micro :color--muted]} "Preview"]]
+             [:img {:class :doc-header--preview-image :src preview-image-uri}]
+             (vector/concat-items [:pre {:class :doc-header--box}]
+                                  (vector/gap-items (:additional header-block) [:br]))]))
+
 (defn assemble-doc-header-return-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ; @param (map) header-block
   ;
   ; @return (hiccup)
@@ -143,7 +146,7 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ; @param (map) header-block
   ;
   ; @return (hiccup)
@@ -157,27 +160,43 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn assemble-doc-header-separator
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) file-data
+  ; @param (map) declaration
+  ; @param (map) header-block
+  ;
+  ; @return (hiccup)
+  [_ _ _ _ _]
+  [:div {:class :doc-header--separator}])
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn assemble-doc-header-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ; @param (map) header-block
   ;
   ; @return (hiccup)
-  [state options file-data header header-block]
+  [state options file-data declaration header-block]
   (case (-> header-block :type)
-        :description (assemble-doc-header-description-block state options file-data header header-block)
-        :error       (assemble-doc-header-error-block       state options file-data header header-block)
-        :example     (assemble-doc-header-usage-block       state options file-data header header-block)
-        :important   (assemble-doc-header-important-block   state options file-data header header-block)
-        :info        (assemble-doc-header-info-block        state options file-data header header-block)
-        :param       (assemble-doc-header-param-block       state options file-data header header-block)
-        :return      (assemble-doc-header-return-block      state options file-data header header-block)
-        :separator   (assemble-doc-header-separator         state options file-data header header-block)
-        :usage       (assemble-doc-header-usage-block       state options file-data header header-block)
+        :description (assemble-doc-header-description-block state options file-data declaration header-block)
+        :error       (assemble-doc-header-error-block       state options file-data declaration header-block)
+        :important   (assemble-doc-header-important-block   state options file-data declaration header-block)
+        :info        (assemble-doc-header-info-block        state options file-data declaration header-block)
+        :param       (assemble-doc-header-param-block       state options file-data declaration header-block)
+        :preview     (assemble-doc-header-preview-block     state options file-data declaration header-block)
+        :return      (assemble-doc-header-return-block      state options file-data declaration header-block)
+        :separator   (assemble-doc-header-separator         state options file-data declaration header-block)
+        :usage       (assemble-doc-header-usage-block       state options file-data declaration header-block)
                      [:div (str header-block)]))
 
 ;; ----------------------------------------------------------------------------
@@ -189,16 +208,16 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ;
   ; @return (hiccup)
-  [_ _ file-data header]
-  (let [collapsible-id (-> header :name (str "--source-code") hiccup/value)
+  [_ _ _ declaration]
+  (let [collapsible-id (-> declaration :name (str "--source-code") hiccup/value)
         toggle-f       (str "toggleCollapsible('"collapsible-id"')")]
        [:div {:class :collapsible-wrapper :id collapsible-id :data-expanded "false"}
              [:div {:class [:collapsible-button :text--micro] :onClick toggle-f} "Source Code"]
              [:pre {:class :doc-header--box}
-                   (-> file-data :source-codes (vector/first-match #(= (:name %) (:name header))) :body)]]))
+                   (-> declaration :body)]]))
 
 (defn assemble-doc-header-name
   ; @ignore
@@ -206,12 +225,12 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ;
   ; @return (hiccup)
-  [_ _ _ header]
+  [_ _ _ declaration]
   [:div {:class :doc-header--name}
-        (:name header)])
+        (:name declaration)])
 
 (defn assemble-doc-header
   ; @ignore
@@ -219,17 +238,17 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ;
   ; @return (hiccup)
-  [state options file-data header]
-  (let [header-id (-> header :name hiccup/value)]
-       [:div {:id header-id :class :doc-header--wrapper}
-             (assemble-doc-header-name state options file-data header)
-             (letfn [(f0 [%] (assemble-doc-header-block state options file-data header %))]
-                    (hiccup/put-with [:div {:class :doc-header--blocks}] (-> header :blocks) f0))
+  [state options file-data declaration]
+  (let [doc-header-id (-> declaration :name hiccup/value)]
+       [:div {:id doc-header-id :class :doc-header--wrapper}
+             (assemble-doc-header-name state options file-data declaration)
+             (letfn [(f0 [%] (assemble-doc-header-block state options file-data declaration %))]
+                    (hiccup/put-with [:div {:class :doc-header--blocks}] (-> declaration :header) f0))
              [:div {:class :doc-header--separator}]
-             (assemble-source-code state options file-data header)]))
+             (assemble-source-code state options file-data declaration)]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -252,12 +271,12 @@
                      "cljc" "Isomorphic namespace"
                      "cljs" "ClojureScript namespace")]
         (letfn [(f0 [%] (assemble-doc-header state options file-data %))]
-               (hiccup/put-with [:div {:id :doc-header-list}] (-> file-data :headers) f0))])
+               (hiccup/put-with [:div {:id :doc-header-list}] (-> file-data :declarations) f0))])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-symbol-list
+(defn assemble-declaration-list
   ; @ignore
   ;
   ; @param (maps in vector) state
@@ -266,10 +285,10 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  [:div {:id :symbol-list}
+  [:div {:id :declaration-list}
         (letfn [(f0 [%] [:a {:class [:button :color--primary] :href (print.utils/symbol-anchor state options file-data %)}
                             (-> % :name)])]
-               (let [symbol-names (-> file-data :headers (vector/sort-items-by :name))]
+               (let [symbol-names (-> file-data :declarations (vector/sort-items-by :name))]
                     (hiccup/put-with [:div {:class :scroll-container}] symbol-names f0)))])
 
 ;; ----------------------------------------------------------------------------
@@ -345,13 +364,10 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  [:body (assemble-namespace-list  state options file-data)
-         (assemble-symbol-list     state options file-data)
-         (assemble-doc-header-list state options file-data)
-         (assemble-top-bar         state options file-data)])
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
+  [:body (assemble-namespace-list   state options file-data)
+         (assemble-declaration-list state options file-data)
+         (assemble-doc-header-list  state options file-data)
+         (assemble-top-bar          state options file-data)])
 
 (defn assemble-page-head
   ; @ignore
@@ -365,9 +381,6 @@
   [:head [:link   {:rel "stylesheet" :href print.config/FONT-URI}]
          [:style  {:type "text/css"}        (asset-compressor/compress-css print.css/STYLES)]
          [:script {:type "text/javascript"} (asset-compressor/compress-js  print.js/SCRIPTS)]])
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
 
 (defn assemble-page
   ; @ignore
@@ -423,8 +436,15 @@
         page-uri  (print.utils/namespace-uri state options file-data extension)]
        [:body {:onLoad (str "window.location.href = \"" page-uri "\"")}]))
 
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
+(defn assemble-cover-head
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ;
+  ; @return (hiccup)
+  [state options]
+  (assemble-page-head state options {}))
 
 (defn assemble-cover
   ; @ignore
@@ -434,5 +454,5 @@
   ;
   ; @return (string)
   [state options]
-  (html5 {} [:html (-> state (assemble-page-head  options {}))
+  (html5 {} [:html (-> state (assemble-cover-head options))
                    (-> state (assemble-cover-body options) hiccup/unparse-class-vectors hiccup/unparse-css)]))

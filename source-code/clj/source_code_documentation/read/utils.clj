@@ -54,7 +54,7 @@
 (defn read-header-blocks
   ; @ignore
   ;
-  ; @param (strings in vectors in vector) header-blocks
+  ; @param (strings in vectors in vector) header
   ;
   ; @example
   ; (read-header-blocks [["; @param (map)(opt) my-map"  "; {...}"]
@@ -64,22 +64,22 @@
   ;  {:type :param :meta ["vector"]    :value "my-vector" :additional [" [...]"]}]
   ;
   ; @return (maps in vector)
-  [header-blocks]
-  (vector/->items header-blocks read-header-block))
+  [header]
+  (vector/->items header read-header-block))
 
-(defn split-header-blocks
+(defn split-header
   ; @ignore
   ;
-  ; @param (strings in vector) header-blocks
+  ; @param (strings in vector) header
   ;
   ; @example
-  ; (split-header-blocks ["; @param (map) my-map" "; {...}" "; @param (vector) my-vector" "; [...]"])
+  ; (split-header ["; @param (map) my-map" "; {...}" "; @param (vector) my-vector" "; [...]"])
   ; =>
   ; [["; @param (map) my-map"       "; {...}"]
   ;  ["; @param (vector) my-vector" "; [...]"]]
   ;
   ; @return (strings in vectors in vector)
-  [header-blocks]
+  [header]
   (letfn [(f0 [%] (regex/re-match? % #"^[\s\t]{0,}\;[\s\t]{0,}\@")) ; <- Returns TRUE if the given comment row is a header block type row.
           (f1 [%] (regex/re-match? % #"^[\s\t]{0,}\;[\s\t]{0,}$"))  ; <- Returns TRUE if the given comment row is an empty comment row.
           (f2 [%] (vector/empty?   %))                              ; <- Returns TRUE if the given result vector is empty (no block has been opened yet).
@@ -88,22 +88,40 @@
                     (-> row-content f1)  (-> result (vector/conj-item ["; @separator" row-content]))
                     (-> result      f2)  (-> result (vector/conj-item ["; @undefined" row-content]))
                     :additional-row      (-> result (vector/update-last-item vector/conj-item row-content))))]
-         (reduce f3 [] header-blocks)))
+         (reduce f3 [] header)))
 
-(defn read-header
+(defn read-declaration-header
   ; @ignore
   ;
-  ; @param (map) header
-  ; {:blocks (strings in vector)}
+  ; @param (map) declaration
   ;
   ; @example
-  ; (read-header {:name "my-function" :blocks ["; Row #1" "; @param (map)(opt) options" ";  {...}" ";" "; @return (map)"]})
+  ; (read-declaration-header {:name "my-function" :header ["; Row #1" "; @param (map)(opt) options" ";  {...}" ";" "; @return (map)"]})
   ; =>
-  ; {:blocks [{:type :param  :meta ["map" "opt"] :value "options" :additional [" {...}"]}
+  ; {:name   "my-function"
+  ;  :header [{:type :param  :meta ["map" "opt"] :value "options" :additional [" {...}"]}
   ;           {:type :return :meta ["map"]}]}
   ;
   ; @return (map)
-  ; {:blocks (maps in vector)}
-  [header]
-  (-> header (update :blocks split-header-blocks)
-             (update :blocks read-header-blocks)))
+  [declaration]
+  (-> declaration (update :header split-header)
+                  (update :header read-header-blocks)))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn read-declaration-body
+  ; @ignore
+  ;
+  ; @param (map) declaration
+  ;
+  ; @example
+  ; (read-declaration-body {:name "my-function" :body "(defn my-function [])"})
+  ; =>
+  ; {:name "my-function"
+  ;  :body "(defn my-function [])"}
+  ;
+  ; @return (map)
+  [declaration]
+  ; removing comments ...
+  declaration)

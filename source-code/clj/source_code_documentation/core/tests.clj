@@ -22,5 +22,5 @@
                          :version {:opt* true :f* string? :e* ":version must be a string!"}
                          :website {:opt* true :f* string? :e* ":name must be a string!"}}
       :output-path      {           :f* string?              :not* empty? :e* ":output-path must be a nonempty string!"}
-      :previews-path    {:opt* true :f* string?              :not* empty? :e* ":previews-path must be a nonempty string!"}
+      :previews-uri     {:opt* true :f* string?              :not* empty? :e* ":previews-uri must be a nonempty string!"}
       :source-paths     {:and* [vector? #(every? string? %)] :not* empty? :e* ":source-paths must be a nonempty vector with string items!"}})

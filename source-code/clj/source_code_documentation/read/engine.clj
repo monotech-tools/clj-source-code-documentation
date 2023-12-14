@@ -15,15 +15,16 @@
   ;
   ; @return (maps in vector)
   [_ _ file-data]
-  (update file-data :headers vector/->items read.utils/read-header))
+  (-> file-data (update :declarations vector/->items read.utils/read-declaration-header)
+                (update :declarations vector/->items read.utils/read-declaration-body)))
 
 (defn read-imported-files
   ; @ignore
   ;
   ; @description
-  ; - Reads the imported headers of defs and defns (from all source files within the given source directories).
+  ; - Reads the imported source codes and headers of defs and defns (from all source files within the given source directories).
   ; - Although the documentation generator creates documentation only for files that match the provided (or default)
-  ;   filename pattern, to handle header links and redirections, it requires reading headers from all available source files.
+  ;   filename pattern, to handle links and redirections, it requires reading source codes and headers from all available source files.
   ;
   ; @param (maps in vector) state
   ; @param (map) options

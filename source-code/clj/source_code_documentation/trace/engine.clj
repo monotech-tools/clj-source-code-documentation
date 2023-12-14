@@ -6,41 +6,41 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn trace-header-redirection
+(defn trace-redirection
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ; @param (map) header-block
   ;
   ; @example
   ; (trace-header-redirection [...] {...} {...}
-  ;                           {:name "my-function" :blocks [{:type :redirect :meta ["..."] :indent 1}]}
+  ;                           {:name "my-function" :header [{:type :redirect :meta ["..."] :indent 1}]}
   ;                           {:type :redirect :meta ["..."] :indent 1})
   ; =>
   ; {:type :redirect :meta ["..."] :indent 1 :pointer "another-namespace/another-function"}
   ;
   ; @return (map)
-  [_ _ file-data header header-block]
-  (let [pointer (trace.utils/derive-pointer                 file-data header header-block)
-        pointer (trace.utils/invoke-pointer-namespace-alias file-data header pointer)]
+  [_ _ file-data declaration header-block]
+  (let [pointer (trace.utils/derive-pointer                 file-data declaration header-block)
+        pointer (trace.utils/invoke-pointer-namespace-alias file-data declaration pointer)]
        (assoc header-block :pointer pointer)))
 
-(defn trace-header-link
+(defn trace-link
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ; @param (map) header-block
   ;
   ; @return (map)
-  [state options file-data header header-block]
-  ; Tracing header links is the same process as tracing header redirections.
-  (trace-header-redirection state options file-data header header-block))
+  [state options file-data declaration header-block]
+  ; Tracing links is the same process as tracing redirections.
+  (trace-redirection state options file-data declaration header-block))
 
 (defn trace-header
   ; @ignore
@@ -48,22 +48,23 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) header
+  ; @param (map) declaration
   ;
   ; @example
   ; (trace-header [...] {...} {...}
-  ;               {:name "my-function" :blocks [{:type :redirect :meta ["..."] :indent 1}]})
+  ;               {:name "my-function" :header [{:type :redirect :meta ["..."] :indent 1}]})
   ; =>
-  ; [{:type :redirect :meta ["..."] :indent 1 :pointer "another-namespace/another-function"}]
+  ; {:name   "my-function"
+  ;  :header [{:type :redirect :meta ["..."] :indent 1 :pointer "another-namespace/another-function"}]}
   ;
-  ; @return (maps in vector)
-  [state options file-data header]
+  ; @return (map)
+  [state options file-data declaration]
   (letfn [(f0 [%] (-> % :type (= :redirect)))
           (f1 [%] (-> % :type (= :link)))
-          (f2 [%] (trace-header-redirection state options file-data header %))
-          (f3 [%] (trace-header-link        state options file-data header %))]
-         (-> header (update :blocks vector/->items-by f0 f2)
-                    (update :blocks vector/->items-by f1 f3))))
+          (f2 [%] (trace-redirection state options file-data declaration %))
+          (f3 [%] (trace-link        state options file-data declaration %))]
+         (-> declaration (update :header vector/->items-by f0 f2)
+                         (update :header vector/->items-by f1 f3))))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -76,17 +77,17 @@
   ; @param (map) file-data
   ;
   ; @return (maps in vector)
-  [state options {:keys [headers] :as file-data}]
+  [state options file-data]
   (letfn [(f0 [%] (trace-header state options file-data %))]
-         (update file-data :headers vector/->items f0)))
+         (update file-data :declarations vector/->items f0)))
 
 (defn trace-imported-files
   ; @ignore
   ;
   ; @description
-  ; - Traces the read headers of defs and defns creating pointers for header links and redirections (for all source files within the given source directories).
+  ; - Traces the links and redirections in headers of defs and defns creating pointers (for all source files within the given source directories).
   ; - Although the documentation generator creates documentation only for files that match the provided (or default)
-  ;   filename pattern, to handle header links and redirections, it requires tracing headers for all available source files.
+  ;   filename pattern, to handle header links and redirections, it requires tracing them for all available source files.
   ;
   ; @param (maps in vector) state
   ; @param (map) options
