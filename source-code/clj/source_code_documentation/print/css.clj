@@ -272,7 +272,11 @@ a:visited {
   padding:          12px 8px }
 
 .doc-header--preview-image {
+  border:     1px solid #dedede;
+  display:    block;
   max-height: 360px;
-  max-width:  640px }
+  max-width:  640px;
+  min-height: 36px;
+  min-width:  48px }
 
 /*** Doc header ***/")
