@@ -1,16 +1,16 @@
 
 (ns source-code-documentation.print.assemble
-    (:require [fruits.uri.api :as uri]
-              [fruits.hiccup.api :as hiccup]
-              [io.api :as io]
-              [fruits.vector.api :as vector]
-              [hiccup.page :refer [html5]]
-              [fruits.string.api :as string]
-              [source-code-documentation.print.js :as print.js]
-              [source-code-documentation.print.css :as print.css]
+    (:require [asset-compressor.api                   :as asset-compressor]
+              [fruits.hiccup.api                      :as hiccup]
+              [fruits.string.api                      :as string]
+              [fruits.uri.api                         :as uri]
+              [fruits.vector.api                      :as vector]
+              [hiccup.page                            :refer [html5]]
+              [io.api                                 :as io]
               [source-code-documentation.print.config :as print.config]
-              [source-code-documentation.print.utils :as print.utils]
-              [asset-compressor.api :as asset-compressor]))
+              [source-code-documentation.print.css    :as print.css]
+              [source-code-documentation.print.js     :as print.js]
+              [source-code-documentation.print.utils  :as print.utils]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

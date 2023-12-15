@@ -1,7 +1,7 @@
 
 (ns source-code-documentation.core.prototypes
-    (:require [fruits.vector.api                     :as vector]
-              [fruits.uri.api :as uri]
+    (:require [fruits.uri.api                        :as uri]
+              [fruits.vector.api                     :as vector]
               [io.api                                :as io]
               [source-code-documentation.core.config :as core.config]))
 

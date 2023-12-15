@@ -4,7 +4,7 @@
               [fruits.vector.api                     :as vector]
               [io.api                                :as io]
               [source-code-documentation.core.config :as core.config]
-              [source-code-documentation.map.utils :as map.utils]
+              [source-code-documentation.map.utils   :as map.utils]
               [source-code-map.api                   :as source-code-map]))
 
 ;; ----------------------------------------------------------------------------

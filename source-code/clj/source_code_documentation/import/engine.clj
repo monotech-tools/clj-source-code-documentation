@@ -1,7 +1,7 @@
 
 (ns source-code-documentation.import.engine
-    (:require [fruits.vector.api :as vector]
-              [io.api :as io]
+    (:require [fruits.vector.api                      :as vector]
+              [io.api                                 :as io]
               [source-code-documentation.import.utils :as import.utils]))
 
 ;; ----------------------------------------------------------------------------

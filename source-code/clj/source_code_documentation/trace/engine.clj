@@ -1,7 +1,7 @@
 
 (ns source-code-documentation.trace.engine
-    (:require [source-code-documentation.trace.utils :as trace.utils]
-              [fruits.vector.api :as vector]))
+    (:require [fruits.vector.api                     :as vector]
+              [source-code-documentation.trace.utils :as trace.utils]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

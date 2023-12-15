@@ -1,6 +1,6 @@
 
 (ns source-code-documentation.read.engine
-    (:require [fruits.vector.api :as vector]
+    (:require [fruits.vector.api                    :as vector]
               [source-code-documentation.read.utils :as read.utils]))
 
 ;; ----------------------------------------------------------------------------

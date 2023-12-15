@@ -1,9 +1,9 @@
 
 (ns source-code-documentation.print.engine
-    (:require [io.api :as io]
-              [fruits.vector.api :as vector]
+    (:require [fruits.vector.api                        :as vector]
+              [io.api                                   :as io]
               [source-code-documentation.print.assemble :as print.assemble]
-              [source-code-documentation.print.utils :as print.utils]))
+              [source-code-documentation.print.utils    :as print.utils]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -55,5 +55,5 @@
        (print-cover! state options)
        (print-pages! state options)
        ; DEBUG
-       ; (print.assemble/assemble-page state options (first state))
-       (-> state)))
+       (print.assemble/assemble-page state options (first state))))
+       ;(-> state)))

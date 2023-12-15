@@ -1,8 +1,8 @@
 
 (ns source-code-documentation.trace.utils
-    (:require [fruits.vector.api :as vector]
-              [fruits.regex.api :as regex]
-              [fruits.string.api :as string]))
+    (:require [fruits.regex.api  :as regex]
+              [fruits.string.api :as string]
+              [fruits.vector.api :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

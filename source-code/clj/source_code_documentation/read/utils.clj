@@ -2,7 +2,8 @@
 (ns source-code-documentation.read.utils
     (:require [fruits.regex.api  :as regex]
               [fruits.string.api :as string]
-              [fruits.vector.api :as vector]))
+              [fruits.vector.api :as vector]
+              [syntax-reader.api :as syntax-reader]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -123,5 +124,6 @@
   ;
   ; @return (map)
   [declaration]
-  ; removing comments ...
-  declaration)
+  (letfn [(f0 [%] (syntax-reader/remove-tags % [[:comment #"\;" #"\n"] [:string  #"\"" #"\"" {:keep? true}]]
+                                               {:keep-indents? true :remove-leftover-blank-lines? true}))]
+         (update declaration :body f0)))

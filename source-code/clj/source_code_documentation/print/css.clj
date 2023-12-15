@@ -221,6 +221,7 @@ a:visited {
   display:        flex;
   flex-direction: column;
   margin-left:    480px;
+  padding-bottom: 32px;
   padding-left:   48px;
   padding-right:  48px;
   padding-top:    60px }

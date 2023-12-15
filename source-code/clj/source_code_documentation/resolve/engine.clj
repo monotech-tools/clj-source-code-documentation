@@ -1,8 +1,8 @@
 
 (ns source-code-documentation.resolve.engine
-    (:require [source-code-documentation.resolve.utils :as resolve.utils]
-              [fruits.vector.api :as vector]
-              [io.api :as io]))
+    (:require [fruits.vector.api                       :as vector]
+              [io.api                                  :as io]
+              [source-code-documentation.resolve.utils :as resolve.utils]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

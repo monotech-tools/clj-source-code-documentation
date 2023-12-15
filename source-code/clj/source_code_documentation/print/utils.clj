@@ -1,9 +1,9 @@
 
 (ns source-code-documentation.print.utils
-    (:require [io.api :as io]
-              [fruits.vector.api :as vector]
+    (:require [fruits.hiccup.api :as hiccup]
               [fruits.string.api :as string]
-              [fruits.hiccup.api :as hiccup]))
+              [fruits.vector.api :as vector]
+              [io.api            :as io]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
