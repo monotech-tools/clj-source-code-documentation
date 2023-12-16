@@ -2,7 +2,8 @@
 (ns source-code-documentation.print.engine
     (:require [fruits.vector.api                        :as vector]
               [io.api                                   :as io]
-              [source-code-documentation.print.assemble :as print.assemble]
+              [source-code-documentation.assemble.cover :as assemble.cover]
+              [source-code-documentation.assemble.page  :as assemble.page]
               [source-code-documentation.print.utils    :as print.utils]))
 
 ;; ----------------------------------------------------------------------------
@@ -14,8 +15,8 @@
   ; @param (maps in vector) state
   ; @param (map) options
   [state options file-data]
-  (let [page            (print.assemble/assemble-page state options file-data)
-        page-print-path (print.utils/page-print-path  state options file-data)]
+  (let [page            (assemble.page/assemble-page state options file-data)
+        page-print-path (print.utils/page-print-path state options file-data)]
        (io/write-file! page-print-path page {:create? true})))
 
 (defn print-pages!
@@ -35,7 +36,7 @@
   ; @param (maps in vector) state
   ; @param (map) options
   [state options]
-  (let [cover            (print.assemble/assemble-cover state options)
+  (let [cover            (assemble.cover/assemble-cover state options)
         cover-print-path (print.utils/cover-print-path  state options)]
        (io/write-file! cover-print-path cover {:create? true})))
 
@@ -54,6 +55,6 @@
            (-> options :output-path io/create-directory!))
        (print-cover! state options)
        (print-pages! state options)
-       ; DEBUG
-       (print.assemble/assemble-page state options (first state))))
+       ; @DEBUG
+       (assemble.page/assemble-page state options (first state))))
        ;(-> state)))

@@ -28,6 +28,26 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn read-declaration-body
+  ; @ignore
+  ;
+  ; @param (map) declaration
+  ;
+  ; @example
+  ; (read-declaration-body {:name "my-function" :body "(defn my-function [])"})
+  ; =>
+  ; {:name "my-function"
+  ;  :body "(defn my-function [])"}
+  ;
+  ; @return (map)
+  [declaration]
+  (letfn [(f0 [%] (syntax-reader/remove-tags % [[:comment #"\;" #"\n"] [:string  #"\"" #"\"" {:keep? true}]]
+                                               {:keep-indents? true :remove-leftover-blank-lines? true}))]
+         (update declaration :body f0)))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn read-header-block
   ; @ignore
   ;
@@ -40,16 +60,16 @@
   ;
   ; @return (map)
   [header-block]
-  (letfn [(f0 [       %] (keyword (regex/re-first % #"(?<=\;[\s\t]{0,}\@)[a-z]{1,}"))) ; <- Returns the header block type derived from the given comment row.
-          (f1 [       %]          (regex/re-all   % #"(?<=\()[^()]+(?=\))"))           ; <- Returns the header block meta values (if any) derived from the given comment row.
-          (f2 [       %]          (regex/re-last  % #"(?<=\@.+[\s\t])[^\s\t\(\)]+$"))  ; <- Returns the header block value (if any) derived from the given comment row.
-          (f3 [       %] (count   (regex/re-first % #"(?<=\;)[\s\t]{0,}(?=\@)")))      ; <- Returns the header block indent length derived from the given comment row.
-          (f4 [result %] (string/keep-range % (-> result :indent inc)))                ; <- Returns the given header block additional row with adjusted indent.
-          (f5 [result %] (if (-> result empty?)                                                 ; <- The 'result' vector is empty when the iteration reads the first row of header block.
-                             (-> result (merge {:type (f0 %) :indent (f3 %)}                    ; <- Every imported header block stars with a type row.
-                                               (if-let [meta  (f1 %)] {:meta  meta})            ; <- Meta values of header blocks are optional.
-                                               (if-let [value (f2 %)] {:value value})))         ; <- Values of header blocks are optional.
-                             (-> result (update :additional vector/conj-item (f4 result %)))))] ; <- Rows after the first row (type row) are the header block additional rows.
+  (letfn [(f0 [       %] (keyword (regex/re-first % #"(?<=\;[ \t]{0,}\@)[a-z]{1,}"))) ; <- Returns the block type, derived from the given comment row.
+          (f1 [       %]          (regex/re-all   % #"(?<=\()[^()]+(?=\))"))          ; <- Returns the block meta values (if any), derived from the given comment row.
+          (f2 [       %]          (regex/re-last  % #"(?<=\@.+[ \t])[^\(\)]+$"))      ; <- Returns the block value (if any), derived from the given comment row.
+          (f3 [       %] (count   (regex/re-first % #"(?<=\;)[ \t]{0,}(?=\@)")))      ; <- Returns the block indent length, derived from the given comment row.
+          (f4 [result %] (string/keep-range % (-> result :indent inc)))               ; <- Returns the given block additional row, with adjusted indent.
+          (f5 [result %] (if (-> result empty?)                                                 ; <- The 'result' vector is empty when the iteration reads the first row of block.
+                             (-> result (merge {:type (f0 %) :indent (f3 %)}                    ; <- Every imported block starts with a type row.
+                                               (let [meta  (f1 %)] (if (-> meta  vector/nonempty?) {:meta  meta}))    ; <- Meta values of blocks are optional.
+                                               (let [value (f2 %)] (if (-> value string/nonempty?) {:value value})))) ; <- Values of blocks are optional.
+                             (-> result (update :additional vector/conj-item (f4 result %)))))] ; <- Rows following the first row (type row) are the additional rows of the block.
          (reduce f5 {} header-block)))
 
 (defn read-header-blocks
@@ -81,15 +101,17 @@
   ;
   ; @return (strings in vectors in vector)
   [header]
-  (letfn [(f0 [%] (regex/re-match? % #"^[\s\t]{0,}\;[\s\t]{0,}\@")) ; <- Returns TRUE if the given comment row is a header block type row.
-          (f1 [%] (regex/re-match? % #"^[\s\t]{0,}\;[\s\t]{0,}$"))  ; <- Returns TRUE if the given comment row is an empty comment row.
-          (f2 [%] (vector/empty?   %))                              ; <- Returns TRUE if the given result vector is empty (no block has been opened yet).
-          (f3 [result row-content]
-              (cond (-> row-content f0)  (-> result (vector/conj-item [               row-content]))
-                    (-> row-content f1)  (-> result (vector/conj-item ["; @separator" row-content]))
-                    (-> result      f2)  (-> result (vector/conj-item ["; @undefined" row-content]))
-                    :additional-row      (-> result (vector/update-last-item vector/conj-item row-content))))]
-         (reduce f3 [] header)))
+  (letfn [(f0 [%] (-> % (regex/re-match? #"^[ \t]{0,}\;[ \t]{0,}\@"))) ; <- Returns TRUE if the given comment row is a block type row.
+          (f1 [%] (-> % (regex/re-match? #"^[ \t]{0,}\;[ \t]{0,}$")))  ; <- Returns TRUE if the given comment row is an empty comment row.
+          (f2 [%] (-> % last first (= "; @separator")))                ; <- Returns TRUE if the last block is a separator block.
+          (f3 [%] (-> % vector/empty?))                                ; <- Returns TRUE if the given result vector is empty (no block has been opened yet).
+          (f4 [result row-content]
+              (cond (-> row-content f0) (-> result (vector/conj-item [               row-content]))           ; <- If the row content is a block type row, opens a new block.
+                    (-> row-content f1) (-> result (vector/conj-item ["; @separator" row-content]))           ; <- If the row content is an empty comment row, opens a new separator block.
+                    (-> result      f3) (-> result (vector/conj-item ["; @plain"     row-content]))           ; <- If the row content is a plain text row and no block has been opened yet, opens a new plain block.
+                    (-> result      f2) (-> result (vector/conj-item ["; @plain"     row-content]))           ; <- If the row content is a plain text row and the last block is a separator block, opens a new plain block.
+                    :additional-row     (-> result (vector/update-last-item vector/conj-item row-content))))] ; <- If the row content is a plain text row appends it the last opened block.
+         (reduce f4 [] header)))
 
 (defn read-declaration-header
   ; @ignore
@@ -111,19 +133,12 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn read-declaration-body
+(defn read-tutorial
   ; @ignore
   ;
-  ; @param (map) declaration
-  ;
-  ; @example
-  ; (read-declaration-body {:name "my-function" :body "(defn my-function [])"})
-  ; =>
-  ; {:name "my-function"
-  ;  :body "(defn my-function [])"}
+  ; @param (map) tutorial
   ;
   ; @return (map)
-  [declaration]
-  (letfn [(f0 [%] (syntax-reader/remove-tags % [[:comment #"\;" #"\n"] [:string  #"\"" #"\"" {:keep? true}]]
-                                               {:keep-indents? true :remove-leftover-blank-lines? true}))]
-         (update declaration :body f0)))
+  [tutorial]
+  (-> tutorial (update :content split-header)
+               (update :content read-header-blocks)))

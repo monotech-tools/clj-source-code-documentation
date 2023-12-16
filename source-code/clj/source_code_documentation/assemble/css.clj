@@ -1,5 +1,5 @@
 
-(ns source-code-documentation.print.css)
+(ns source-code-documentation.assemble.css)
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -12,8 +12,12 @@
 /*** Body ***/
 
 body {
-  font-family: Montserrat;
-  margin:      0 }
+  font-family:    Montserrat;
+  margin:         0 0 0 480px;
+  padding-bottom: 32px;
+  padding-left:   48px;
+  padding-right:  48px;
+  padding-top:    60px }
 
 div {
   box-sizing: border-box }
@@ -146,11 +150,14 @@ a:visited {
   width:            100% }
 
 #top-bar--library-uri {
-  font-size:   14px;
+  font-size:   12px;
   line-height: 24px;
   position:    absolute;
   right:       18px;
   top:         18px }
+
+#top-bar--library-uri:hover {
+  opacity: .5 }
 
 #top-bar--library-name {
   font-size:      18px;
@@ -168,9 +175,9 @@ a:visited {
 
 
 
-/*** Namespace list, declaration list ***/
+/*** Primary list, secondary list ***/
 
-#namespace-list {
+#primary-list {
   border-right:   1px solid #e0e0e0;
   display:        flex;
   flex-direction: column;
@@ -181,7 +188,7 @@ a:visited {
   top:            60px;
   width:          240px }
 
-#declaration-list {
+#secondary-list {
   border-right:   1px solid #e0e0e0;
   display:        flex;
   flex-direction: column;
@@ -192,13 +199,15 @@ a:visited {
   top:            60px;
   width:          240px }
 
-#namespace-list .text--micro {
+#primary-list .text--micro,
+#secondary-list .text--micro {
   padding-left: 12px }
 
-.namespace-list--container {
+.primary-list--container,
+.secondary-list--container {
   margin-bottom: 12px }
 
-/*** Namespace list, declaration list ***/
+/*** Primary list, secondary list ***/
 
 
 
@@ -215,56 +224,79 @@ a:visited {
 
 
 
-/*** Doc header list ***/
+/*** Namespace header ***/
 
-#doc-header-list--wrapper {
-  display:        flex;
-  flex-direction: column;
-  margin-left:    480px;
-  padding-bottom: 32px;
-  padding-left:   48px;
-  padding-right:  48px;
-  padding-top:    60px }
-
-#doc-header-list--title {
+#namespace-header--title {
   font-size:   18px;
   font-weight: 600;
   line-height: 24px;
   margin-top:  24px }
 
-#doc-header-list {
+/*** Namespace header ***/
+
+
+
+/*** Declarations ***/
+
+#declarations {
   display:        flex;
   flex-direction: column }
 
-/*** Doc header list ***/
+/*** Declarations ***/
 
 
 
-/*** Doc header ***/
+/*** Declaration ***/
 
-.doc-header--wrapper {
+.declaration--wrapper {
   padding-top: 64px }
 
-.doc-header--name {
-  border-bottom: 1px solid #e0e0e0;
-  font-size:     16px;
-  font-weight:   600;
-  line-height:   42px;
-  margin-bottom: 12px }
+.declaration--name {
+  border-bottom:  1px solid #e0e0e0;
+  color:          #558899;
+  font-size:      16px;
+  font-weight:    600;
+  line-height:    18px;
+  padding-bottom: 8px;
+  margin-bottom:  12px }
 
-.doc-header--blocks {
+/*** Declaration ***/
+
+
+
+/*** Tutorial ***/
+
+.tutorial--wrapper {
+  padding-top: 64px }
+
+.tutorial--name {
+  border-bottom:  1px solid #e0e0e0;
+  color:          #665599;
+  font-size:      16px;
+  font-weight:    600;
+  line-height:    18px;
+  padding-bottom: 8px;
+  margin-bottom:  12px }
+
+/*** Tutorial ***/
+
+
+
+/*** Doc blocks ***/
+
+.doc-blocks {
   display: flex;
   flex-direction: column }
 
-.doc-header--separator {
+.doc-block--separator {
   height: 12px }
 
-.doc-header--block-label {
+.doc-block--label {
   display:     flex;
   gap:         4px;
   line-height: 24px }
 
-.doc-header--box {
+.doc-block--box {
   background-color: #fafafa;
   color:            #333;
   font-size:        12px;
@@ -272,7 +304,7 @@ a:visited {
   margin:           0;
   padding:          12px 8px }
 
-.doc-header--preview-image {
+.doc-block--preview-image {
   border:     1px solid #dedede;
   display:    block;
   max-height: 360px;
@@ -280,4 +312,30 @@ a:visited {
   min-height: 36px;
   min-width:  48px }
 
-/*** Doc header ***/")
+/*** Doc blocks ***/
+
+
+
+/*** Library credits ***/
+
+#library-credits {
+  background-color: white;
+  border-right:     1px solid #e0e0e0;
+  border-top:       1px solid #e0e0e0;
+  bottom:           0;
+  left:             0;
+  position:         fixed;
+  width:            480px }
+
+#library-credits--link {
+  color:          #55bb66;
+  font-size:      12px;
+  letter-spacing: .8px;
+  line-height:    48px;
+  text-align:     center }
+
+#library-credits--link:hover {
+  background-color: #f0f0f0
+}
+
+/*** Library credits ***/")

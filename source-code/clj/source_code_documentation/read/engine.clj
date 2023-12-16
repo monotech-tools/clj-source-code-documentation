@@ -16,7 +16,8 @@
   ; @return (maps in vector)
   [_ _ file-data]
   (-> file-data (update :declarations vector/->items read.utils/read-declaration-header)
-                (update :declarations vector/->items read.utils/read-declaration-body)))
+                (update :declarations vector/->items read.utils/read-declaration-body)
+                (update :tutorials    vector/->items read.utils/read-tutorial)))
 
 (defn read-imported-files
   ; @ignore

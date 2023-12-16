@@ -184,3 +184,11 @@ redirectbol egy lehet és az a source-code-ot is átirányitja
 
 ; @redirect (namespace/z)  ; <- uses headers of namespace/z
 (def a "a")
+
+
+
+
+```
+; @tutorial
+; ...
+```
