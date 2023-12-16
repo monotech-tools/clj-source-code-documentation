@@ -192,3 +192,13 @@ redirectbol egy lehet és az a source-code-ot is átirányitja
 ; @tutorial
 ; ...
 ```
+
+
+```
+; My text [My link](#my-anchor)
+; My text [My link](https://...)
+```
+
+```
+@note
+```

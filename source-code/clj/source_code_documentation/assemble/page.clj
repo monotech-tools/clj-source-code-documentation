@@ -14,7 +14,7 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-doc-description-block
+(defn assemble-doc-block-additional-box
   ; @ignore
   ;
   ; @param (maps in vector) state
@@ -23,11 +23,40 @@
   ;
   ; @return (hiccup)
   [_ _ doc-block]
+  (if (-> doc-block :additional vector/nonempty?)
+      (vector/concat-items [:pre {:class [:doc-block--box :text--s]}]
+                           (-> doc-block :additional (vector/gap-items [:br]) assemble.utils/parse-links))))
+
+(defn assemble-doc-block-additional-text
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) doc-block
+  ; @param (keyword or keywords in vector) class
+  ;
+  ; @return (hiccup)
+  [_ _ doc-block class]
+  (if (-> doc-block :additional vector/nonempty?)
+      (vector/concat-items [:pre {:class class}]
+                           (-> doc-block :additional (vector/gap-items [:br]) assemble.utils/parse-links))))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn assemble-doc-description-block
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) doc-block
+  ;
+  ; @return (hiccup)
+  [state options doc-block]
   [:div {:class :doc-block}
         [:div {:class :doc-block--label}
-              [:span {:class [:text--micro :color--muted]} "Description"]]
-        (vector/concat-items [:div {:class [:text--normal :color--basic]}]
-                             (vector/gap-items (:additional doc-block) [:br]))])
+              [:pre {:class [:text--xs :color--muted]} "Description"]]
+        (assemble-doc-block-additional-text state options doc-block [:text--m :color--basic])])
 
 (defn assemble-doc-error-block
   ; @ignore
@@ -40,8 +69,8 @@
   [_ _ doc-block]
   [:div {:class :doc-block}
         [:div {:class :doc-block--label}
-              [:span {:class [:text--micro :color--muted]} "Error"]]
-        [:div {:class [:text--normal :color--warning]}
+              [:pre {:class [:text--xs :color--muted]} "Error"]]
+        [:pre {:class [:text--m :color--warning]}
               (str doc-block)]])
 
 (defn assemble-doc-important-block
@@ -52,12 +81,11 @@
   ; @param (map) doc-block
   ;
   ; @return (hiccup)
-  [_ _ doc-block]
+  [state options doc-block]
   [:div {:class :doc-block}
         [:div {:class :doc-block--label}
-              [:span {:class [:text--micro :color--muted]} "Important"]]
-        (vector/concat-items [:div {:class [:text--normal :color--warning]}]
-                             (vector/gap-items (:additional doc-block) [:br]))])
+              [:pre {:class [:text--xs :color--muted]} "Important"]]
+        (assemble-doc-block-additional-text state options doc-block [:text--m :color--warning])])
 
 (defn assemble-doc-info-block
   ; @ignore
@@ -67,12 +95,25 @@
   ; @param (map) doc-block
   ;
   ; @return (hiccup)
-  [_ _ doc-block]
+  [state options doc-block]
   [:div {:class :doc-block}
         [:div {:class :doc-block--label}
-              [:span {:class [:text--micro :color--muted]} "Info"]]
-        (vector/concat-items [:div {:class [:text--normal :color--blue]}]
-                             (vector/gap-items (:additional doc-block) [:br]))])
+              [:pre {:class [:text--xs :color--muted]} "Info"]]
+        (assemble-doc-block-additional-text state options doc-block [:text--m :color--primary])])
+
+(defn assemble-doc-note-block
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) doc-block
+  ;
+  ; @return (hiccup)
+  [state options doc-block]
+  [:div {:class :doc-block}
+        [:div {:class :doc-block--label}
+              [:pre {:class [:text--xs :color--muted]} "Note"]]
+        (assemble-doc-block-additional-text state options doc-block [:text--m :color--muted])])
 
 (defn assemble-doc-plain-block
   ; @ignore
@@ -82,10 +123,9 @@
   ; @param (map) doc-block
   ;
   ; @return (hiccup)
-  [_ _ doc-block]
+  [state options doc-block]
   [:div {:class :doc-block}
-        (vector/concat-items [:div {:class [:text--normal :color--blue]}]
-                             (vector/gap-items (:additional doc-block) [:br]))])
+        (assemble-doc-block-additional-text state options doc-block [:text--m :color--default])])
 
 (defn assemble-doc-tutorial-block
   ; @ignore
@@ -95,13 +135,12 @@
   ; @param (map) doc-block
   ;
   ; @return (hiccup)
-  [_ _ doc-block]
+  [state options doc-block]
   [:div {:class :doc-block}
         [:div {:class :doc-block--label}
-              [:span {:class [:text--micro :color--muted]} "Tutorial"]]
-        (-> doc-block :value)
-        (vector/concat-items [:div {:class [:text--normal :color--blue]}]
-                             (vector/gap-items (:additional doc-block) [:br]))])
+              [:pre {:class [:text--xs :color--muted]} "Tutorial"]
+              (-> doc-block :value)]
+        (assemble-doc-block-additional-text state options doc-block [:text--m :color--default])])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -114,14 +153,15 @@
   ; @param (map) doc-block
   ;
   ; @return (hiccup)
-  [_ _ doc-block]
+  [state options doc-block]
   [:div {:class :doc-block}
         [:div {:class :doc-block--label}
-              [:span {:class [:text--micro :color--muted]} "Param"]
-              [:span {}                                    (-> doc-block :value)]
-              [:span {:class [:text--micro :color--muted]} (-> doc-block :meta first)]
-              [:span {:class [:text--micro :color--muted]}
-                     (case (-> doc-block :meta second) "opt" "optional" "req" "required" "required")]]])
+              [:pre {:class [:text--xs :color--muted]} "Param"]
+              [:pre {}                                 (-> doc-block :value)]
+              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta first)]
+              [:pre {:class [:text--xs :color--muted]}
+                    (case (-> doc-block :meta second) "opt" "optional" "req" "required" "required")]]
+        (assemble-doc-block-additional-text state options doc-block [:text--s :color--muted])])
 
 (defn assemble-doc-return-block
   ; @ignore
@@ -131,11 +171,12 @@
   ; @param (map) doc-block
   ;
   ; @return (hiccup)
-  [_ _ doc-block]
+  [state options doc-block]
   [:div {:class :doc-block}
         [:div {:class :doc-block--label}
-              [:span {:class [:text--micro :color--muted]} "Return"]
-              [:span {:class [:text--micro :color--muted]} (-> doc-block :meta first)]]])
+              [:pre {:class [:text--xs :color--muted]} "Return"]
+              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta first)]]
+        (assemble-doc-block-additional-text state options doc-block [:text--s :color--muted])])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -152,12 +193,28 @@
   (let [preview-image-uri (assemble.utils/preview-image-uri state options doc-block)]
        [:div {:class :doc-block}
              [:div {:class :doc-block--label}
-                   [:span {:class [:text--micro :color--muted]} "Preview"]]
+                   [:pre {:class [:text--xs :color--muted]} "Preview"]]
              [:img {:class :doc-block--preview-image :src preview-image-uri}]
-             (vector/concat-items [:pre {:class :doc-block--box}]
-                                  (vector/gap-items (:additional doc-block) [:br]))]))
+             (assemble-doc-block-additional-box state options doc-block)]))
 
 (defn assemble-doc-usage-block
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) doc-block
+  ;
+  ; @return (hiccup)
+  [state options doc-block]
+  [:div {:class :doc-block}
+        [:div {:class :doc-block--label}
+              [:pre {:class [:text--xs :color--muted]} "Usage"]]
+        (assemble-doc-block-additional-box state options doc-block)])
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn assemble-doc-unknown-block
   ; @ignore
   ;
   ; @param (maps in vector) state
@@ -168,12 +225,8 @@
   [_ _ doc-block]
   [:div {:class :doc-block}
         [:div {:class :doc-block--label}
-              [:span {:class [:text--micro :color--muted]} "Usage"]]
-        (vector/concat-items [:pre {:class :doc-block--box}]
-                             (vector/gap-items (:additional doc-block) [:br]))])
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
+              [:pre {:class [:text--xs :color--warning]} "Unknown syntax"]]
+        [:pre {:class [:text--m :color--muted]} (str doc-block)]])
 
 (defn assemble-doc-separator-block
   ; @ignore
@@ -203,6 +256,7 @@
         :error       (assemble-doc-error-block       state options doc-block)
         :important   (assemble-doc-important-block   state options doc-block)
         :info        (assemble-doc-info-block        state options doc-block)
+        :note        (assemble-doc-note-block        state options doc-block)
         :param       (assemble-doc-param-block       state options doc-block)
         :plain       (assemble-doc-plain-block       state options doc-block)
         :preview     (assemble-doc-preview-block     state options doc-block)
@@ -210,7 +264,7 @@
         :separator   (assemble-doc-separator-block   state options doc-block)
         :tutorial    (assemble-doc-tutorial-block    state options doc-block)
         :usage       (assemble-doc-usage-block       state options doc-block)
-                     [:div (str doc-block)]))
+                     (assemble-doc-unknown-block     state options doc-block)))
 
 (defn assemble-doc-blocks
   ; @ignore
@@ -239,9 +293,8 @@
   (let [collapsible-id (-> declaration :name (str "--source-code") hiccup/value)
         toggle-f       (str "toggleCollapsible('"collapsible-id"')")]
        [:div {:class :collapsible-wrapper :id collapsible-id :data-expanded "false"}
-             [:div {:class [:collapsible-button :text--micro] :onClick toggle-f} "Source Code"]
-             [:pre {:class :doc-block--box}
-                   (-> declaration :body)]]))
+             [:pre {:class [:collapsible-button :text--xs] :onClick toggle-f} "Source Code"]
+             (hiccup/parse-newlines [:pre {:class [:text-s :doc-block--box]} (-> declaration :body)])]))
 
 (defn assemble-declaration-name
   ; @ignore
@@ -252,7 +305,7 @@
   ;
   ; @return (hiccup)
   [_ _ declaration]
-  [:div {:class :declaration--name}
+  [:pre {:class :declaration--name}
         (:name declaration)])
 
 (defn assemble-declaration
@@ -266,7 +319,7 @@
   [state options declaration]
   (let [declaration-id (-> declaration :name hiccup/value)]
        [:div {:id declaration-id :class :declaration--wrapper}
-             [:span {:class [:text--micro :color--muted]} "Declaration"]
+             [:pre {:class [:text--xs :color--muted]} "Declaration"]
              (assemble-declaration-name    state options          declaration)
              (assemble-doc-blocks          state options (:header declaration))
              (assemble-doc-separator-block state options {})
@@ -297,7 +350,7 @@
   ;
   ; @return (hiccup)
   [_ _ tutorial]
-  [:div {:class :tutorial--name}
+  [:pre {:class :tutorial--name}
         (:name tutorial)])
 
 (defn assemble-tutorial
@@ -311,7 +364,7 @@
   [state options tutorial]
   (let [tutorial-id (-> tutorial :name hiccup/value)]
        [:div {:id tutorial-id :class :tutorial--wrapper}
-             [:span {:class [:text--micro :color--muted]} "Tutorial"]
+             [:pre {:class [:text--xs :color--muted]} "Tutorial"]
              (assemble-tutorial-name state options           tutorial)
              (assemble-doc-blocks    state options (:content tutorial))]))
 
@@ -341,13 +394,13 @@
   ; @return (hiccup)
   [_ _ file-data]
   [:div {:id :namespace-header}
-        [:span {:id :namespace-header--title}
-               (-> file-data :ns-map :declaration :name)]
-        [:span {:class [:text--micro :color--muted]}
-               (case (-> file-data :filepath io/filepath->extension)
-                     "clj"  "Clojure namespace"
-                     "cljc" "Isomorphic namespace"
-                     "cljs" "ClojureScript namespace")]])
+        [:pre {:id :namespace-header--title}
+              (-> file-data :ns-map :declaration :name)]
+        [:pre {:class [:text--xs :color--muted]}
+              (case (-> file-data :filepath io/filepath->extension)
+                    "clj"  "Clojure namespace"
+                    "cljc" "Isomorphic namespace"
+                    "cljs" "ClojureScript namespace")]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -362,9 +415,9 @@
   ; @return (hiccup)
   [state options file-data]
   (letfn [(f0 [%] (assemble.utils/symbol-anchor state options file-data %))
-          (f1 [%] [:a {:class [:button :color--primary] :href (f0 %)} (-> % :name)])]
+          (f1 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--primary]} (-> % :name)]])]
          (let [label "Tutorials" tutorials (-> file-data :tutorials)]
-              (hiccup/put-with [:div {:class :secondary-list--container} [:span {:class [:text--micro :color--muted]} label]] tutorials f1))))
+              (hiccup/put-with [:div {:class :secondary-list--container} [:pre {:class [:text--xs :color--muted]} label]] tutorials f1))))
 
 (defn assemble-declaration-list
   ; @ignore
@@ -376,9 +429,9 @@
   ; @return (hiccup)
   [state options file-data]
   (letfn [(f0 [%] (assemble.utils/symbol-anchor state options file-data %))
-          (f1 [%] [:a {:class [:button :color--primary] :href (f0 %)} (-> % :name)])]
+          (f1 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--primary]} (-> % :name)]])]
          (let [label "Declarations" declarations (-> file-data :declarations (vector/sort-items-by :name))]
-              (hiccup/put-with [:div {:class :secondary-list--container} [:span {:class [:text--micro :color--muted]} label]] declarations f1))))
+              (hiccup/put-with [:div {:class :secondary-list--container} [:pre {:class [:text--xs :color--muted]} label]] declarations f1))))
 
 (defn assemble-secondary-list
   ; @ignore
@@ -408,12 +461,13 @@
   ; @return (hiccup)
   [state options file-data extension]
   (if-let [namespaces (assemble.utils/filter-namespaces state options extension)]
-          (letfn [(f0 [%] [:a {:class [:button :color--primary (if (f2 %) :button--active)] :href (f1 %)} (-> % :ns-map :declaration :name)])
+          (letfn [(f0 [%] [:a {:href (f1 %)} [:pre {:class [:button :color--primary (if (f2 %) :button--active)]}
+                                                   (-> % :ns-map :declaration :name)]])
                   (f1 [%] (assemble.utils/namespace-uri state options % extension))
                   (f2 [%] (and (= extension (-> % :filepath io/filepath->extension))
                                (= file-data (-> %))))]
                  (let [label (case extension "clj" "Clojure namespaces" "cljc" "Isomorphic namespaces" "cljs" "ClojureScript namespaces")]
-                      (hiccup/put-with [:div {:class :primary-list--container} [:span {:class [:text--micro :color--muted]} label]] namespaces f0)))))
+                      (hiccup/put-with [:div {:class :primary-list--container} [:pre {:class [:text--xs :color--muted]} label]] namespaces f0)))))
 
 (defn assemble-primary-list
   ; @ignore
@@ -443,17 +497,17 @@
   ; @return (hiccup)
   [_ options _]
   [:div {:id :top-bar}
-        [:span {:id :top-bar--library-name}                         (-> options :library :name)]
-        [:span {:id :top-bar--library-version :class :color--muted} (-> options :library :version)]
+        [:pre {:id :top-bar--library-name}                         (-> options :library :name)]
+        [:pre {:id :top-bar--library-version :class :color--muted} (-> options :library :version)]
         (let [library-website-pretty-url (-> options :library :website uri/pretty-url)
               library-website-valid-url  (-> options :library :website uri/valid-url)]
-             [:a {:id :top-bar--library-uri :class :color--primary :href library-website-valid-url}
-                 (-> library-website-pretty-url)])])
+             [:a {:id :top-bar--library-uri :href library-website-valid-url}
+                 [:pre {:class :color--primary} (-> library-website-pretty-url)]])])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-library-credits
+(defn assemble-bottom-bar
   ; @ignore
   ;
   ; @param (maps in vector) state
@@ -462,9 +516,9 @@
   ;
   ; @return (hiccup)
   [_ _ _]
-  [:div {:id :library-credits}
-        [:a {:id :library-credits--link :href "https://github.com/mt-devtools/clj-source-code-documentation"}
-            "[mt-devtools/clj-source-code-documentation]"]])
+  [:div {:id :bottom-bar}
+        [:a {:id :bottom-bar--credits-link :href "https://github.com/mt-devtools/clj-source-code-documentation"}
+            [:pre "github.com/mt-devtools/clj-source-code-documentation"]]])
 
 (defn assemble-page-body
   ; @ignore
@@ -481,7 +535,7 @@
          (assemble-tutorials        state options file-data)
          (assemble-declarations     state options file-data)
          (assemble-top-bar          state options file-data)
-         (assemble-library-credits  state options file-data)])
+         (assemble-bottom-bar       state options file-data)])
 
 (defn assemble-page-head
   ; @ignore

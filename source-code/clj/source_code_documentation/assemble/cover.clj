@@ -11,29 +11,6 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-credits
-  ; @ignore
-  ;
-  ; @param (maps in vector) state
-  ; @param (map) options
-  ;
-  ; @return (hiccup)
-  [_ options]
-  (let [author-website-pretty-url  (-> options :author  :website uri/pretty-url)
-        author-website-valid-url   (-> options :author  :website uri/valid-url)
-        library-website-pretty-url (-> options :library :website uri/pretty-url)
-        library-website-valid-url  (-> options :library :website uri/valid-url)]
-       [:div {:id :credits}
-             [:table {}
-                     (if (-> options :library :name)    [:tr [:td "Name:"]    [:td [:div (-> options :library :name)]]])
-                     (if (-> options :library :website) [:tr [:td "Website:"] [:td [:a {:class :color--primary :href library-website-valid-url} library-website-pretty-url]]])
-                     (if (-> options :library :version) [:tr [:td "Version:"] [:td [:div (-> options :library :version)]]])
-                     (if (-> options :author  :name)    [:tr [:td "Author:"]  [:td [:div (-> options :author :name)]]])
-                     (if (-> options :author  :website) [:tr [:td "Website:"] [:td [:a {:class :color--primary :href author-website-valid-url} author-website-pretty-url]]])]]))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
 (defn assemble-cover-body
   ; @ignore
   ;

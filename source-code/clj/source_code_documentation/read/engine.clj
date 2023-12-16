@@ -17,7 +17,7 @@
   [_ _ file-data]
   (-> file-data (update :declarations vector/->items read.utils/read-declaration-header)
                 (update :declarations vector/->items read.utils/read-declaration-body)
-                (update :tutorials    vector/->items read.utils/read-tutorial)))
+                (update :tutorials    vector/->items read.utils/read-tutorial-content)))
 
 (defn read-imported-files
   ; @ignore
