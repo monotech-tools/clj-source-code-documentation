@@ -60,11 +60,11 @@
   ;
   ; @return (map)
   [doc-block]
-  (letfn [(f0 [       %] (keyword (regex/re-first % #"(?<=\;[ \t]{0,}\@)[a-z]{1,}"))) ; <- Returns the block type, derived from the given comment row.
-          (f1 [       %]          (regex/re-all   % #"(?<=\()[^()]+(?=\))"))          ; <- Returns the block meta values (if any), derived from the given comment row.
-          (f2 [       %]          (regex/re-last  % #"(?<=\@.+[ \t])[^\(\)]+$"))      ; <- Returns the block value (if any), derived from the given comment row.
-          (f3 [       %] (count   (regex/re-first % #"(?<=\;)[ \t]{0,}(?=\@)")))      ; <- Returns the block indent length, derived from the given comment row.
-          (f4 [result %] (string/keep-range % (-> result :indent inc)))               ; <- Returns the given block additional row, with adjusted indent.
+  (letfn [(f0 [       %] (keyword (regex/re-first % #"(?<=\;[\h]{0,}\@)[a-z]{1,}"))) ; <- Returns the block type, derived from the given comment row.
+          (f1 [       %]          (regex/re-all   % #"(?<=\()[^()]+(?=\))"))         ; <- Returns the block meta values (if any), derived from the given comment row.
+          (f2 [       %]          (regex/re-last  % #"(?<=\@.+[\h])[^\(\)]+$"))      ; <- Returns the block value (if any), derived from the given comment row.
+          (f3 [       %] (count   (regex/re-first % #"(?<=\;)[\h]{0,}(?=\@)")))      ; <- Returns the block indent length, derived from the given comment row.
+          (f4 [result %] (string/keep-range % (-> result :indent inc)))              ; <- Returns the given block additional row, with adjusted indent.
           (f5 [result %] (if (-> result empty?)                                                 ; <- The 'result' vector is empty when the iteration reads the first row of block.
                              (-> result (merge {:type (f0 %) :indent (f3 %)}                    ; <- Every imported block starts with a type row.
                                                (let [meta  (f1 %)] (if (-> meta  vector/nonempty?) {:meta  meta}))    ; <- Meta values of blocks are optional.
@@ -101,10 +101,10 @@
   ;
   ; @return (strings in vectors in vector)
   [doc-blocks]
-  (letfn [(f0 [%] (-> % (regex/re-match? #"^[ \t]{0,}\;[ \t]{0,}\@"))) ; <- Returns TRUE if the given comment row is a block type row.
-          (f1 [%] (-> % (regex/re-match? #"^[ \t]{0,}\;[ \t]{0,}$")))  ; <- Returns TRUE if the given comment row is an empty comment row.
-          (f2 [%] (-> % last first (= "; @separator")))                ; <- Returns TRUE if the last block is a separator block.
-          (f3 [%] (-> % vector/empty?))                                ; <- Returns TRUE if the given result vector is empty (no block has been opened yet).
+  (letfn [(f0 [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}\@"))) ; <- Returns TRUE if the given comment row is a block type row.
+          (f1 [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}$")))  ; <- Returns TRUE if the given comment row is an empty comment row.
+          (f2 [%] (-> % last first (= "; @separator")))              ; <- Returns TRUE if the last block is a separator block.
+          (f3 [%] (-> % vector/empty?))                              ; <- Returns TRUE if the given result vector is empty (no block has been opened yet).
           (f4 [result row-content]
               (cond (-> row-content f0) (-> result (vector/conj-item [               row-content]))           ; <- If the row content is a block type row, opens a new block.
                     (-> row-content f1) (-> result (vector/conj-item ["; @separator" row-content]))           ; <- If the row content is an empty comment row, opens a new separator block.

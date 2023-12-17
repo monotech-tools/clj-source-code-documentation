@@ -19,9 +19,9 @@
   ;
   ; @return (strings in vector)
   [n]
-  (letfn [(f0 [       %] (regex/re-match? % #"^[ \t]{0,}\;"))  ; <- Returns TRUE if the given value is a comment row.
-          (f1 [       %] (regex/re-match? % #"\n[ \t]{0,}\;")) ; <- Returns TRUE if the given value contains any comment rows.
-          (f2 [result %] (conj result (string/trim %)))]       ; <- Trims the given value (comment row) then appends it to the result vector.
+  (letfn [(f0 [       %] (regex/re-match? % #"^[\h]{0,}\;"))  ; <- Returns TRUE if the given value is a comment row.
+          (f1 [       %] (regex/re-match? % #"\n[\h]{0,}\;")) ; <- Returns TRUE if the given value contains any comment rows.
+          (f2 [result %] (conj result (string/trim %)))]      ; <- Trims the given value (comment row) then appends it to the result vector.
          (loop [observed-part n result []]
                (let [row-ends-at (or (string/first-dex-of observed-part "\n") (count observed-part))
                      row-content (string/keep-range observed-part 0 (->  row-ends-at))
@@ -47,9 +47,9 @@
   ;
   ; @return (strings in vector)
   [n]
-  (letfn [(f0 [       %] (regex/re-match? % #"^[ \t]{0,}\;"))  ; <- Returns TRUE if the given value is a comment row.
-          (f1 [       %] (regex/re-match? % #"\n[ \t]{0,}\;")) ; <- Returns TRUE if the given value contains any comment rows.
-          (f2 [result %] (conj result (string/trim %)))]       ; <- Trims the given value (comment row) then appends it to the result vector.
+  (letfn [(f0 [       %] (regex/re-match? % #"^[\h]{0,}\;"))  ; <- Returns TRUE if the given value is a comment row.
+          (f1 [       %] (regex/re-match? % #"\n[\h]{0,}\;")) ; <- Returns TRUE if the given value contains any comment rows.
+          (f2 [result %] (conj result (string/trim %)))]      ; <- Trims the given value (comment row) then appends it to the result vector.
          (loop [observed-part n result []]
                (let [row-ends-at (or (string/first-dex-of observed-part "\n") (count observed-part))
                      row-content (string/keep-range observed-part 0 (->  row-ends-at))
@@ -97,10 +97,10 @@
   ;
   ; @return (strings in vector)
   [file-content {:keys [bounds]}]
-  (-> file-content (string/keep-range 0 (first bounds))                       ; <- Cuts off the rest of the file content from the start position of the def.
-                   (string/trim-end)                                          ; <- Removes the indent (if any) that precedes the def.
-                   (regex/after-last-match #"\n[ \t]{0,}\n" {:return? false}) ; <- Keeps the part after the last empty row.
-                   (last-coherent-comment-row-group)))                        ; <- Extracts the last coherent comment row group.
+  (-> file-content (string/keep-range 0 (first bounds))                      ; <- Cuts off the rest of the file content from the start position of the def.
+                   (string/trim-end)                                         ; <- Removes the indent (if any) that precedes the def.
+                   (regex/after-last-match #"\n[\h]{0,}\n" {:return? false}) ; <- Keeps the part after the last empty row.
+                   (last-coherent-comment-row-group)))                       ; <- Extracts the last coherent comment row group.
 
 (defn import-defn-header
   ; @ignore
@@ -118,9 +118,9 @@
   ;
   ; @return (strings in vector)
   [file-content {:keys [bounds]}]
-  (-> file-content (string/keep-range (first bounds) (last bounds))            ; <- Keeps the part of the file content from the start position of the defn - to its end position.
-                   (regex/before-first-match #"\n[ \t]{1,}\[|\n[ \t]{1,}\(\[") ; <- Cuts off the part from the first (non-commented and non-quoted) argument list.
-                   (last-coherent-comment-row-group)))                         ; <- Extracts the last coherent comment row group.
+  (-> file-content (string/keep-range (first bounds) (last bounds))          ; <- Keeps the part of the file content from the start position of the defn - to its end position.
+                   (regex/before-first-match #"\n[\h]{1,}\[|\n[\h]{1,}\(\[") ; <- Cuts off the part from the first (non-commented and non-quoted) argument list.
+                   (last-coherent-comment-row-group)))                       ; <- Extracts the last coherent comment row group.
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -183,7 +183,7 @@
   ;
   ; @return (maps in vector)
   [substring]
-  (letfn [(f0 [%] (regex/re-first % #"(?<=\@tutorial[ \t]{1,})[^\n]{1,}(?=\n)"))
+  (letfn [(f0 [%] (regex/re-first % #"(?<=\@tutorial[\h]{1,})[^\n]{1,}(?=\n)"))
           (f1 [%] (string/after-first-occurence % "\n"))]
          {:name    (-> substring f0)
           :content (-> substring f1 (first-coherent-comment-row-group))}))
@@ -200,8 +200,8 @@
   ; - The 'f1' function cuts off the part after the second match before passing the substring to
   ;   the 'first-coherent-comment-row-group' function, to prevent reading multiple tutorials
   ;   from one comment row group (if they are joined).
-  (letfn [(f0 [%] (regex/first-dex-of       % #"\n[ \t]{0,}\;[ \t]{0,}\@tutorial"))
-          (f1 [%] (regex/before-first-match % #"\n[ \t]{0,}\;[ \t]{0,}\@tutorial" {:return? true}))]
+  (letfn [(f0 [%] (regex/first-dex-of       % #"\n[\h]{0,}\;[\h]{0,}\@tutorial"))
+          (f1 [%] (regex/before-first-match % #"\n[\h]{0,}\;[\h]{0,}\@tutorial" {:return? true}))]
          (loop [substring file-content tutorials []]
                (if-let [position (f0 substring)]
                        (let [substring (string/keep-range substring (inc position))]

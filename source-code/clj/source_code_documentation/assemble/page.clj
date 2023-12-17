@@ -4,6 +4,7 @@
               [fruits.hiccup.api                      :as hiccup]
               [fruits.uri.api                         :as uri]
               [fruits.vector.api                      :as vector]
+              [fruits.string.api                      :as string]
               [hiccup.page                            :refer [html5]]
               [io.api                                 :as io]
               [source-code-documentation.assemble.config :as assemble.config]
@@ -25,7 +26,7 @@
   [_ _ doc-block]
   (if (-> doc-block :additional vector/nonempty?)
       (vector/concat-items [:pre {:class [:doc-block--box :text--s]}]
-                           (-> doc-block :additional (vector/gap-items [:br]) assemble.utils/parse-links))))
+                           (-> doc-block :additional (vector/gap-items [:br]) assemble.utils/unparse-entities))))
 
 (defn assemble-doc-block-additional-text
   ; @ignore
@@ -43,6 +44,23 @@
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
+
+(defn assemble-doc-bug-block
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) doc-block
+  ;
+  ; @return (hiccup)
+  [state options doc-block]
+  [:div {:class :doc-block}
+        [:div {:class :doc-block--label}
+              [:pre {:class [:text--xs :color--muted]} (-> "Bug")]
+              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta first)]
+              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta second)]]
+        [:pre {:class [:text--m :color--default]} (-> doc-block :value)]
+        (assemble-doc-block-additional-text state options doc-block [:text--m :color--warning])])
 
 (defn assemble-doc-description-block
   ; @ignore
@@ -145,6 +163,40 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn assemble-doc-atom-block
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) doc-block
+  ;
+  ; @return (hiccup)
+  [state options doc-block]
+  [:div {:class :doc-block}
+        [:div {:class :doc-block--label}
+              [:pre {:class [:text--xs :color--muted]}   (-> "Atom")]
+              [:pre {:class [:text-s   :color--default]} (-> doc-block :value)]
+              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta first)]
+              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta second)]]
+        (assemble-doc-block-additional-text state options doc-block [:text--s :color--muted])])
+
+(defn assemble-doc-constant-block
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) doc-block
+  ;
+  ; @return (hiccup)
+  [state options doc-block]
+  [:div {:class :doc-block}
+        [:div {:class :doc-block--label}
+              [:pre {:class [:text--xs :color--muted]}   (-> "Constant")]
+              [:pre {:class [:text-s   :color--default]} (-> doc-block :value)]
+              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta first)]
+              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta second)]]
+        (assemble-doc-block-additional-text state options doc-block [:text--s :color--muted])])
+
 (defn assemble-doc-param-block
   ; @ignore
   ;
@@ -156,11 +208,10 @@
   [state options doc-block]
   [:div {:class :doc-block}
         [:div {:class :doc-block--label}
-              [:pre {:class [:text--xs :color--muted]} "Param"]
-              [:pre {}                                 (-> doc-block :value)]
-              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta first)]
-              [:pre {:class [:text--xs :color--muted]}
-                    (case (-> doc-block :meta second) "opt" "optional" "req" "required" "required")]]
+              [:pre {:class [:text--xs :color--muted]}   (-> "Param")]
+              [:pre {:class [:text-s   :color--default]} (-> doc-block :value)]
+              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta first)]
+              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta second (case "opt" "optional" "req" "required" "required"))]]
         (assemble-doc-block-additional-text state options doc-block [:text--s :color--muted])])
 
 (defn assemble-doc-return-block
@@ -174,12 +225,26 @@
   [state options doc-block]
   [:div {:class :doc-block}
         [:div {:class :doc-block--label}
-              [:pre {:class [:text--xs :color--muted]} "Return"]
-              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta first)]]
+              [:pre {:class [:text--xs :color--muted]} (-> "Return")]
+              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta first)]
+              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta second)]]
         (assemble-doc-block-additional-text state options doc-block [:text--s :color--muted])])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
+
+(defn assemble-doc-code-block
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) doc-block
+  ;
+  ; @return (hiccup)
+  [state options doc-block]
+  [:div {:class :doc-block}
+        ; @code blocks don't have labels.
+        (assemble-doc-block-additional-box state options doc-block)])
 
 (defn assemble-doc-preview-block
   ; @ignore
@@ -252,6 +317,10 @@
   ; @return (hiccup)
   [state options doc-block]
   (case (-> doc-block :type)
+        :atom        (assemble-doc-atom-block        state options doc-block)
+        :bug         (assemble-doc-bug-block         state options doc-block)
+        :code        (assemble-doc-code-block        state options doc-block)
+        :constant    (assemble-doc-constant-block    state options doc-block)
         :description (assemble-doc-description-block state options doc-block)
         :error       (assemble-doc-error-block       state options doc-block)
         :important   (assemble-doc-important-block   state options doc-block)
@@ -397,10 +466,8 @@
         [:pre {:id :namespace-header--title}
               (-> file-data :ns-map :declaration :name)]
         [:pre {:class [:text--xs :color--muted]}
-              (case (-> file-data :filepath io/filepath->extension)
-                    "clj"  "Clojure namespace"
-                    "cljc" "Isomorphic namespace"
-                    "cljs" "ClojureScript namespace")]])
+              (-> file-data :filepath io/filepath->extension
+                  (case "clj" "Clojure namespace" "cljc" "Isomorphic namespace" "cljs" "ClojureScript namespace" "Unknown"))]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -466,7 +533,8 @@
                   (f1 [%] (assemble.utils/namespace-uri state options % extension))
                   (f2 [%] (and (= extension (-> % :filepath io/filepath->extension))
                                (= file-data (-> %))))]
-                 (let [label (case extension "clj" "Clojure namespaces" "cljc" "Isomorphic namespaces" "cljs" "ClojureScript namespaces")]
+                 (let [label      (-> extension  (case "clj" "Clojure namespaces" "cljc" "Isomorphic namespaces" "cljs" "ClojureScript namespaces"))
+                       namespaces (-> namespaces (vector/sort-items-by #(-> % :ns-map :declaration :name)))]
                       (hiccup/put-with [:div {:class :primary-list--container} [:pre {:class [:text--xs :color--muted]} label]] namespaces f0)))))
 
 (defn assemble-primary-list

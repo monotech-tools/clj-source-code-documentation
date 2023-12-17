@@ -114,7 +114,7 @@
   ; @param (vector) n
   ;
   ; @usage
-  ; (parse-links ["My text [My link](#my-anchor)" [:br] ...])
+  ; (parse-links ["My text [My anchor](#my-anchor)" [:br] ...])
   ; =>
   ; ["My text" [:a {:href "#my-anchor"} "My text"] [:br] ...]
   ;
@@ -125,3 +125,22 @@
                       (vector/concat-items result (parse-links (parse-link % position)))
                       (vector/conj-item    result %)))]
          (reduce f0 [] n)))
+
+(defn unparse-entities
+  ; @ignore
+  ;
+  ; @param (vector) n
+  ;
+  ; @usage
+  ; (unparse-entities ["This is an HTML element: <img />" [:br] ...])
+  ; =>
+  ; ["This is an HTML element: &lt;img /&gt;" [:br] ...]
+  ;
+  ; @param (vector)
+  [n]
+  (letfn [(f0 [%]
+              (if (-> % string?)
+                  (-> % (string/replace-part "<" "&lt;")
+                        (string/replace-part ">" "&gt;"))
+                  (-> %)))]
+         (vector/->items n f0)))
