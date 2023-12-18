@@ -53,6 +53,7 @@
 ; ; @ignore
 ; ; @important
 ; ; @info
+; ; @link
 ; ; @note
 ; ; @param
 ; ; @preview
@@ -137,6 +138,46 @@
 ;   ; @return (integer)
 ;   [] ...)
 ;
+; Link marker:
+;
+; @code
+; (defn my-function
+;   ; @description
+;   ; Lorem ipsum dolor sit amet.
+;   ;
+;   ; @link (another-function)
+;   [] ...)
+;
+; (defn another-function
+;  ; @note
+;  ; Documentation of the 'another-function' function will be INSERTED into the documentation of the 'my-function' function.
+;  ;
+;  ; @return (integer)
+;  [] ...)
+; @---
+;
+; @code
+; (ns my-namespace
+;   (:require [another-namespace]))
+;
+; ; @description
+; ; Lorem ipsum dolor sit amet.
+; ;
+; ; @link (another-namespace/another-function)
+; (def my-function another-namespace/another-function)
+; @---
+;
+; @code
+; (ns my-namespace
+;   (:require [another-namespace]))
+;
+; ; @description
+; ; Lorem ipsum dolor sit amet.
+; ;
+; ; @link (another-namespace/*)
+; (def my-function another-namespace/another-function)
+; @---
+;
 ; Note marker:
 ;
 ; @code
@@ -183,12 +224,12 @@
 ;
 ; @code
 ; (defn my-function
-;   ; @redirect (your-function)
+;   ; @redirect (another-function)
 ;   [] ...)
 ;
-; (defn your-function
-;  ; @description
-;  ; Documentation of the 'your-function' function will be the documentation of the 'my-function' function as well.
+; (defn another-function
+;  ; @note
+;  ; Documentation of the 'another-function' function will REPLACE the documentation of the 'my-function' function.
 ;  ;
 ;  ; @return (integer)
 ;  [] ...)
@@ -196,19 +237,18 @@
 ;
 ; @code
 ; (ns my-namespace
-;   (:require [your-namespace]))
+;   (:require [another-namespace]))
 ;
-; ; @redirect (your-namespace/your-function)
-; (def my-function your-namespace/your-function)
+; ; @redirect (another-namespace/another-function)
+; (def my-function another-namespace/another-function)
 ; @---
 ;
 ; @code
 ; (ns my-namespace
-;   (:require [your-namespace]))
+;   (:require [another-namespace]))
 ;
-; ; @redirect (your-namespace/*)
-; (def my-function      your-namespace/your-function)
-; (def another-function your-namespace/another-function)
+; ; @redirect (another-namespace/*)
+; (def my-function another-namespace/another-function)
 ; @---
 ;
 ; Return marker:

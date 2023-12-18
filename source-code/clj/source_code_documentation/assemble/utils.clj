@@ -53,15 +53,32 @@
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) header-block
+  ; @param (map) content-block
   ;
   ; @return (string)
-  [_ {:keys [previews-uri]} header-block]
-  (let [preview-path (-> header-block :meta first)]
+  [_ {:keys [previews-uri]} content-block]
+  (let [preview-path (-> content-block :meta first)]
        (str previews-uri "/" preview-path)))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
+
+(defn filter-sections
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) file-data
+  ; @param (keyword) type
+  ;
+  ; @usage
+  ; (filter-sections [...] {...} {:sections [...]} :tutorial)
+  ;
+  ; @return (maps in vector)
+  [state _ file-data type]
+  (letfn [(f0 [%] (-> % :type (= type)))]
+         (-> file-data :sections (vector/keep-items-by f0)
+                                 (vector/to-nil {:if-empty? true}))))
 
 (defn filter-namespaces
   ; @ignore
@@ -70,7 +87,7 @@
   ; @param (map) options
   ; @param (string) extension
   ;
-  ; @example
+  ; @usage
   ; (filter-namespaces [{:filepath "source-code/my_namespace_a.clj"  ...}
   ;                     {:filepath "source-code/my_namespace_a.cljs" ...}]
   ;                    {...}

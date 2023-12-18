@@ -93,6 +93,9 @@ a.inline-link:hover {
 .color--primary {
   color: #0088cc }
 
+.color--secondary {
+  color: #8800cc }
+
 .color--muted {
   color: #606060 }
 
@@ -134,10 +137,10 @@ a.inline-link:hover {
 .collapsible-wrapper[data-expanded=\"true\"] .collapsible-button::after {
   content: '▲' }
 
-.collapsible-wrapper .doc-block--box {
+.collapsible-wrapper .content-block--box {
   display: none }
 
-.collapsible-wrapper[data-expanded=\"true\"] .doc-block--box {
+.collapsible-wrapper[data-expanded=\"true\"] .content-block--box {
   display: block }
 
 /*** Collapsible ***/
@@ -291,7 +294,6 @@ a.inline-link:hover {
 
 .declaration--name {
   border-bottom:  1px solid #e0e0e0;
-  color:          #558899;
   font-size:      18px;
   font-weight:    600;
   line-height:    18px;
@@ -309,7 +311,6 @@ a.inline-link:hover {
 
 .tutorial--name {
   border-bottom:  1px solid #e0e0e0;
-  color:          #665599;
   font-size:      18px;
   font-weight:    600;
   line-height:    18px;
@@ -322,31 +323,31 @@ a.inline-link:hover {
 
 /*** Doc blocks ***/
 
-.doc-blocks {
+.content-blocks {
   display: flex;
   flex-direction: column }
 
-.doc-block--separator {
+.content-block--separator {
   height: 12px }
 
-.doc-block--label {
+.content-block--label {
   display:     flex;
   gap:         4px;
   line-height: 24px }
 
-.doc-block--box {
+.content-block--box {
   background-color: #fafafa;
   color:            #333;
   line-height:      16px;
   margin:           0;
   padding:          12px 8px }
 
-.doc-block--preview-image {
+.content-block--preview-image {
   border:     1px solid #dedede;
   display:    block;
-  max-height: 360px;
+  max-height: 480px;
   max-width:  640px;
-  min-height: 36px;
-  min-width:  48px }
+  min-height: 48px;
+  min-width:  64px }
 
 /*** Doc blocks ***/")

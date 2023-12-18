@@ -12,21 +12,21 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) declaration
-  ; @param (map) header-block
+  ; @param (map) section
+  ; @param (map) content-block
   ;
-  ; @example
-  ; (trace-header-redirection [...] {...} {...}
-  ;                           {:name "my-function" :header [{:type :redirect :meta ["..."] :indent 1}]}
-  ;                           {:type :redirect :meta ["..."] :indent 1})
+  ; @usage
+  ; (trace-redirection [...] {...} {...}
+  ;                    {:name "my-function" :type :defn :content [{:type :redirect :meta ["..."] :indent 1}]}
+  ;                    {:type :redirect :meta ["..."] :indent 1})
   ; =>
   ; {:type :redirect :meta ["..."] :indent 1 :pointer "another-namespace/another-function"}
   ;
   ; @return (map)
-  [_ _ file-data declaration header-block]
-  (let [pointer (trace.utils/derive-pointer                 file-data declaration header-block)
-        pointer (trace.utils/invoke-pointer-namespace-alias file-data declaration pointer)]
-       (assoc header-block :pointer pointer)))
+  [_ _ file-data section content-block]
+  (let [pointer (trace.utils/derive-pointer                 file-data section content-block)
+        pointer (trace.utils/invoke-pointer-namespace-alias file-data section pointer)]
+       (assoc content-block :pointer pointer)))
 
 (defn trace-link
   ; @ignore
@@ -34,37 +34,40 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) declaration
-  ; @param (map) header-block
+  ; @param (map) section
+  ; @param (map) content-block
   ;
   ; @return (map)
-  [state options file-data declaration header-block]
+  [state options file-data section content-block]
   ; Tracing links is the same process as tracing redirections.
-  (trace-redirection state options file-data declaration header-block))
+  (trace-redirection state options file-data section content-block))
 
-(defn trace-header
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn trace-section
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) file-data
-  ; @param (map) declaration
+  ; @param (map) section
   ;
-  ; @example
-  ; (trace-header [...] {...} {...}
-  ;               {:name "my-function" :header [{:type :redirect :meta ["..."] :indent 1}]})
+  ; @usage
+  ; (trace-section [...] {...} {...}
+  ;                {:name "my-function" :type :defn :content [{:type :redirect :meta ["..."] :indent 1}]})
   ; =>
-  ; {:name   "my-function"
-  ;  :header [{:type :redirect :meta ["..."] :indent 1 :pointer "another-namespace/another-function"}]}
+  ; {:name    "my-function"
+  ;  :content [{:type :redirect :meta ["..."] :indent 1 :pointer "another-namespace/another-function"}]}
   ;
   ; @return (map)
-  [state options file-data declaration]
+  [state options file-data section]
   (letfn [(f0 [%] (-> % :type (= :redirect)))
           (f1 [%] (-> % :type (= :link)))
-          (f2 [%] (trace-redirection state options file-data declaration %))
-          (f3 [%] (trace-link        state options file-data declaration %))]
-         (-> declaration (update :header vector/->items-by f0 f2)
-                         (update :header vector/->items-by f1 f3))))
+          (f2 [%] (trace-redirection state options file-data section %))
+          (f3 [%] (trace-link        state options file-data section %))]
+         (-> section (update :content vector/->items-by f0 f2)
+                     (update :content vector/->items-by f1 f3))))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -78,16 +81,16 @@
   ;
   ; @return (maps in vector)
   [state options file-data]
-  (letfn [(f0 [%] (trace-header state options file-data %))]
-         (update file-data :declarations vector/->items f0)))
+  (letfn [(f0 [%] (trace-section state options file-data %))]
+         (update file-data :sections vector/->items f0)))
 
 (defn trace-imported-files
   ; @ignore
   ;
   ; @description
-  ; - Traces the links and redirections in headers of defs and defns creating pointers (for all source files within the given source directories).
+  ; - Traces the links and redirections in documentation contents of defs and defns creating pointers (for all source files within the given source directories).
   ; - Although the documentation generator creates documentation only for files that match the provided (or default)
-  ;   filename pattern, to handle header links and redirections, it requires tracing them for all available source files.
+  ;   filename pattern, to handle documentation content links and redirections, it requires tracing them for all available source files.
   ;
   ; @param (maps in vector) state
   ; @param (map) options

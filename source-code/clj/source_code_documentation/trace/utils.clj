@@ -14,13 +14,13 @@
   ; Returns the value of a specific def declaration in case its type is symbol (symbol type def declaration values are imported).
   ;
   ; @param (map) file-data
-  ; @param (map) declaration
+  ; @param (map) section
   ;
-  ; @example
-  ; (def-value-symbol {:ns-map {:defs [{:name "my-function" :value {:symbol "another-namespace/another-function"}}]}}
-  ;                   {:name "my-function" :header [...]})
+  ; @usage
+  ; (def-value-symbol {:ns-map {:defs [{:name "MY-CONSTANT" :value {:symbol "another-namespace/ANOTHER-CONSTANT"}}]}}
+  ;                   {:name "MY-CONSTANT" :type :def :content [...]})
   ; =>
-  ; "another-namespace/another-function"
+  ; "another-namespace/ANOTHER-CONSTANT"
   ;
   ; @return (string)
   [file-data {:keys [name]}]
@@ -31,17 +31,17 @@
   ; @ignore
   ;
   ; @param (map) file-data
-  ; @param (map) declaration
+  ; @param (map) section
   ;
-  ; @example
-  ; (def-value-symbol-namespace {:ns-map {:defs [{:name "my-function" :value {:symbol "another-namespace/another-function"}}]}}
-  ;                             {:name "my-function" :header [...]})
+  ; @usage
+  ; (def-value-symbol-namespace {:ns-map {:defs [{:name "MY-CONSTANT" :value {:symbol "another-namespace/ANOTHER-CONSTANT"}}]}}
+  ;                             {:name "MY-CONSTANT" :type :def :content [...]})
   ; =>
   ; "another-namespace"
   ;
   ; @return (string)
-  [file-data declaration]
-  (-> file-data (def-value-symbol declaration)
+  [file-data section]
+  (-> file-data (def-value-symbol section)
                 (string/before-first-occurence "/" {:return? false})
                 (string/to-nil {:if-empty? true})))
 
@@ -49,17 +49,17 @@
   ; @ignore
   ;
   ; @param (map) file-data
-  ; @param (map) declaration
+  ; @param (map) section
   ;
-  ; @example
-  ; (def-value-symbol-name {:ns-map {:defs [{:name "my-function" :value {:symbol "another-namespace/another-function"}}]}}
-  ;                        {:name "my-function" :header [...]})
+  ; @usage
+  ; (def-value-symbol-name {:ns-map {:defs [{:name "MY-CONSTANT" :value {:symbol "another-namespace/ANOTHER-CONSTANT"}}]}}
+  ;                        {:name "MY-CONSTANT" :type :def :content [...]})
   ; =>
-  ; "another-function"
+  ; "ANOTHER-CONSTANT"
   ;
   ; @return (string)
-  [file-data declaration]
-  (-> file-data (def-value-symbol declaration)
+  [file-data section]
+  (-> file-data (def-value-symbol section)
                 (string/after-last-occurence "/" {:return? true})
                 (string/to-nil {:if-empty? true})))
 
@@ -73,20 +73,20 @@
   ; Returns the namespace of the given link / redirection pointer.
   ;
   ; @param (map) file-data
-  ; @param (map) declaration
+  ; @param (map) section
   ; @param (string) pointer
   ;
-  ; @example
+  ; @usage
   ; (pointer-namespace {...}
-  ;                    {:name "my-function" :header [...]}
-  ;                    "another-namespace/another-function")
+  ;                    {:name "MY-CONSTANT" :type :def :content [...]}
+  ;                    "another-namespace/ANOTHER-CONSTANT")
   ; =>
-  ; "another-namespace"
+  ; "ANOTHER-CONSTANT"
   ;
-  ; @example
+  ; @usage
   ; (pointer-namespace {...}
-  ;                    {:name "my-function" :header [...]}
-  ;                    "another-function")
+  ;                    {:name "MY-CONSTANT" :content [...]}
+  ;                    "ANOTHER-CONSTANT")
   ; =>
   ; nil
   ;
@@ -102,26 +102,26 @@
   ; Returns the name of the given link / redirection pointer.
   ;
   ; @param (map) file-data
-  ; @param (map) declaration
+  ; @param (map) section
   ; @param (string) pointer
   ;
-  ; @example
+  ; @usage
   ; (pointer-name {...}
-  ;               {:name "my-function" :header [...]}
-  ;               "another-namespace/another-function")
+  ;               {:name "MY-CONSTANT" :type :def :content [...]}
+  ;               "another-namespace/ANOTHER-CONSTANT")
   ; =>
-  ; "another-function"
+  ; "ANOTHER-CONSTANT"
   ;
-  ; @example
+  ; @usage
   ; (pointer-name {...}
-  ;               {:name "my-function" :header [...]}
-  ;               "another-function")
+  ;               {:name "MY-CONSTANT" :type :def :content [...]}
+  ;               "ANOTHER-CONSTANT")
   ; =>
-  ; "another-function"
+  ; "ANOTHER-CONSTANT"
   ;
-  ; @example
+  ; @usage
   ; (pointer-name {...}
-  ;               {:name "my-function" :header [...]}
+  ;               {:name "MY-CONSTANT" :type :def :content [...]}
   ;               "")
   ; =>
   ; nil
@@ -144,21 +144,21 @@
   ; - Replaces the '*' wildcard character with the file namespace.
   ;
   ; @param (map) file-data
-  ; @param (map) declaration
+  ; @param (map) section
   ; @param (string) pointer
   ;
-  ; @example
+  ; @usage
   ; (derive-pointer-namespace {...}
-  ;                           {:name "my-function" :header [...]}
-  ;                           "another-namespace/another-function")
+  ;                           {:name "MY-CONSTANT" :type :def :content [...]}
+  ;                           "another-namespace/ANOTHER-CONSTANT")
   ; =>
   ; "another-namespace"
   ;
   ; @return (string)
-  [file-data declaration pointer]
+  [file-data section pointer]
   (let [file-namespace (-> file-data :ns-map :declaration :name)]
-       (-> (or (pointer-namespace          file-data declaration pointer)
-               (def-value-symbol-namespace file-data declaration)
+       (-> (or (pointer-namespace          file-data section pointer)
+               (def-value-symbol-namespace file-data section)
                (-> file-namespace))
            (regex/replace-match #"^\*$" file-namespace))))
 
@@ -172,20 +172,20 @@
   ; - Replaces the '*' wildcard character with the declaration name.
   ;
   ; @param (map) file-data
-  ; @param (map) declaration
+  ; @param (map) section
   ; @param (string) pointer
   ;
-  ; @example
+  ; @usage
   ; (derive-pointer-name {...}
-  ;                      {:name "my-function" :header [...]}
-  ;                      "another-namespace/another-function")
+  ;                      {:name "MY-CONSTANT" :type :def :content [...]}
+  ;                      "another-namespace/ANOTHER-CONSTANT")
   ; =>
-  ; "another-function"
+  ; "ANOTHER-CONSTANT"
   ;
   ; @return (string)
-  [file-data {:keys [name] :as declaration} pointer]
-  (-> (or (pointer-name          file-data declaration pointer)
-          (def-value-symbol-name file-data declaration)
+  [file-data {:keys [name] :as section} pointer]
+  (-> (or (pointer-name          file-data section pointer)
+          (def-value-symbol-name file-data section)
           (-> name))
       (regex/replace-match #"^\*$" name)))
 
@@ -193,21 +193,21 @@
   ; @ignore
   ;
   ; @param (map) file-data
-  ; @param (map) declaration
-  ; @param (map) header-block
+  ; @param (map) section
+  ; @param (map) content-block
   ;
-  ; @example
+  ; @usage
   ; (derive-pointer {...}
-  ;                 {:name "my-function" :header [...]}
+  ;                 {:name "MY-CONSTANT" :type :def :content [...]}
   ;                 {:type :redirect :meta "..."})
   ; =>
-  ; :another-namespace/another-function
+  ; :another-namespace/ANOTHER-CONSTANT
   ;
   ; @return (namespaced keyword)
-  [file-data declaration header-block]
-  (let [pointer (-> header-block :meta first)]
-       (keyword (derive-pointer-namespace file-data declaration pointer)
-                (derive-pointer-name      file-data declaration pointer))))
+  [file-data section content-block]
+  (let [pointer (-> content-block :meta first)]
+       (keyword (derive-pointer-namespace file-data section pointer)
+                (derive-pointer-name      file-data section pointer))))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -216,13 +216,13 @@
   ; @ignore
   ;
   ; @param (map) file-data
-  ; @param (map) declaration
+  ; @param (map) section
   ; @param (namespaced pointer) pointer
   ;
   ; @usage
   ; (invoke-pointer-namespace-alias {...}
-  ;                                 {:name "my-function" :header [...]}
-  ;                                 :another-namespace/another-function)
+  ;                                 {:name "MY-CONSTANT" :type :def :content [...]}
+  ;                                 :another-namespace/ANOTHER-CONSTANT)
   ;
   ; @return (namespaced keyword)
   [file-data _ pointer]

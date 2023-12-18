@@ -21,7 +21,7 @@
   ; @param (vector) state
   ; @param (map) options
   ;
-  ; @example
+  ; @usage
   ; (map-source-paths [] {:filename-pattern #"my\_namespace\_a\.clj"
   ;                       :source-paths ["source-code"]})
   ; =>
@@ -33,7 +33,8 @@
   [state {:keys [filename-pattern source-paths]}]
   (letfn [(f0 [filepath]    (-> filepath io/filepath->filename (regex/re-match? filename-pattern)))
           (f1 [source-path] (io/search-files source-path core.config/SOURCE-FILENAME-PATTERN))
-          (f2 [filepath]    {:filepath filepath :ns-map (source-code-map/read-ns-map filepath) :create-documentation? (f0 filepath)})]
+          (f2 [filepath]    (println "Mapping file:" filepath)
+                            {:filepath filepath :ns-map (source-code-map/read-ns-map filepath) :create-documentation? (f0 filepath)})]
          (-> source-paths (vector/->items f1)
                           (vector/flat-items)
                           (vector/->items f2))))

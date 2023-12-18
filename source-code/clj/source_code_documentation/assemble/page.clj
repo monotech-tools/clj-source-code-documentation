@@ -15,337 +15,337 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-doc-block-additional-box
+(defn assemble-content-block-additional-box
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [_ _ doc-block]
-  (if (-> doc-block :additional vector/nonempty?)
-      (vector/concat-items [:pre {:class [:doc-block--box :text--s]}]
-                           (-> doc-block :additional (vector/gap-items [:br]) assemble.utils/unparse-entities))))
+  [_ _ content-block]
+  (if (-> content-block :additional vector/nonempty?)
+      (vector/concat-items [:pre {:class [:content-block--box :text--s]}]
+                           (-> content-block :additional (vector/gap-items [:br]) assemble.utils/unparse-entities))))
 
-(defn assemble-doc-block-additional-text
+(defn assemble-content-block-additional-text
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ; @param (keyword or keywords in vector) class
   ;
   ; @return (hiccup)
-  [_ _ doc-block class]
-  (if (-> doc-block :additional vector/nonempty?)
+  [_ _ content-block class]
+  (if (-> content-block :additional vector/nonempty?)
       (vector/concat-items [:pre {:class class}]
-                           (-> doc-block :additional (vector/gap-items [:br]) assemble.utils/parse-links))))
+                           (-> content-block :additional (vector/gap-items [:br]) assemble.utils/parse-links))))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-doc-bug-block
+(defn assemble-bug-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]} (-> "Bug")]
-              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta first)]
-              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta second)]]
-        [:pre {:class [:text--m :color--default]} (-> doc-block :value)]
-        (assemble-doc-block-additional-text state options doc-block [:text--m :color--warning])])
+              [:pre {:class [:text--xs :color--muted]} (-> content-block :meta first)]
+              [:pre {:class [:text--xs :color--muted]} (-> content-block :meta second)]]
+        [:pre {:class [:text--m :color--default]} (-> content-block :value)]
+        (assemble-content-block-additional-text state options content-block [:text--m :color--warning])])
 
-(defn assemble-doc-description-block
+(defn assemble-description-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]} "Description"]]
-        (assemble-doc-block-additional-text state options doc-block [:text--m :color--basic])])
+        (assemble-content-block-additional-text state options content-block [:text--m :color--basic])])
 
-(defn assemble-doc-error-block
+(defn assemble-error-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [_ _ doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [_ _ content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]} "Error"]]
         [:pre {:class [:text--m :color--warning]}
-              (str doc-block)]])
+              (str content-block)]])
 
-(defn assemble-doc-important-block
+(defn assemble-important-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]} "Important"]]
-        (assemble-doc-block-additional-text state options doc-block [:text--m :color--warning])])
+        (assemble-content-block-additional-text state options content-block [:text--m :color--warning])])
 
-(defn assemble-doc-info-block
+(defn assemble-info-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]} "Info"]]
-        (assemble-doc-block-additional-text state options doc-block [:text--m :color--primary])])
+        (assemble-content-block-additional-text state options content-block [:text--m :color--primary])])
 
-(defn assemble-doc-note-block
+(defn assemble-note-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]} "Note"]]
-        (assemble-doc-block-additional-text state options doc-block [:text--m :color--muted])])
+        (assemble-content-block-additional-text state options content-block [:text--m :color--muted])])
 
-(defn assemble-doc-plain-block
+(defn assemble-plain-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        (assemble-doc-block-additional-text state options doc-block [:text--m :color--default])])
+  [state options content-block]
+  [:div {:class :content-block}
+        (assemble-content-block-additional-text state options content-block [:text--m :color--default])])
 
-(defn assemble-doc-tutorial-block
+(defn assemble-tutorial-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]} "Tutorial"]
-              (-> doc-block :value)]
-        (assemble-doc-block-additional-text state options doc-block [:text--m :color--default])])
+              (-> content-block :value)]
+        (assemble-content-block-additional-text state options content-block [:text--m :color--default])])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-doc-atom-block
+(defn assemble-atom-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]}   (-> "Atom")]
-              [:pre {:class [:text-s   :color--default]} (-> doc-block :value)]
-              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta first)]
-              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta second)]]
-        (assemble-doc-block-additional-text state options doc-block [:text--s :color--muted])])
+              [:pre {:class [:text-s   :color--default]} (-> content-block :value)]
+              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta first)]
+              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta second)]]
+        (assemble-content-block-additional-text state options content-block [:text--s :color--muted])])
 
-(defn assemble-doc-constant-block
+(defn assemble-constant-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]}   (-> "Constant")]
-              [:pre {:class [:text-s   :color--default]} (-> doc-block :value)]
-              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta first)]
-              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta second)]]
-        (assemble-doc-block-additional-text state options doc-block [:text--s :color--muted])])
+              [:pre {:class [:text-s   :color--default]} (-> content-block :value)]
+              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta first)]
+              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta second)]]
+        (assemble-content-block-additional-text state options content-block [:text--s :color--muted])])
 
-(defn assemble-doc-param-block
+(defn assemble-param-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]}   (-> "Param")]
-              [:pre {:class [:text-s   :color--default]} (-> doc-block :value)]
-              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta first)]
-              [:pre {:class [:text--xs :color--muted]}   (-> doc-block :meta second (case "opt" "optional" "req" "required" "required"))]]
-        (assemble-doc-block-additional-text state options doc-block [:text--s :color--muted])])
+              [:pre {:class [:text-s   :color--default]} (-> content-block :value)]
+              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta first)]
+              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta second (case "opt" "optional" "req" "required" "required"))]]
+        (assemble-content-block-additional-text state options content-block [:text--s :color--muted])])
 
-(defn assemble-doc-return-block
+(defn assemble-return-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]} (-> "Return")]
-              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta first)]
-              [:pre {:class [:text--xs :color--muted]} (-> doc-block :meta second)]]
-        (assemble-doc-block-additional-text state options doc-block [:text--s :color--muted])])
+              [:pre {:class [:text--xs :color--muted]} (-> content-block :meta first)]
+              [:pre {:class [:text--xs :color--muted]} (-> content-block :meta second)]]
+        (assemble-content-block-additional-text state options content-block [:text--s :color--muted])])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-doc-code-block
+(defn assemble-code-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
+  [state options content-block]
+  [:div {:class :content-block}
         ; @code blocks don't have labels.
-        (assemble-doc-block-additional-box state options doc-block)])
+        (assemble-content-block-additional-box state options content-block)])
 
-(defn assemble-doc-preview-block
+(defn assemble-preview-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  (let [preview-image-uri (assemble.utils/preview-image-uri state options doc-block)]
-       [:div {:class :doc-block}
-             [:div {:class :doc-block--label}
+  [state options content-block]
+  (let [preview-image-uri (assemble.utils/preview-image-uri state options content-block)]
+       [:div {:class :content-block}
+             [:div {:class :content-block--label}
                    [:pre {:class [:text--xs :color--muted]} "Preview"]]
-             [:img {:class :doc-block--preview-image :src preview-image-uri}]
-             (assemble-doc-block-additional-box state options doc-block)]))
+             [:img {:class :content-block--preview-image :src preview-image-uri}]
+             (assemble-content-block-additional-box state options content-block)]))
 
-(defn assemble-doc-usage-block
+(defn assemble-usage-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--muted]} "Usage"]]
-        (assemble-doc-block-additional-box state options doc-block)])
+        (assemble-content-block-additional-box state options content-block)])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-doc-unknown-block
+(defn assemble-unknown-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [_ _ doc-block]
-  [:div {:class :doc-block}
-        [:div {:class :doc-block--label}
+  [_ _ content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
               [:pre {:class [:text--xs :color--warning]} "Unknown syntax"]]
-        [:pre {:class [:text--m :color--muted]} (str doc-block)]])
+        [:pre {:class [:text--m :color--muted]} (str content-block)]])
 
-(defn assemble-doc-separator-block
+(defn assemble-separator-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
   [_ _ _]
-  [:div {:class :doc-block--separator}])
+  [:div {:class :content-block--separator}])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-doc-block
+(defn assemble-content-block
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) doc-block
+  ; @param (map) content-block
   ;
   ; @return (hiccup)
-  [state options doc-block]
-  (case (-> doc-block :type)
-        :atom        (assemble-doc-atom-block        state options doc-block)
-        :bug         (assemble-doc-bug-block         state options doc-block)
-        :code        (assemble-doc-code-block        state options doc-block)
-        :constant    (assemble-doc-constant-block    state options doc-block)
-        :description (assemble-doc-description-block state options doc-block)
-        :error       (assemble-doc-error-block       state options doc-block)
-        :important   (assemble-doc-important-block   state options doc-block)
-        :info        (assemble-doc-info-block        state options doc-block)
-        :note        (assemble-doc-note-block        state options doc-block)
-        :param       (assemble-doc-param-block       state options doc-block)
-        :plain       (assemble-doc-plain-block       state options doc-block)
-        :preview     (assemble-doc-preview-block     state options doc-block)
-        :return      (assemble-doc-return-block      state options doc-block)
-        :separator   (assemble-doc-separator-block   state options doc-block)
-        :tutorial    (assemble-doc-tutorial-block    state options doc-block)
-        :usage       (assemble-doc-usage-block       state options doc-block)
-                     (assemble-doc-unknown-block     state options doc-block)))
+  [state options content-block]
+  (case (-> content-block :type)
+        :atom        (assemble-atom-content-block        state options content-block)
+        :bug         (assemble-bug-content-block         state options content-block)
+        :code        (assemble-code-content-block        state options content-block)
+        :constant    (assemble-constant-content-block    state options content-block)
+        :description (assemble-description-content-block state options content-block)
+        :error       (assemble-error-content-block       state options content-block)
+        :important   (assemble-important-content-block   state options content-block)
+        :info        (assemble-info-content-block        state options content-block)
+        :note        (assemble-note-content-block        state options content-block)
+        :param       (assemble-param-content-block       state options content-block)
+        :plain       (assemble-plain-content-block       state options content-block)
+        :preview     (assemble-preview-content-block     state options content-block)
+        :return      (assemble-return-content-block      state options content-block)
+        :separator   (assemble-separator-content-block   state options content-block)
+        :tutorial    (assemble-tutorial-content-block    state options content-block)
+        :usage       (assemble-usage-content-block       state options content-block)
+                     (assemble-unknown-content-block     state options content-block)))
 
-(defn assemble-doc-blocks
+(defn assemble-content-blocks
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (maps in vector) doc-blocks
+  ; @param (maps in vector) content-blocks
   ;
   ; @return (hiccup)
-  [state options doc-blocks]
-  (letfn [(f0 [%] (assemble-doc-block state options %))]
-         (hiccup/put-with [:div {:class :doc-blocks}] doc-blocks f0)))
+  [state options content-blocks]
+  (letfn [(f0 [%] (assemble-content-block state options %))]
+         (hiccup/put-with [:div {:class :content-blocks}] content-blocks f0)))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -355,44 +355,46 @@
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) declaration
+  ; @param (map) section
   ;
   ; @return (hiccup)
-  [_ _ declaration]
-  (let [collapsible-id (-> declaration :name (str "--source-code") hiccup/value)
+  [_ _ section]
+  (let [collapsible-id (-> section :name (str "--source-code") hiccup/value)
         toggle-f       (str "toggleCollapsible('"collapsible-id"')")]
-       [:div {:class :collapsible-wrapper :id collapsible-id :data-expanded "false"}
-             [:pre {:class [:collapsible-button :text--xs] :onClick toggle-f} "Source Code"]
-             (hiccup/parse-newlines [:pre {:class [:text-s :doc-block--box]} (-> declaration :body)])]))
+       (if (-> section :source-code)
+           [:div {:class :collapsible-wrapper :id collapsible-id :data-expanded "false"}
+                 [:pre {:class [:collapsible-button :text--xs] :onClick toggle-f} "Source Code"]
+                 (hiccup/parse-newlines [:pre {:class [:text-s :content-block--box]} (-> section :source-code)])])))
 
 (defn assemble-declaration-name
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) declaration
+  ; @param (map) section
   ;
   ; @return (hiccup)
-  [_ _ declaration]
-  [:pre {:class :declaration--name}
-        (:name declaration)])
+  [_ _ section]
+  [:pre {:class [:declaration--name :color--primary]}
+        (:name section)])
 
 (defn assemble-declaration
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) declaration
+  ; @param (map) section
   ;
   ; @return (hiccup)
-  [state options declaration]
-  (let [declaration-id (-> declaration :name hiccup/value)]
-       [:div {:id declaration-id :class :declaration--wrapper}
-             [:pre {:class [:text--xs :color--muted]} "Declaration"]
-             (assemble-declaration-name    state options          declaration)
-             (assemble-doc-blocks          state options (:header declaration))
-             (assemble-doc-separator-block state options {})
-             (assemble-source-code         state options declaration)]))
+  [state options section]
+  (let [section-id (-> section :name hiccup/value)]
+       [:div {:id section-id :class :declaration--wrapper}
+             [:pre {:class [:text--xs :color--muted]}
+                   (-> section :type (case :def "Declaration" :defn "Declaration" :tutorial "Tutorial"))]
+             (assemble-declaration-name        state options           section)
+             (assemble-content-blocks          state options (:content section))
+             (assemble-separator-content-block state options {})
+             (assemble-source-code             state options section)]))
 
 (defn assemble-declarations
   ; @ignore
@@ -403,9 +405,12 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  [:div {:id :declarations--wrapper}
-        (letfn [(f0 [%] (assemble-declaration state options %))]
-               (hiccup/put-with [:div {:id :declarations}] (-> file-data :declarations) f0))])
+  (letfn [(f0 [%] (-> state (assemble-declaration           options           %)))
+          (f1 [%] (-> state (assemble.utils/filter-sections options file-data %) (vector/sort-items-by :name)))]
+         [:div {:id :declarations--wrapper}
+               (-> [:div {:id :declarations}]
+                   (hiccup/put-with (f1 :def)  f0)
+                   (hiccup/put-with (f1 :defn) f0))]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -415,27 +420,27 @@
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) tutorial
+  ; @param (map) section
   ;
   ; @return (hiccup)
-  [_ _ tutorial]
-  [:pre {:class :tutorial--name}
-        (:name tutorial)])
+  [_ _ section]
+  [:pre {:class [:tutorial--name :color--secondary]}
+        (:name section)])
 
 (defn assemble-tutorial
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) tutorial
+  ; @param (map) section
   ;
   ; @return (hiccup)
-  [state options tutorial]
-  (let [tutorial-id (-> tutorial :name hiccup/value)]
-       [:div {:id tutorial-id :class :tutorial--wrapper}
+  [state options section]
+  (let [section-id (-> section :name hiccup/value)]
+       [:div {:id section-id :class :tutorial--wrapper}
              [:pre {:class [:text--xs :color--muted]} "Tutorial"]
-             (assemble-tutorial-name state options           tutorial)
-             (assemble-doc-blocks    state options (:content tutorial))]))
+             (assemble-tutorial-name  state options           section)
+             (assemble-content-blocks state options (:content section))]))
 
 (defn assemble-tutorials
   ; @ignore
@@ -446,9 +451,11 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  [:div {:id :tutorials--wrapper}
-        (letfn [(f0 [%] (assemble-tutorial state options %))]
-               (hiccup/put-with [:div {:id :tutorials}] (-> file-data :tutorials) f0))])
+  (letfn [(f0 [%] (-> state (assemble-tutorial              options           %)))
+          (f1 [%] (-> state (assemble.utils/filter-sections options file-data %) (vector/sort-items-by :name)))]
+         [:div {:id :tutorials--wrapper}
+               (-> [:div {:id :tutorials}]
+                   (hiccup/put-with (f1 :tutorial) f0))]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -481,12 +488,13 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  (letfn [(f0 [%] (assemble.utils/symbol-anchor state options file-data %))
-          (f1 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--primary]} (-> % :name)]])]
-         (let [label "Tutorials" tutorials (-> file-data :tutorials)]
-              (hiccup/put-with [:div {:class :secondary-list--container} [:pre {:class [:text--xs :color--muted]} label]] tutorials f1))))
+  (letfn [(f0 [%] (-> state (assemble.utils/symbol-anchor   options file-data %)))
+          (f1 [%] (-> state (assemble.utils/filter-sections options file-data %) (vector/sort-items-by :name)))
+          (f2 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--secondary]} (-> % :name)]])]
+         (-> [:div {:class :secondary-list--container} [:pre {:class [:text--xs :color--muted]} "Tutorials"]]
+             (hiccup/put-with (f1 :tutorial) f2))))
 
-(defn assemble-declaration-list
+(defn assemble-section-list
   ; @ignore
   ;
   ; @param (maps in vector) state
@@ -495,10 +503,13 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  (letfn [(f0 [%] (assemble.utils/symbol-anchor state options file-data %))
-          (f1 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--primary]} (-> % :name)]])]
-         (let [label "Declarations" declarations (-> file-data :declarations (vector/sort-items-by :name))]
-              (hiccup/put-with [:div {:class :secondary-list--container} [:pre {:class [:text--xs :color--muted]} label]] declarations f1))))
+  (letfn [(f0 [%] (-> state (assemble.utils/symbol-anchor    options file-data %)))
+          (f1 [%] (-> state (assemble.utils/filter-sections  options file-data %) (vector/sort-items-by :name)))
+          (f2 [%] (-> state (assemble.utils/filter-sections  options file-data %) (vector/sort-items-by :name)))
+          (f3 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--primary]} (-> % :name)]])]
+         (-> [:div {:class :secondary-list--container} [:pre {:class [:text--xs :color--muted]} "Declarations"]]
+             (hiccup/put-with (f1 :def)  f3)
+             (hiccup/put-with (f2 :defn) f3))))
 
 (defn assemble-secondary-list
   ; @ignore
@@ -511,8 +522,8 @@
   [state options file-data]
   [:div {:id :secondary-list}
         [:div {:class :scroll-container}
-              (assemble-tutorial-list    state options file-data)
-              (assemble-declaration-list state options file-data)]])
+              (assemble-tutorial-list state options file-data)
+              (assemble-section-list  state options file-data)]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

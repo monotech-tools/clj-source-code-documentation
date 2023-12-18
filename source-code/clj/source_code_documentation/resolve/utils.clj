@@ -9,18 +9,18 @@
   ; @ignore
   ;
   ; @param (map) file-data
-  ; @param (map) declaration
+  ; @param (map) section
   ;
-  ; @example
+  ; @usage
   ; (create-pointer {:ns-map {:declaration {:name "my-namespace"}}}
-  ;                 {:name "my-function" :header [...]})
+  ;                 {:name "my-function" :content [...]})
   ; =>
   ; :my-namespace/my-function
   ;
   ; @return (namespaced keyword)
-  [file-data declaration]
+  [file-data section]
   (keyword (-> file-data :ns-map :declaration :name)
-           (-> declaration :name)))
+           (-> section :name)))
 
 (defn update-trace
   ; @ignore
@@ -28,7 +28,7 @@
   ; @param (namespaced keywords in vector) trace
   ; @param (namespaced keyword) pointer
   ;
-  ; @example
+  ; @usage
   ; (update-trace [:my-namespace/my-function] :another-namespace/another-function)
   ; =>
   ; [:my-namespace/my-function :another-namespace/another-function]

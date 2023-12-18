@@ -12,7 +12,7 @@
   ;
   ; @param (string) n
   ;
-  ; @example
+  ; @usage
   ; (first-coherent-comment-row-group "\n ; Commented row #1\n Non-commented row\n ; Commented row #2\n ; Commented row #3")
   ; =>
   ; [" ; Commented row #1"]
@@ -39,7 +39,7 @@
   ;
   ; @param (string) n
   ;
-  ; @example
+  ; @usage
   ; (last-coherent-comment-row-group "\n ; Commented row #1\n Non-commented row\n ; Commented row #2\n ; Commented row #3")
   ; =>
   ; [" ; Commented row #2"
@@ -66,12 +66,12 @@
   ; @ignore
   ;
   ; @description
-  ; Returns the value of a specific def declaration.
+  ; Imports the value of a specific def declaration.
   ;
   ; @param (string) file-content
   ; @param (map) def
   ;
-  ; @example
+  ; @usage
   ; (import-def-value "... (def my-constant :my-value) ..." {...})
   ; =>
   ; ":my-value"
@@ -81,17 +81,17 @@
   (string/keep-range file-content (-> value :bounds first)
                                   (-> value :bounds second)))
 
-(defn import-def-header
+(defn import-def-content
   ; @ignore
   ;
   ; @description
-  ; Returns the comment header of a specific def declaration.
+  ; Imports the documentation content of a specific def declaration.
   ;
   ; @param (string) file-content
   ; @param (map) def
   ;
-  ; @example
-  ; (import-def-header "... \n; @constant (keyword)\n(def my-constant :my-value) ..." {...})
+  ; @usage
+  ; (import-def-content "... \n; @constant (keyword)\n(def my-constant :my-value) ..." {...})
   ; =>
   ; "; @constant (keyword)"
   ;
@@ -102,17 +102,17 @@
                    (regex/after-last-match #"\n[\h]{0,}\n" {:return? false}) ; <- Keeps the part after the last empty row.
                    (last-coherent-comment-row-group)))                       ; <- Extracts the last coherent comment row group.
 
-(defn import-defn-header
+(defn import-defn-content
   ; @ignore
   ;
   ; @description
-  ; Returns the comment header of a specific defn declaration.
+  ; Imports the documentation content of a specific defn declaration.
   ;
   ; @param (string) file-content
   ; @param (map) defn
   ;
-  ; @example
-  ; (import-defn-header "... (defn my-function\n; @param (map) my-param\n [my-param] ...) ..." {...})
+  ; @usage
+  ; (import-defn-content "... (defn my-function\n; @param (map) my-param\n [my-param] ...) ..." {...})
   ; =>
   ; "; @param (map) my-param"
   ;
@@ -125,7 +125,7 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn import-def-body
+(defn import-def-source-code
   ; @ignore
   ;
   ; @description
@@ -134,8 +134,8 @@
   ; @param (string) file-content
   ; @param (map) def
   ;
-  ; @example
-  ; (import-def-body "... (def my-constant [] ...) ..." {...})
+  ; @usage
+  ; (import-def-source-code "... (def my-constant [] ...) ..." {...})
   ; =>
   ; "(def my-constant :my-value)"
   ;
@@ -143,7 +143,7 @@
   [file-content {:keys [bounds]}]
   (string/keep-range file-content (first bounds) (last bounds)))
 
-(defn import-defn-body
+(defn import-defn-source-code
   ; @ignore
   ;
   ; @description
@@ -152,8 +152,8 @@
   ; @param (string) file-content
   ; @param (map) defn
   ;
-  ; @example
-  ; (import-defn-body "... (defn my-function [] ...) ..." {...})
+  ; @usage
+  ; (import-defn-source-code "... (defn my-function [] ...) ..." {...})
   ; =>
   ; "(defn my-function [] ...)"
   ;
@@ -186,7 +186,8 @@
   (letfn [(f0 [%] (regex/re-first % #"(?<=\@tutorial[\h]{1,})[^\n]{1,}(?=\n)"))
           (f1 [%] (string/after-first-occurence % "\n"))]
          {:name    (-> substring f0)
-          :content (-> substring f1 (first-coherent-comment-row-group))}))
+          :content (-> substring f1 (first-coherent-comment-row-group))
+          :type    (-> :tutorial)}))
 
 (defn import-tutorials
   ; @ignore
