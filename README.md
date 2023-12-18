@@ -9,7 +9,7 @@ The <strong>clj-source-code-documentation</strong> is a simple documentation boo
 
 ```
 {:deps {mt-devtools/clj-source-code-documentation {:git/url "https://github.com/mt-devtools/clj-source-code-documentation"
-                                                   :sha     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}
+                                                   :sha     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}}
 ```
 
 ### Current version

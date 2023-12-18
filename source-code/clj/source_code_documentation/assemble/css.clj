@@ -216,26 +216,33 @@ a.inline-link:hover {
 /*** Primary list, secondary list ***/
 
 #primary-list {
-  border-right:   1px solid #e0e0e0;
-  display:        flex;
-  flex-direction: column;
-  height:         calc(100vh - 60px);
-  left:           0;
-  padding:        12px 0 54px 0;
-  position:       fixed;
-  top:            60px;
-  width:          280px }
+  background-color: #fff;
+  border-right:     1px solid #e0e0e0;
+  display:          flex;
+  flex-direction:   column;
+  height:           calc(100vh - 60px);
+  left:             0;
+  padding:          12px 0 54px 0;
+  position:         fixed;
+  top:              60px;
+  width:            280px }
 
 #secondary-list {
-  border-right:   1px solid #e0e0e0;
-  display:        flex;
-  flex-direction: column;
-  height:         calc(100vh - 60px);
-  left:           280px;
-  padding:        12px 0 54px 0;
-  position:       fixed;
-  top:            60px;
-  width:          280px }
+  background-color: #fff;
+  border-right:     1px solid #e0e0e0;
+  display:          flex;
+  flex-direction:   column;
+  height:           calc(100vh - 60px);
+  left:             280px;
+  padding:          12px 0 54px 0;
+  position:         fixed;
+  top:              60px;
+  width:            280px }
+
+#primary-list,
+#secondary-list {
+  /*  Relative positioned elements can overflow the sidebars in case of horizontal scrolling! */
+  z-index: 9999 }
 
 #primary-list .text--xs,
 #secondary-list .text--xs {

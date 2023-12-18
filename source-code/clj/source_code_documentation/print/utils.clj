@@ -1,8 +1,8 @@
 
 (ns source-code-documentation.print.utils
-    (:require [io.api :as io]
-              [source-code-documentation.assemble.utils :as assemble.utils]
-              [fruits.string.api :as string]))
+    (:require [fruits.string.api                        :as string]
+              [io.api                                   :as io]
+              [source-code-documentation.assemble.utils :as assemble.utils]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

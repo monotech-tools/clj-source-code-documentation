@@ -1,8 +1,8 @@
 
 (ns source-code-documentation.assemble.utils
     (:require [fruits.hiccup.api :as hiccup]
+              [fruits.regex.api  :as regex]
               [fruits.string.api :as string]
-              [fruits.regex.api :as regex]
               [fruits.vector.api :as vector]
               [io.api            :as io]))
 

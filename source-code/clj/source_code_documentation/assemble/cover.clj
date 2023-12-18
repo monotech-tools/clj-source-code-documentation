@@ -1,11 +1,11 @@
 
 (ns source-code-documentation.assemble.cover
-    (:require [fruits.hiccup.api                      :as hiccup]
-              [fruits.uri.api                         :as uri]
-              [fruits.vector.api                      :as vector]
-              [hiccup.page                            :refer [html5]]
-              [io.api                                 :as io]
-              [source-code-documentation.assemble.page :as assemble.page]
+    (:require [fruits.hiccup.api                        :as hiccup]
+              [fruits.uri.api                           :as uri]
+              [fruits.vector.api                        :as vector]
+              [hiccup.page                              :refer [html5]]
+              [io.api                                   :as io]
+              [source-code-documentation.assemble.page  :as assemble.page]
               [source-code-documentation.assemble.utils :as assemble.utils]))
 
 ;; ----------------------------------------------------------------------------

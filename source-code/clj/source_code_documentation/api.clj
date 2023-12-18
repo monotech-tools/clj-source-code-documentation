@@ -11,16 +11,14 @@
 ;
 ; @code
 ; (ns my-namespace)
-; ...
+;
 ; ; @tutorial My tutorial
 ; ;
 ; ; Lorem ipsum dolor sit amet.
-; ; ...
 ; ;
 ; ; @usage
 ; ; (my-function ...)
-; ;
-; ; ...
+; @---
 ;
 ; Constant declaration headers:
 ;
@@ -46,21 +44,23 @@
 
 ; @tutorial Markers
 ;
-; - @atom
-; - @bug
-; - @code
-; - @constant
-; - @description
-; - @ignore
-; - @important
-; - @info
-; - @note
-; - @param
-; - @preview
-; - @redirect
-; - @return
-; - @tutorial
-; - @usage
+; @code
+; ; @atom
+; ; @bug
+; ; @code
+; ; @constant
+; ; @description
+; ; @ignore
+; ; @important
+; ; @info
+; ; @note
+; ; @param
+; ; @preview
+; ; @redirect
+; ; @return
+; ; @tutorial
+; ; @usage
+; ; @---
 ;
 ; Atom marker:
 ;
@@ -88,7 +88,7 @@
 ; ; @code
 ; ; (my-function "...")
 ;
-; Consant marker:
+; Constant marker:
 ;
 ; @code
 ; ; @constant (map)
@@ -117,7 +117,7 @@
 ;   ; Content below the @ignore marker will not be in the documentation.
 ;   [] ...)
 ;
-; Imprtant marker:
+; Important marker:
 ;
 ; @code
 ; (defn my-function
@@ -185,28 +185,31 @@
 ; (defn my-function
 ;   ; @redirect (your-function)
 ;   [] ...)
-; ...
+;
 ; (defn your-function
 ;  ; @description
 ;  ; Documentation of the 'your-function' function will be the documentation of the 'my-function' function as well.
 ;  ;
 ;  ; @return (integer)
 ;  [] ...)
+; @---
 ;
 ; @code
 ; (ns my-namespace
 ;   (:require [your-namespace]))
-; ...
+;
 ; ; @redirect (your-namespace/your-function)
 ; (def my-function your-namespace/your-function)
+; @---
 ;
 ; @code
 ; (ns my-namespace
 ;   (:require [your-namespace]))
-; ...
+;
 ; ; @redirect (your-namespace/*)
 ; (def my-function      your-namespace/your-function)
 ; (def another-function your-namespace/another-function)
+; @---
 ;
 ; Return marker:
 ;
@@ -253,13 +256,26 @@
 ;   ; @return (integer)
 ;   [a & [b]] ...)
 ;
+; --- (block end) marker:
+;
+; @code
+; ; @tutorial My tutorial
+; ;
+; ; Lorem ipsum dolor sit amet.
+; ;
+; ; @code
+; ;
+; ; By default, empty rows always close opened blocks, except if a block end marker
+; ; tells the interpreter where is the actual end of the block.
+; ;
+; ; @---
 
 ; @tutorial Links
 ;
 ; @code
 ; (defn my-function
 ;   ; @description
-;   ; Place a [link](https://...) or an [anchor](#another-function) anywhere.
+;   ; Place a [link](https://...) or an [anchor](#another-function) anywhere in your documentation content.
 ;   ;
 ;   ; @return (integer)
 ;   [] ...)

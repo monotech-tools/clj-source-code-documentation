@@ -66,10 +66,10 @@
           (f3 [       %] (count   (regex/re-first % #"(?<=\;)[\h]{0,}(?=\@)")))      ; <- Returns the block indent length, derived from the given comment row.
           (f4 [result %] (string/keep-range % (-> result :indent inc)))              ; <- Returns the given block additional row, with adjusted indent.
           (f5 [result %] (if (-> result empty?)                                                 ; <- The 'result' vector is empty when the iteration reads the first row of block.
-                             (-> result (merge {:type (f0 %) :indent (f3 %)}                    ; <- Every imported block starts with a type row.
+                             (-> result (merge {:type (f0 %) :indent (f3 %)}                    ; <- Every imported block starts with a block marker row.
                                                (let [meta  (f1 %)] (if (-> meta  vector/nonempty?) {:meta  meta}))    ; <- Meta values of blocks are optional.
                                                (let [value (f2 %)] (if (-> value string/nonempty?) {:value value})))) ; <- Values of blocks are optional.
-                             (-> result (update :additional vector/conj-item (f4 result %)))))] ; <- Rows following the first row (type row) are the additional rows of the block.
+                             (-> result (update :additional vector/conj-item (f4 result %)))))] ; <- Rows following the first row (block marker row) are additional rows of the block.
          (reduce f5 {} doc-block)))
 
 (defn read-doc-blocks
@@ -101,17 +101,36 @@
   ;
   ; @return (strings in vectors in vector)
   [doc-blocks]
-  (letfn [(f0 [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}\@"))) ; <- Returns TRUE if the given comment row is a block type row.
-          (f1 [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}$")))  ; <- Returns TRUE if the given comment row is an empty comment row.
-          (f2 [%] (-> % last first (= "; @separator")))              ; <- Returns TRUE if the last block is a separator block.
-          (f3 [%] (-> % vector/empty?))                              ; <- Returns TRUE if the given result vector is empty (no block has been opened yet).
-          (f4 [result row-content]
-              (cond (-> row-content f0) (-> result (vector/conj-item [               row-content]))           ; <- If the row content is a block type row, opens a new block.
-                    (-> row-content f1) (-> result (vector/conj-item ["; @separator" row-content]))           ; <- If the row content is an empty comment row, opens a new separator block.
-                    (-> result      f3) (-> result (vector/conj-item ["; @plain"     row-content]))           ; <- If the row content is a plain text row and no block has been opened yet, opens a new plain block.
-                    (-> result      f2) (-> result (vector/conj-item ["; @plain"     row-content]))           ; <- If the row content is a plain text row and the last block is a separator block, opens a new plain block.
-                    :additional-row     (-> result (vector/update-last-item vector/conj-item row-content))))] ; <- If the row content is a plain text row appends it the last opened block.
-         (reduce f4 [] doc-blocks)))
+  ; - Block start marker row: "; @usage", "; @param", etc.
+  ; - Block end marker row:   "; @---"
+  ; - Empty comment row:      "; "
+  ; - Nonempty comment row:   "; abc..."
+  (letfn [(f0  [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}\@")))                 ; <- Returns TRUE if the given comment row is a block marker row.
+          (f1  [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}\@\-\-\-")))           ; <- Returns TRUE if the given comment row is a block end marker row.
+          (f2  [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}$")))                  ; <- Returns TRUE if the given comment row is an empty comment row.
+          (f3  [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}[^\@\h]")))            ; <- Returns TRUE if the given comment row is an nonempty comment row.
+          (f4  [%] (-> % (regex/re-first  #"^[\h]{0,}\;[\h]{0,}\@.*")))               ; <- Returns the given comment row if it is a block marker row.
+          (f5  [%] (-> doc-blocks (vector/keep-range %) (vector/first-result f4) f1)) ; <- Returns TRUE if the next block marker row will be a block end marker row.
+          (f6  [%] (-> % last first (= "; @separator")))                              ; <- Returns TRUE if the last block is a separator block.
+          (f7  [%] (-> % empty?))                                                     ; <- Returns TRUE if no block has been opened yet.
+          (f8  [result cursor row-content] (cond (f0 row-content)  (-> result (f9  cursor row-content))   ; <- Block start marker or end marker row
+                                                 (f2 row-content)  (-> result (f10 cursor row-content))   ; <- Empty comment row
+                                                 (f3 row-content)  (-> result (f11 cursor row-content)))) ; <- Nonempty comment row
+          (f9  [result cursor row-content] (cond (f1 row-content)  (-> result)                            ; <- Block end marker row
+                                                 :start-marker     (-> result (f13 cursor row-content)))) ; <- Block start marker row
+          (f10 [result cursor row-content] (cond (f5 cursor)       (-> result (f12 cursor row-content))   ; <- Empty comment row + the next block marker row will be a block end marker row.
+                                                 :else             (-> result (f13 cursor row-content)))) ; <- Empty comment row + the next block marker row will NOT be a block end marker row.
+          (f11 [result cursor row-content] (cond (f6 result)       (-> result (f13 cursor row-content))   ; <- Nonempty comment row + last block is a separator block
+                                                 (f7 result)       (-> result (f13 cursor row-content))   ; <- Nonempty comment row + no block has been opened yet
+                                                 :any-block-opened (-> result (f12 cursor row-content)))) ; <- Nonempty comment row + last block is NOT a separator block
+          (f12 [result cursor row-content] (cond (f6 result)       (-> result (f13 cursor row-content))   ; <- Appends to previous block + last block is a separator block
+                                                 (f7 result)       (-> result (f13 cursor row-content))   ; <- Appends to previous block + no block has been opened yet
+                                                 :any-block-opened (-> result (vector/update-last-item vector/conj-item row-content))))
+          (f13 [result cursor row-content] (cond (f2 row-content)  (-> result (vector/conj-item ["; @separator" row-content]))   ; <- Opens a new block + empty comment row
+                                                 (f3 row-content)  (-> result (vector/conj-item ["; @plain"     row-content]))   ; <- Opens a new block + nonempty comment row
+                                                 (f0 row-content)  (-> result (vector/conj-item [               row-content]))))] ; <- Opens a new block + block marker row
+         ; ...
+         (reduce-kv f8 [] doc-blocks)))
 
 (defn remove-ignored-doc-blocks
   ; @ignore
