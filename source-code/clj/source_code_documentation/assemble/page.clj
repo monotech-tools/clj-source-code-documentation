@@ -145,6 +145,20 @@
   [:div {:class :content-block}
         (assemble-content-block-additional-text state options content-block [:text--m :color--default])])
 
+(defn assemble-title-content-block
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) content-block
+  ;
+  ; @return (hiccup)
+  [state options content-block]
+  [:div {:class :content-block}
+        [:div {:class :content-block--label}
+              [:pre {:class [:text--m :color--primary]} (-> content-block :value)]]
+        (assemble-content-block-additional-text state options content-block [:text--m :color--default])])
+
 (defn assemble-tutorial-content-block
   ; @ignore
   ;
@@ -331,6 +345,7 @@
         :preview     (assemble-preview-content-block     state options content-block)
         :return      (assemble-return-content-block      state options content-block)
         :separator   (assemble-separator-content-block   state options content-block)
+        :title       (assemble-title-content-block       state options content-block)
         :tutorial    (assemble-tutorial-content-block    state options content-block)
         :usage       (assemble-usage-content-block       state options content-block)
                      (assemble-unknown-content-block     state options content-block)))
@@ -387,8 +402,8 @@
   ;
   ; @return (hiccup)
   [state options section]
-  (let [section-id (-> section :name hiccup/value)]
-       [:div {:id section-id :class :declaration--wrapper}
+  (let [declaration-id (-> section :name hiccup/value)]
+       [:div {:id declaration-id :class :declaration--wrapper}
              [:pre {:class [:text--xs :color--muted]}
                    (-> section :type (case :def "Declaration" :defn "Declaration" :tutorial "Tutorial"))]
              (assemble-declaration-name        state options           section)
@@ -405,8 +420,10 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  (letfn [(f0 [%] (-> state (assemble-declaration           options           %)))
-          (f1 [%] (-> state (assemble.utils/filter-sections options file-data %) (vector/sort-items-by :name)))]
+  ; @NOTE#3901
+  ; (vector/sort-items-by :name)
+  (letfn [(f0 [%] (-> state (assemble-declaration options %)))
+          (f1 [%] (-> state (assemble.utils/filter-sections options file-data %)))]
          [:div {:id :declarations--wrapper}
                (-> [:div {:id :declarations}]
                    (hiccup/put-with (f1 :def)  f0)
@@ -415,7 +432,7 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn assemble-tutorial-name
+(defn assemble-tutorial-label
   ; @ignore
   ;
   ; @param (maps in vector) state
@@ -425,7 +442,7 @@
   ; @return (hiccup)
   [_ _ section]
   [:pre {:class [:tutorial--name :color--secondary]}
-        (:name section)])
+        (:label section)])
 
 (defn assemble-tutorial
   ; @ignore
@@ -436,10 +453,10 @@
   ;
   ; @return (hiccup)
   [state options section]
-  (let [section-id (-> section :name hiccup/value)]
-       [:div {:id section-id :class :tutorial--wrapper}
+  (let [tutorial-id (-> section :name hiccup/value)]
+       [:div {:id tutorial-id :class :tutorial--wrapper}
              [:pre {:class [:text--xs :color--muted]} "Tutorial"]
-             (assemble-tutorial-name  state options           section)
+             (assemble-tutorial-label state options           section)
              (assemble-content-blocks state options (:content section))]))
 
 (defn assemble-tutorials
@@ -451,8 +468,10 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  (letfn [(f0 [%] (-> state (assemble-tutorial              options           %)))
-          (f1 [%] (-> state (assemble.utils/filter-sections options file-data %) (vector/sort-items-by :name)))]
+  ; @NOTE#3901
+  ; (vector/sort-items-by :name)
+  (letfn [(f0 [%] (-> state (assemble-tutorial options %)))
+          (f1 [%] (-> state (assemble.utils/filter-sections options file-data %)))]
          [:div {:id :tutorials--wrapper}
                (-> [:div {:id :tutorials}]
                    (hiccup/put-with (f1 :tutorial) f0))]))
@@ -488,13 +507,14 @@
   ;
   ; @return (hiccup)
   [state options file-data]
+  ; @NOTE#3901
   (letfn [(f0 [%] (-> state (assemble.utils/symbol-anchor   options file-data %)))
-          (f1 [%] (-> state (assemble.utils/filter-sections options file-data %) (vector/sort-items-by :name)))
-          (f2 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--secondary]} (-> % :name)]])]
+          (f1 [%] (-> state (assemble.utils/filter-sections options file-data %) (vector/sort-items-by :label)))
+          (f2 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--secondary]} (-> % :label)]])]
          (-> [:div {:class :secondary-list--container} [:pre {:class [:text--xs :color--muted]} "Tutorials"]]
              (hiccup/put-with (f1 :tutorial) f2))))
 
-(defn assemble-section-list
+(defn assemble-declaration-list
   ; @ignore
   ;
   ; @param (maps in vector) state
@@ -503,9 +523,10 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  (letfn [(f0 [%] (-> state (assemble.utils/symbol-anchor    options file-data %)))
-          (f1 [%] (-> state (assemble.utils/filter-sections  options file-data %) (vector/sort-items-by :name)))
-          (f2 [%] (-> state (assemble.utils/filter-sections  options file-data %) (vector/sort-items-by :name)))
+  ; @NOTE#3901
+  (letfn [(f0 [%] (-> state (assemble.utils/symbol-anchor   options file-data %)))
+          (f1 [%] (-> state (assemble.utils/filter-sections options file-data %) (vector/sort-items-by :name)))
+          (f2 [%] (-> state (assemble.utils/filter-sections options file-data %) (vector/sort-items-by :name)))
           (f3 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--primary]} (-> % :name)]])]
          (-> [:div {:class :secondary-list--container} [:pre {:class [:text--xs :color--muted]} "Declarations"]]
              (hiccup/put-with (f1 :def)  f3)
@@ -520,10 +541,11 @@
   ;
   ; @return (hiccup)
   [state options file-data]
+  ; @NOTE#3901
   [:div {:id :secondary-list}
         [:div {:class :scroll-container}
-              (assemble-tutorial-list state options file-data)
-              (assemble-section-list  state options file-data)]])
+              (assemble-tutorial-list    state options file-data)
+              (assemble-declaration-list state options file-data)]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -538,15 +560,16 @@
   ;
   ; @return (hiccup)
   [state options file-data extension]
-  (if-let [namespaces (assemble.utils/filter-namespaces state options extension)]
-          (letfn [(f0 [%] [:a {:href (f1 %)} [:pre {:class [:button :color--primary (if (f2 %) :button--active)]}
-                                                   (-> % :ns-map :declaration :name)]])
-                  (f1 [%] (assemble.utils/namespace-uri state options % extension))
-                  (f2 [%] (and (= extension (-> % :filepath io/filepath->extension))
-                               (= file-data (-> %))))]
+  ; @NOTE#3901
+  (letfn [(f0 [%] (-> state (assemble.utils/namespace-uri     options % extension)))
+          (f1 [%] (-> state (assemble.utils/filter-namespaces options %)))
+          (f2 [%] (and (-> % :filepath io/filepath->extension (= extension)) (= file-data %)))
+          (f3 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--primary (if (f2 %) :button--active)]} (-> % :ns-map :declaration :name)]])]
+         (if-let [namespaces (f1 extension)]
                  (let [label      (-> extension  (case "clj" "Clojure namespaces" "cljc" "Isomorphic namespaces" "cljs" "ClojureScript namespaces"))
                        namespaces (-> namespaces (vector/sort-items-by #(-> % :ns-map :declaration :name)))]
-                      (hiccup/put-with [:div {:class :primary-list--container} [:pre {:class [:text--xs :color--muted]} label]] namespaces f0)))))
+                      (-> [:div {:class :primary-list--container} [:pre {:class [:text--xs :color--muted]} label]]
+                          (hiccup/put-with namespaces f3))))))
 
 (defn assemble-primary-list
   ; @ignore
@@ -557,6 +580,9 @@
   ;
   ; @return (hiccup)
   [state options file-data]
+  ; @NOTE#3901
+  ; The namespace list, declaration list, and tutorial list items are alphabetically ordered.
+  ; The actual declaration and tutorial sections are displayed in their natural order as they were placed in files.
   [:div {:id :primary-list}
         [:div {:class :scroll-container}
               (assemble-namespace-list state options file-data "clj")

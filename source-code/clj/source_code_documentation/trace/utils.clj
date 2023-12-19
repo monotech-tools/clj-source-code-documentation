@@ -70,23 +70,24 @@
   ; @ignore
   ;
   ; @description
-  ; Returns the namespace of the given link / redirection pointer.
+  ; Returns the namespace of the given link pointer / redirection pointer.
   ;
   ; @param (map) file-data
   ; @param (map) section
   ; @param (string) pointer
   ;
   ; @usage
-  ; (pointer-namespace {...}
-  ;                    {:name "MY-CONSTANT" :type :def :content [...]}
-  ;                    "another-namespace/ANOTHER-CONSTANT")
+  ; (pointer-namespace {...} {...} "another-namespace/ANOTHER-CONSTANT")
   ; =>
   ; "ANOTHER-CONSTANT"
   ;
   ; @usage
-  ; (pointer-namespace {...}
-  ;                    {:name "MY-CONSTANT" :content [...]}
-  ;                    "ANOTHER-CONSTANT")
+  ; (pointer-namespace {...} {...} "ANOTHER-CONSTANT")
+  ; =>
+  ; nil
+  ;
+  ; @usage
+  ; (pointer-namespace {...} {...} "")
   ; =>
   ; nil
   ;
@@ -99,30 +100,24 @@
   ; @ignore
   ;
   ; @description
-  ; Returns the name of the given link / redirection pointer.
+  ; Returns the name of the given link pointer / redirection pointer.
   ;
   ; @param (map) file-data
   ; @param (map) section
   ; @param (string) pointer
   ;
   ; @usage
-  ; (pointer-name {...}
-  ;               {:name "MY-CONSTANT" :type :def :content [...]}
-  ;               "another-namespace/ANOTHER-CONSTANT")
+  ; (pointer-name {...} {...} "another-namespace/ANOTHER-CONSTANT")
   ; =>
   ; "ANOTHER-CONSTANT"
   ;
   ; @usage
-  ; (pointer-name {...}
-  ;               {:name "MY-CONSTANT" :type :def :content [...]}
-  ;               "ANOTHER-CONSTANT")
+  ; (pointer-name {...} {...} "ANOTHER-CONSTANT")
   ; =>
   ; "ANOTHER-CONSTANT"
   ;
   ; @usage
-  ; (pointer-name {...}
-  ;               {:name "MY-CONSTANT" :type :def :content [...]}
-  ;               "")
+  ; (pointer-name {...} {...} "")
   ; =>
   ; nil
   ;
@@ -134,60 +129,82 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn wildcard-target-namespace
+  ; @ignore
+  ;
+  ; @param (map) file-data
+  ; @param (map) section
+  ;
+  ; @return (string)
+  [file-data section]
+  (or (def-value-symbol-namespace file-data section)
+      "unknown-wildcard-target"))
+
+(defn wildcard-target-name
+  ; @ignore
+  ;
+  ; @param (map) file-data
+  ; @param (map) section
+  ;
+  ; @return (string)
+  [file-data section]
+  (or (def-value-symbol-name file-data section)
+      "unknown-wildcard-target"))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn derive-pointer-namespace
   ; @ignore
   ;
   ; @description
-  ; - Derives the namespace from the given link / redirection pointer.
-  ; - Uses the namespace from the declaration's value (if any, symbol type, and the declaration is a def) as a fallback.
-  ; - Uses the file namespace as a second fallback.
-  ; - Replaces the '*' wildcard character with the file namespace.
+  ; - Derives the namespace from the given link pointer / redirection pointer.
+  ; - Uses the file namespace as a fallback value.
+  ; - Replaces the '*' wildcard character with the namespace from the declaration's value
+  ;   (if the declaration is a def, its value is a symbol and has a namespace).
   ;
   ; @param (map) file-data
   ; @param (map) section
   ; @param (string) pointer
   ;
   ; @usage
-  ; (derive-pointer-namespace {...}
-  ;                           {:name "MY-CONSTANT" :type :def :content [...]}
-  ;                           "another-namespace/ANOTHER-CONSTANT")
+  ; (derive-pointer-namespace {...} {...} "another-namespace/ANOTHER-CONSTANT")
   ; =>
   ; "another-namespace"
   ;
   ; @return (string)
   [file-data section pointer]
-  (let [file-namespace (-> file-data :ns-map :declaration :name)]
-       (-> (or (pointer-namespace          file-data section pointer)
-               (def-value-symbol-namespace file-data section)
-               (-> file-namespace))
-           (regex/replace-match #"^\*$" file-namespace))))
+  (if-let [pointer-namespace (pointer-namespace file-data section pointer)]
+          (cond (-> pointer-namespace (not= "*"))
+                (-> pointer-namespace)
+                :replace-wildcard (wildcard-target-namespace file-data section))
+          (-> file-data :ns-map :declaration :name)))
 
 (defn derive-pointer-name
   ; @ignore
   ;
   ; @description
-  ; - Derives the name from the given link / redirection pointer.
-  ; - Uses the name from the declaration's value (if any, symbol type, and the declaration is a def) as a fallback.
-  ; - Uses the declaration name as a second fallback.
-  ; - Replaces the '*' wildcard character with the declaration name.
+  ; - Derives the name from the given link pointer / redirection pointer.
+  ; - Uses the declaration name as a fallback value.
+  ; - Replaces the '*' wildcard character with the name from the declaration's value
+  ;   (if the declaration is a def and its value is a symbol).
   ;
   ; @param (map) file-data
   ; @param (map) section
   ; @param (string) pointer
   ;
   ; @usage
-  ; (derive-pointer-name {...}
-  ;                      {:name "MY-CONSTANT" :type :def :content [...]}
-  ;                      "another-namespace/ANOTHER-CONSTANT")
+  ; (derive-pointer-name {...} {...} "another-namespace/ANOTHER-CONSTANT")
   ; =>
   ; "ANOTHER-CONSTANT"
   ;
   ; @return (string)
   [file-data {:keys [name] :as section} pointer]
-  (-> (or (pointer-name          file-data section pointer)
-          (def-value-symbol-name file-data section)
-          (-> name))
-      (regex/replace-match #"^\*$" name)))
+  (if-let [pointer-name (pointer-name file-data section pointer)]
+          (cond (-> pointer-name (not= "*"))
+                (-> pointer-name)
+                :replace-wildcard (wildcard-target-name file-data section))
+          (-> name)))
 
 (defn derive-pointer
   ; @ignore
@@ -197,17 +214,15 @@
   ; @param (map) content-block
   ;
   ; @usage
-  ; (derive-pointer {...}
-  ;                 {:name "MY-CONSTANT" :type :def :content [...]}
-  ;                 {:type :redirect :meta "..."})
+  ; (derive-pointer {...} {...} {:type :redirect :meta ["another-namespace/ANOTHER-CONSTANT"]})
   ; =>
   ; :another-namespace/ANOTHER-CONSTANT
   ;
   ; @return (namespaced keyword)
   [file-data section content-block]
   (let [pointer (-> content-block :meta first)]
-       (keyword (derive-pointer-namespace file-data section pointer)
-                (derive-pointer-name      file-data section pointer))))
+       (keyword (-> file-data (derive-pointer-namespace section pointer))
+                (-> file-data (derive-pointer-name      section pointer)))))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -220,9 +235,7 @@
   ; @param (namespaced pointer) pointer
   ;
   ; @usage
-  ; (invoke-pointer-namespace-alias {...}
-  ;                                 {:name "MY-CONSTANT" :type :def :content [...]}
-  ;                                 :another-namespace/ANOTHER-CONSTANT)
+  ; (invoke-pointer-namespace-alias {...} {...} :another-namespace/ANOTHER-CONSTANT)
   ;
   ; @return (namespaced keyword)
   [file-data _ pointer]

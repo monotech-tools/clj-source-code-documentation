@@ -2,7 +2,8 @@
 (ns source-code-documentation.import.utils
     (:require [fruits.regex.api  :as regex]
               [fruits.string.api :as string]
-              [fruits.vector.api :as vector]))
+              [fruits.vector.api :as vector]
+              [fruits.normalize.api :as normalize]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -185,7 +186,8 @@
   [substring]
   (letfn [(f0 [%] (regex/re-first % #"(?<=\@tutorial[\h]{1,})[^\n]{1,}(?=\n)"))
           (f1 [%] (string/after-first-occurence % "\n"))]
-         {:name    (-> substring f0)
+         {:name    (-> substring f0 normalize/clean-text)
+          :label   (-> substring f0)
           :content (-> substring f1 (first-coherent-comment-row-group))
           :type    (-> :tutorial)}))
 
