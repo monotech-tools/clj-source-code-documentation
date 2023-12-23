@@ -11,9 +11,8 @@
 /*** Body ***/
 
 body {
-  font-family: Montserrat;
-  margin:      0 0 0 560px;
-  padding:     60px 48px }
+  margin:  0 0 0 560px;
+  padding: 60px 48px }
 
 div {
   box-sizing: border-box }
@@ -100,7 +99,7 @@ a.inline-link:hover {
   color: #606060 }
 
 .color--warning {
-  color: #883300 }
+  color: #cc00aa }
 
 /*** Colors ***/
 
