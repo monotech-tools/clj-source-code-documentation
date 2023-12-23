@@ -27,7 +27,7 @@
   ;    :website (string)(opt)}
   ;  :base-uri (string)
   ;  :filename-pattern (regex pattern)(opt)
-  ;   Default: #"[a-z\_\d]{1,}\.clj[cs]{0,1}"
+  ;   Default: #"[a-z\_\d]+\.clj[cs]?"
   ;  :library (map)(opt)}
   ;   {:name (string)(opt)
   ;    :version (string)(opt)

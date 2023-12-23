@@ -117,8 +117,8 @@
   ;
   ; @param (vector)
   [n position]
-  (letfn [(f0 [%] (regex/re-first % #"(?<=\[)[^\[\]]{1,}(?=\]\()"))
-          (f1 [%] (regex/re-first % #"(?<=\]\()[^\(\)]{1,}(?=\))"))]
+  (letfn [(f0 [%] (regex/re-first % #"(?<=\[)[^\[\]]+(?=\]\()"))
+          (f1 [%] (regex/re-first % #"(?<=\]\()[^\(\)]+(?=\))"))]
          (let [link (-> n (string/keep-range position)
                           (string/to-first-occurence ")"))]
               [(string/keep-range n 0 position)
@@ -138,7 +138,7 @@
   ; @param (vector)
   [n]
   (letfn [(f0 [result %]
-              (if-let [position (regex/first-dex-of % #"\[[^\[\]]{1,}\]\([^\(\)]{1,}\)")]
+              (if-let [position (regex/first-dex-of % #"\[[^\[\]]+\]\([^\(\)]+\)")]
                       (vector/concat-items result (parse-links (parse-link % position)))
                       (vector/conj-item    result %)))]
          (reduce f0 [] n)))

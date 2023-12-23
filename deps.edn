@@ -1,14 +1,14 @@
 
 {:paths ["source-code/clj"]
  :deps  {bithandshake/cljc-fruits         {:git/url "https://github.com/bithandshake/cljc-fruits"
-                                           :sha     "39fc79c7bb80eacd04accffe4e476176b5082119"}
+                                           :sha     "b5de370a3005142f791ddc75aae373073d002fa7"}
          bithandshake/cljc-io             {:git/url "https://github.com/bithandshake/cljc-io"
-                                           :sha     "994977d2a2884d6517d3bff13c9389204921ce56"}
+                                           :sha     "cbd13bbe0d8a7d85fd39fe17c718cacccbc3c939"}
          mt-devtools/clj-asset-compressor {:git/url "https://github.com/mt-devtools/clj-asset-compressor"
-                                           :sha     "1c748b2947d3647cf1e6f601e469ef4bd734dd25"}
+                                           :sha     "aa875b2d78e1410b1765f387294ac12a3352876b"}
          mt-devtools/clj-source-code-map  {:git/url "https://github.com/mt-devtools/clj-source-code-map"
-                                           :sha     "1c748b2947d3647cf1e6f601e469ef4bd734dd25"}
+                                           :sha     "aa875b2d78e1410b1765f387294ac12a3352876b"}
          mt-devtools/clj-syntax-reader    {:git/url "https://github.com/mt-devtools/clj-syntax-reader"
-                                           :sha     "1c748b2947d3647cf1e6f601e469ef4bd734dd25"}
+                                           :sha     "aa875b2d78e1410b1765f387294ac12a3352876b"}
          hiccup/hiccup                    {:mvn/version "1.0.5"}
          org.clojure/clojure              {:mvn/version "1.10.1"}}}

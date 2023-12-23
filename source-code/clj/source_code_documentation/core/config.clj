@@ -7,7 +7,7 @@
 ; @ignore
 ;
 ; @constant (regex pattern)
-(def SOURCE-FILENAME-PATTERN #"[a-z\_\d]{1,}\.clj[cs]{0,1}")
+(def SOURCE-FILENAME-PATTERN #"[a-z\_\d]+\.clj[cs]?")
 
 ; @ignore
 ;

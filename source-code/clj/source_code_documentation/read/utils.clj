@@ -66,11 +66,11 @@
   ;
   ; @return (map)
   [content-block]
-  (letfn [(f0 [       %] (keyword (regex/re-first % #"(?<=\;[\h]{0,}\@)[a-z]{1,}"))) ; <- Returns the block type, derived from the given comment row.
-          (f1 [       %]          (regex/re-all   % #"(?<=\()[^()]+(?=\))"))         ; <- Returns the block meta values (if any), derived from the given comment row.
-          (f2 [       %]          (regex/re-last  % #"(?<=\@.+[\h])[^\(\)]+$"))      ; <- Returns the block value (if any), derived from the given comment row.
-          (f3 [       %] (count   (regex/re-first % #"(?<=\;)[\h]{0,}(?=\@)")))      ; <- Returns the block indent length, derived from the given comment row.
-          (f4 [result %] (string/keep-range % (-> result :indent inc)))              ; <- Returns the given block additional row, with adjusted indent.
+  (letfn [(f0 [       %] (keyword (regex/re-first % #"(?<=\;[\h]*\@)[a-z]+")))  ; <- Returns the block type, derived from the given comment row.
+          (f1 [       %]          (regex/re-all   % #"(?<=\()[^()]+(?=\))"))    ; <- Returns the block meta values (if any), derived from the given comment row.
+          (f2 [       %]          (regex/re-last  % #"(?<=\@.+[\h])[^\(\)]+$")) ; <- Returns the block value (if any), derived from the given comment row.
+          (f3 [       %] (count   (regex/re-first % #"(?<=\;)[\h]*(?=\@)")))    ; <- Returns the block indent length, derived from the given comment row.
+          (f4 [result %] (string/keep-range % (-> result :indent inc)))         ; <- Returns the given block additional row, with adjusted indent.
           (f5 [result %] (if (-> result empty?)                                                 ; <- The 'result' vector is empty when the iteration reads the first row of block.
                              (-> result (merge {:type (f0 %) :indent (f3 %)}                    ; <- Every imported block starts with a block marker row.
                                                (let [meta  (f1 %)] (if (-> meta  vector/nonempty?) {:meta  meta}))    ; <- Meta values of blocks are optional.
@@ -111,11 +111,11 @@
   ; - Block end marker row:   "; @---"
   ; - Empty comment row:      "; "
   ; - Nonempty comment row:   "; abc..."
-  (letfn [(f0  [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}\@")))                     ; <- Returns TRUE if the given comment row is a block marker row.
-          (f1  [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}\@\-\-\-")))               ; <- Returns TRUE if the given comment row is a block end marker row.
-          (f2  [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}$")))                      ; <- Returns TRUE if the given comment row is an empty comment row.
-          (f3  [%] (-> % (regex/re-match? #"^[\h]{0,}\;[\h]{0,}[^\@\h]")))                ; <- Returns TRUE if the given comment row is an nonempty comment row.
-          (f4  [%] (-> % (regex/re-first  #"^[\h]{0,}\;[\h]{0,}\@.*")))                   ; <- Returns the given comment row if it is a block marker row.
+  (letfn [(f0  [%] (-> % (regex/re-match? #"^[\h]*\;[\h]*\@")))                           ; <- Returns TRUE if the given comment row is a block marker row.
+          (f1  [%] (-> % (regex/re-match? #"^[\h]*\;[\h]*\@\-\-\-")))                     ; <- Returns TRUE if the given comment row is a block end marker row.
+          (f2  [%] (-> % (regex/re-match? #"^[\h]*\;[\h]*$")))                            ; <- Returns TRUE if the given comment row is an empty comment row.
+          (f3  [%] (-> % (regex/re-match? #"^[\h]*\;[\h]*[^\@\h]")))                      ; <- Returns TRUE if the given comment row is an nonempty comment row.
+          (f4  [%] (-> % (regex/re-first  #"^[\h]*\;[\h]*\@.*")))                         ; <- Returns the given comment row if it is a block marker row.
           (f5  [%] (-> content-blocks (vector/keep-range %) (vector/first-result f4) f1)) ; <- Returns TRUE if the next block marker row will be a block end marker row.
           (f6  [%] (-> % last first (= "; @separator")))                                  ; <- Returns TRUE if the last block is a separator block.
           (f7  [%] (-> % empty?))                                                         ; <- Returns TRUE if no block has been opened yet.
