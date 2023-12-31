@@ -56,5 +56,5 @@
        (print-cover! state options)
        (print-pages! state options)
        ; @DEBUG
-       (assemble.page/assemble-page state options (first state))))
+       (assemble.page/assemble-page state options (last state))))
        ;(-> state)))

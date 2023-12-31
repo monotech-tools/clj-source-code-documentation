@@ -80,6 +80,16 @@ a.inline-link:hover {
   font-size:   13px;
   line-height: 18px }
 
+.text--l {
+  font-size:   14px;
+  line-height: 18px }
+
+.text--semi-bold {
+  font-weight: 500 }
+
+.text--bold {
+  font-weight: 600 }
+
 /*** Text ***/
 
 
@@ -113,7 +123,6 @@ a.inline-link:hover {
 
 .collapsible-button {
   cursor:      pointer;
-  font-weight: 500;
   position:    relative;
   user-select: none;
   width:       fit-content }
@@ -173,7 +182,6 @@ a.inline-link:hover {
 
 #top-bar--library-name {
   font-size:      18px;
-  font-weight:    600;
   line-height:    60px;
   text-transform: uppercase }
 
@@ -268,7 +276,6 @@ a.inline-link:hover {
 
 #namespace-header--title {
   font-size:   18px;
-  font-weight: 600;
   line-height: 24px;
   margin-top:  24px }
 
@@ -294,7 +301,6 @@ a.inline-link:hover {
 .declaration--name {
   border-bottom:  1px solid #e0e0e0;
   font-size:      18px;
-  font-weight:    600;
   line-height:    18px;
   padding-bottom: 8px;
   margin-bottom:  12px }
@@ -311,7 +317,6 @@ a.inline-link:hover {
 .tutorial--name {
   border-bottom:  1px solid #e0e0e0;
   font-size:      18px;
-  font-weight:    600;
   line-height:    18px;
   padding-bottom: 8px;
   margin-bottom:  12px }

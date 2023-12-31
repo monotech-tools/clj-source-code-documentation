@@ -42,6 +42,8 @@
 ;   ; @return (integer)
 ;   [a & [b]] ...)
 
+
+
 ; @tutorial Markers
 ;
 ; Feel free to use block markers in any combination.
@@ -213,6 +215,9 @@
 ; ; @code
 ; ; [:div {:class :my-class} "My content"]
 ; ;
+; ; @code My label
+; ; [:div {:class :my-class} "My content"]
+; ;
 ; ; @usage
 ; ; [:div {:class :my-class} "My content"]
 ; @---
@@ -347,6 +352,8 @@
 ; ; The 'foo/*' pointer points to the documentation of the 'ANOTHER-CONSTANT' declaration within the 'foo' namespace.
 ; (def MY-CONSTANT another-namespace/ANOTHER-CONSTANT)
 ; @---
+
+
 
 ; @tutorial Links
 ;

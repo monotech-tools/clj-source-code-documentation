@@ -155,7 +155,7 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--m :color--primary]} (-> content-block :value)]]
+              [:pre {:class [:color--primary :text--l :text--bold]} (-> content-block :value)]]
         (assemble-content-block-additional-text state options content-block [:text--m :color--default])])
 
 (defn assemble-todo-content-block
@@ -270,7 +270,8 @@
   ; @return (hiccup)
   [state options content-block]
   [:div {:class :content-block}
-        ; @code blocks don't have labels.
+        [:div {:class :content-block--label}
+              [:pre {:class [:text--xs :color--muted]} (:value content-block)]]
         (assemble-content-block-additional-box state options content-block)])
 
 (defn assemble-preview-content-block
@@ -392,7 +393,7 @@
         toggle-f       (str "toggleCollapsible('"collapsible-id"')")]
        (if (-> section :source-code)
            [:div {:class :collapsible-wrapper :id collapsible-id :data-expanded "false"}
-                 [:pre {:class [:collapsible-button :text--xs] :onClick toggle-f} "Source Code"]
+                 [:pre {:class [:collapsible-button :text--xs :text--semi-bold] :onClick toggle-f} "Source Code"]
                  (hiccup/parse-newlines [:pre {:class [:text-s :content-block--box]} (-> section :source-code)])])))
 
 (defn assemble-declaration-name
@@ -404,7 +405,7 @@
   ;
   ; @return (hiccup)
   [_ _ section]
-  [:pre {:class [:declaration--name :color--primary]}
+  [:pre {:class [:declaration--name :color--primary :text--bold]}
         (:name section)])
 
 (defn assemble-declaration
@@ -433,7 +434,7 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  ; @NOTE#3901
+  ; @note (#3901)
   ; (vector/sort-items-by :name)
   (letfn [(f0 [%] (-> state (assemble-declaration options %)))
           (f1 [%] (-> state (assemble.utils/filter-sections options file-data %)))]
@@ -454,7 +455,7 @@
   ;
   ; @return (hiccup)
   [_ _ section]
-  [:pre {:class [:tutorial--name :color--secondary]}
+  [:pre {:class [:tutorial--name :color--secondary :text--bold]}
         (:label section)])
 
 (defn assemble-tutorial
@@ -481,7 +482,7 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  ; @NOTE#3901
+  ; @note (#3901)
   ; (vector/sort-items-by :name)
   (letfn [(f0 [%] (-> state (assemble-tutorial options %)))
           (f1 [%] (-> state (assemble.utils/filter-sections options file-data %)))]
@@ -502,7 +503,7 @@
   ; @return (hiccup)
   [_ _ file-data]
   [:div {:id :namespace-header}
-        [:pre {:id :namespace-header--title}
+        [:pre {:id :namespace-header--title :class :text--bold}
               (-> file-data :ns-map :declaration :name)]
         [:pre {:class [:text--xs :color--muted]}
               (-> file-data :filepath io/filepath->extension
@@ -520,14 +521,13 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  ; @NOTE#3901
+  ; @note (#3901)
   (letfn [(f0 [%] (-> state (assemble.utils/symbol-anchor   options file-data %)))
           (f1 [%] (-> state (assemble.utils/filter-sections options file-data %)))
-          (f2 [%] (-> %     (vector/sort-items-by :label)))
-          (f3 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--secondary]} (-> % :label)]])]
+          (f2 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--secondary]} (-> % :label)]])]
          (if-let [tutorials (f1 :tutorial)]
                  (-> [:div {:class :secondary-list--container} [:pre {:class [:text--xs :color--muted]} "Tutorials"]]
-                     (hiccup/put-with (f2 tutorials) f3)))))
+                     (hiccup/put-with tutorials f2)))))
 
 (defn assemble-declaration-list
   ; @ignore
@@ -538,7 +538,7 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  ; @NOTE#3901
+  ; @note (#3901)
   (letfn [(f0 [%] (-> state (assemble.utils/symbol-anchor   options file-data %)))
           (f1 [%] (-> state (assemble.utils/filter-sections options file-data %)))
           (f2 [%] (-> %     (vector/sort-items-by :name)))
@@ -558,7 +558,7 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  ; @NOTE#3901
+  ; @note (#3901)
   [:div {:id :secondary-list}
         [:div {:class :scroll-container}
               (assemble-tutorial-list    state options file-data)
@@ -577,7 +577,7 @@
   ;
   ; @return (hiccup)
   [state options file-data extension]
-  ; @NOTE#3901
+  ; @note (#3901)
   (letfn [(f0 [%] (-> state (assemble.utils/namespace-uri     options % extension)))
           (f1 [%] (-> state (assemble.utils/filter-namespaces options %)))
           (f2 [%] (-> %     (vector/sort-items-by #(-> % :ns-map :declaration :name))))
@@ -597,9 +597,10 @@
   ;
   ; @return (hiccup)
   [state options file-data]
-  ; @NOTE#3901
-  ; The namespace list, declaration list, and tutorial list items are alphabetically ordered.
-  ; The actual declaration and tutorial sections are displayed in their natural order as they were placed in files.
+  ; @note (#3901)
+  ; - The namespace list and declaration list items are alphabetically ordered (to make searching items easy).
+  ; - Tutorial list items are displayed in their written order as they were placed in files (their written order could be important!).
+  ; - The actual declaration and tutorial sections are displayed in their written order as they were placed in files (their written order could be important!).
   [:div {:id :primary-list}
         [:div {:class :scroll-container}
               (assemble-namespace-list state options file-data "clj")
@@ -619,7 +620,7 @@
   ; @return (hiccup)
   [_ options _]
   [:div {:id :top-bar}
-        [:pre {:id :top-bar--library-name}                         (-> options :library :name)]
+        [:pre {:id :top-bar--library-name    :class :text--bold}   (-> options :library :name)]
         [:pre {:id :top-bar--library-version :class :color--muted} (-> options :library :version)]
         (let [library-website-pretty-url (-> options :library :website uri/pretty-url)
               library-website-valid-url  (-> options :library :website uri/valid-url)]
