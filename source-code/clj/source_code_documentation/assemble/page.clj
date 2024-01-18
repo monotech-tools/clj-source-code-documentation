@@ -1,15 +1,15 @@
 
 (ns source-code-documentation.assemble.page
-    (:require [asset-compressor.api                      :as asset-compressor]
-              [fruits.hiccup.api                         :as hiccup]
-              [fruits.string.api                         :as string]
-              [fruits.uri.api                            :as uri]
-              [fruits.vector.api                         :as vector]
-              [hiccup.page                               :refer [html5]]
-              [io.api                                    :as io]
-              [source-code-documentation.assemble.css    :as assemble.css]
-              [source-code-documentation.assemble.js     :as assemble.js]
-              [source-code-documentation.assemble.utils  :as assemble.utils]))
+    (:require [asset-compressor.api                     :as asset-compressor]
+              [fruits.hiccup.api                        :as hiccup]
+              [fruits.string.api                        :as string]
+              [fruits.uri.api                           :as uri]
+              [fruits.vector.api                        :as vector]
+              [hiccup.page                              :refer [html5]]
+              [io.api                                   :as io]
+              [source-code-documentation.assemble.css   :as assemble.css]
+              [source-code-documentation.assemble.js    :as assemble.js]
+              [source-code-documentation.assemble.utils :as assemble.utils]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -23,7 +23,7 @@
   ;
   ; @return (hiccup)
   [_ _ content-block]
-  (if (-> content-block :additional vector/nonempty?)
+  (if (-> content-block :additional vector/not-empty?)
       (vector/concat-items [:pre {:class [:content-block--box :text--s]}]
                            (-> content-block :additional (vector/gap-items [:br]) assemble.utils/unparse-entities))))
 
@@ -37,7 +37,7 @@
   ;
   ; @return (hiccup)
   [_ _ content-block class]
-  (if (-> content-block :additional vector/nonempty?)
+  (if (-> content-block :additional vector/not-empty?)
       (vector/concat-items [:pre {:class class}]
                            (-> content-block :additional (vector/gap-items [:br]) assemble.utils/parse-links))))
 

@@ -1,9 +1,9 @@
 
 (ns source-code-documentation.import.utils
-    (:require [fruits.regex.api  :as regex]
-              [fruits.string.api :as string]
-              [fruits.vector.api :as vector]
-              [fruits.normalize.api :as normalize]))
+    (:require [fruits.normalize.api :as normalize]
+              [fruits.regex.api     :as regex]
+              [fruits.string.api    :as string]
+              [fruits.vector.api    :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

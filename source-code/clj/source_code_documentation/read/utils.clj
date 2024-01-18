@@ -1,10 +1,10 @@
 
 (ns source-code-documentation.read.utils
-    (:require [fruits.regex.api  :as regex]
-              [fruits.string.api :as string]
-              [fruits.vector.api :as vector]
-              [syntax-reader.api :as syntax-reader]
-              [syntax-interpreter.api :as syntax-interpreter]))
+    (:require [fruits.regex.api       :as regex]
+              [fruits.string.api      :as string]
+              [fruits.vector.api      :as vector]
+              [syntax-interpreter.api :as syntax-interpreter]
+              [syntax-reader.api      :as syntax-reader]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -73,8 +73,8 @@
           (f4 [result %] (string/keep-range % (-> result :indent inc)))         ; <- Returns the given block additional row, with adjusted indent.
           (f5 [result %] (if (-> result empty?)                                                 ; <- The 'result' vector is empty when the iteration reads the first row of block.
                              (-> result (merge {:type (f0 %) :indent (f3 %)}                    ; <- Every imported block starts with a block marker row.
-                                               (let [meta  (f1 %)] (if (-> meta  vector/nonempty?) {:meta  meta}))    ; <- Meta values of blocks are optional.
-                                               (let [value (f2 %)] (if (-> value string/nonempty?) {:value value})))) ; <- Values of blocks are optional.
+                                               (let [meta  (f1 %)] (if (-> meta  vector/not-empty?) {:meta  meta}))    ; <- Meta values of blocks are optional.
+                                               (let [value (f2 %)] (if (-> value string/not-empty?) {:value value})))) ; <- Values of blocks are optional.
                              (-> result (update :additional vector/conj-item (f4 result %)))))] ; <- Rows following the first row (block marker row) are additional rows of the block.
          (reduce f5 {} content-block)))
 
