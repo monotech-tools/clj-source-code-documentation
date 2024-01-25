@@ -20,11 +20,12 @@
   ; @param (maps in vector) state
   ; @param (map) options
   ; @param (map) content-block
+  ; @param (keyword or keywords in vector) class
   ;
   ; @return (hiccup)
-  [_ _ content-block]
+  [_ _ content-block class]
   (if (-> content-block :additional vector/not-empty?)
-      (vector/concat-items [:pre {:class [:content-block--box :text--s]}]
+      (vector/concat-items [:pre {:class (conj class :content-block--boxed)}]
                            (-> content-block :additional (vector/gap-items [:br]) assemble.utils/unparse-entities))))
 
 (defn assemble-content-block-additional-text
@@ -55,11 +56,11 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]} (-> "Bug")]
-              [:pre {:class [:text--xs :color--muted]} (-> content-block :meta first)]
-              [:pre {:class [:text--xs :color--muted]} (-> content-block :meta second)]]
-        [:pre {:class [:text--m :color--default]} (-> content-block :value)]
-        (assemble-content-block-additional-text state options content-block [:text--m :color--warning])])
+              [:pre {:class [:color--muted :text--xs]} (-> "Bug")]
+              [:pre {:class [:color--muted :text--xs]} (-> content-block :meta first)]
+              [:pre {:class [:color--muted :text--xs]} (-> content-block :meta second)]]
+        [:pre {:class [:color--default :text--m]} (-> content-block :value)]
+        (assemble-content-block-additional-text state options content-block [:color--warning :text--m :text--wrap])])
 
 (defn assemble-description-content-block
   ; @ignore
@@ -72,8 +73,8 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]} "Description"]]
-        (assemble-content-block-additional-text state options content-block [:text--m :color--basic])])
+              [:pre {:class [:color--muted :text--xs]} "Description"]]
+        (assemble-content-block-additional-text state options content-block [:color--basic :text--m :text--wrap])])
 
 (defn assemble-error-content-block
   ; @ignore
@@ -86,8 +87,8 @@
   [_ _ content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]} "Error"]]
-        [:pre {:class [:text--m :color--warning]}
+              [:pre {:class [:color--muted :text--xs]} "Error"]]
+        [:pre {:class [:color--warning :text--m :scroll-x]}
               (str content-block)]])
 
 (defn assemble-important-content-block
@@ -101,8 +102,8 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]} "Important"]]
-        (assemble-content-block-additional-text state options content-block [:text--m :color--warning])])
+              [:pre {:class [:color--muted :text--xs]} "Important"]]
+        (assemble-content-block-additional-text state options content-block [:color--warning :text--m :text--wrap])])
 
 (defn assemble-info-content-block
   ; @ignore
@@ -115,8 +116,8 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]} "Info"]]
-        (assemble-content-block-additional-text state options content-block [:text--m :color--primary])])
+              [:pre {:class [:color--muted :text--xs]} "Info"]]
+        (assemble-content-block-additional-text state options content-block [:color--primary :text--m :text--wrap])])
 
 (defn assemble-note-content-block
   ; @ignore
@@ -129,8 +130,8 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]} "Note"]]
-        (assemble-content-block-additional-text state options content-block [:text--m :color--muted])])
+              [:pre {:class [:color--muted :text--xs]} "Note"]]
+        (assemble-content-block-additional-text state options content-block [:color--muted :text--m :text--wrap])])
 
 (defn assemble-plain-content-block
   ; @ignore
@@ -142,7 +143,7 @@
   ; @return (hiccup)
   [state options content-block]
   [:div {:class :content-block}
-        (assemble-content-block-additional-text state options content-block [:text--m :color--default])])
+        (assemble-content-block-additional-text state options content-block [:color--default :text--m :text--wrap])])
 
 (defn assemble-title-content-block
   ; @ignore
@@ -155,8 +156,8 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:color--primary :text--l :text--bold]} (-> content-block :value)]]
-        (assemble-content-block-additional-text state options content-block [:text--m :color--default])])
+              [:pre {:class [:color--primary :text--l :text--bold :text--wrap]} (-> content-block :value)]]
+        (assemble-content-block-additional-text state options content-block [:color--default :text--m :text--wrap])])
 
 (defn assemble-todo-content-block
   ; @ignore
@@ -169,9 +170,12 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]} "Todo"]]
-        (assemble-content-block-additional-text state options content-block [:text--m :color--warning])])
+              [:pre {:class [:color--muted :text--xs]} "Todo"]]
+        (assemble-content-block-additional-text state options content-block [:color--warning :text--m :text--wrap])])
 
+
+
+; Deprecated!
 (defn assemble-tutorial-content-block
   ; @ignore
   ;
@@ -183,9 +187,12 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]} "Tutorial"]
+              [:pre {:class [:color--muted :text--xs]} "Tutorial"]
               (-> content-block :value)]
-        (assemble-content-block-additional-text state options content-block [:text--m :color--default])])
+        (assemble-content-block-additional-text state options content-block [:color--default :text--m :text--wrap])])
+; Deprecated!
+
+
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -201,11 +208,11 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]}   (-> "Atom")]
-              [:pre {:class [:text-s   :color--default]} (-> content-block :value)]
-              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta first)]
-              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta second)]]
-        (assemble-content-block-additional-text state options content-block [:text--s :color--muted])])
+              [:pre {:class [:color--muted   :text--xs]} (-> "Atom")]
+              [:pre {:class [:color--default :text-s  ]} (-> content-block :value)]
+              [:pre {:class [:color--muted   :text--xs]} (-> content-block :meta first)]
+              [:pre {:class [:color--muted   :text--xs]} (-> content-block :meta second)]]
+        (assemble-content-block-additional-text state options content-block [:color--muted :text--s :scroll-x])])
 
 (defn assemble-constant-content-block
   ; @ignore
@@ -218,11 +225,11 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]}   (-> "Constant")]
-              [:pre {:class [:text-s   :color--default]} (-> content-block :value)]
-              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta first)]
-              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta second)]]
-        (assemble-content-block-additional-text state options content-block [:text--s :color--muted])])
+              [:pre {:class [:color--muted   :text--xs]} (-> "Constant")]
+              [:pre {:class [:color--default :text-s  ]} (-> content-block :value)]
+              [:pre {:class [:color--muted   :text--xs]} (-> content-block :meta first)]
+              [:pre {:class [:color--muted   :text--xs]} (-> content-block :meta second)]]
+        (assemble-content-block-additional-text state options content-block [:color--muted :text--s :scroll-x])])
 
 (defn assemble-param-content-block
   ; @ignore
@@ -235,11 +242,11 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]}   (-> "Param")]
-              [:pre {:class [:text-s   :color--default]} (-> content-block :value)]
-              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta first)]
-              [:pre {:class [:text--xs :color--muted]}   (-> content-block :meta second (case "opt" "optional" "req" "required" "required"))]]
-        (assemble-content-block-additional-text state options content-block [:text--s :color--muted])])
+              [:pre {:class [:color--muted   :text--xs]} (-> "Param")]
+              [:pre {:class [:color--default :text-s  ]} (-> content-block :value)]
+              [:pre {:class [:color--muted   :text--xs]} (-> content-block :meta first)]
+              [:pre {:class [:color--muted   :text--xs]} (-> content-block :meta second (case "opt" "optional" "req" "required" "required"))]]
+        (assemble-content-block-additional-text state options content-block [:color--muted :text--s :scroll-x])])
 
 (defn assemble-return-content-block
   ; @ignore
@@ -252,10 +259,10 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]} (-> "Return")]
-              [:pre {:class [:text--xs :color--muted]} (-> content-block :meta first)]
-              [:pre {:class [:text--xs :color--muted]} (-> content-block :meta second)]]
-        (assemble-content-block-additional-text state options content-block [:text--s :color--muted])])
+              [:pre {:class [:color--muted :text--xs]} (-> "Return")]
+              [:pre {:class [:color--muted :text--xs]} (-> content-block :meta first)]
+              [:pre {:class [:color--muted :text--xs]} (-> content-block :meta second)]]
+        (assemble-content-block-additional-text state options content-block [:color--muted :text--s :scroll-x])])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -271,8 +278,8 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]} (:value content-block)]]
-        (assemble-content-block-additional-box state options content-block)])
+              [:pre {:class [:color--muted :text--xs]} (:value content-block)]]
+        (assemble-content-block-additional-box state options content-block [:text--s :scroll-x])])
 
 (defn assemble-preview-content-block
   ; @ignore
@@ -286,9 +293,9 @@
   (let [preview-image-uri (assemble.utils/preview-image-uri state options content-block)]
        [:div {:class :content-block}
              [:div {:class :content-block--label}
-                   [:pre {:class [:text--xs :color--muted]} "Preview"]]
+                   [:pre {:class [:color--muted :text--xs]} "Preview"]]
              [:img {:class :content-block--preview-image :src preview-image-uri}]
-             (assemble-content-block-additional-box state options content-block)]))
+             (assemble-content-block-additional-box state options content-block [:text--s :scroll-x])]))
 
 (defn assemble-usage-content-block
   ; @ignore
@@ -301,8 +308,8 @@
   [state options content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--muted]} "Usage"]]
-        (assemble-content-block-additional-box state options content-block)])
+              [:pre {:class [:color--muted :text--xs]} "Usage"]]
+        (assemble-content-block-additional-box state options content-block [:text--s :scroll-x])])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -318,8 +325,9 @@
   [_ _ content-block]
   [:div {:class :content-block}
         [:div {:class :content-block--label}
-              [:pre {:class [:text--xs :color--warning]} "Unknown syntax"]]
-        [:pre {:class [:text--m :color--muted]} (str content-block)]])
+              [:pre {:class [:color--warning :text--xs]} "Unknown syntax"]]
+        [:pre {:class [:color--muted :text--m :scroll-x]}
+              (str content-block)]])
 
 (defn assemble-separator-content-block
   ; @ignore
@@ -361,7 +369,9 @@
         :separator   (assemble-separator-content-block   state options content-block)
         :title       (assemble-title-content-block       state options content-block)
         :todo        (assemble-todo-content-block        state options content-block)
-        :tutorial    (assemble-tutorial-content-block    state options content-block)
+       ; Deprecated!
+       ; Tutorials are not content blocks, they are sections, and there is no such thing as tutorial content block.
+       ;:tutorial    (assemble-tutorial-content-block    state options content-block)
         :usage       (assemble-usage-content-block       state options content-block)
                      (assemble-unknown-content-block     state options content-block)))
 
@@ -394,7 +404,8 @@
        (if (-> section :source-code)
            [:div {:class :collapsible-wrapper :id collapsible-id :data-expanded "false"}
                  [:pre {:class [:collapsible-button :text--xs :text--semi-bold] :onClick toggle-f} "Source Code"]
-                 (hiccup/parse-newlines [:pre {:class [:text-s :content-block--box]} (-> section :source-code)])])))
+                 (hiccup/parse-newlines [:pre {:class [:collapsible-content :content-block--boxed :text-s :scroll-x]}
+                                              (-> section :source-code)])])))
 
 (defn assemble-declaration-name
   ; @ignore
@@ -405,7 +416,7 @@
   ;
   ; @return (hiccup)
   [_ _ section]
-  [:pre {:class [:declaration--name :color--primary :text--bold]}
+  [:pre {:class [:color--primary :declaration--name :text--bold]}
         (:name section)])
 
 (defn assemble-declaration
@@ -419,7 +430,7 @@
   [state options section]
   (let [declaration-id (-> section :name hiccup/value)]
        [:div {:id declaration-id :class :declaration--wrapper}
-             [:pre {:class [:text--xs :color--muted]} "Declaration"]
+             [:pre {:class [:color--muted :text--xs]} "Declaration"]
              (assemble-declaration-name        state options           section)
              (assemble-content-blocks          state options (:content section))
              (assemble-separator-content-block state options {})
@@ -455,7 +466,7 @@
   ;
   ; @return (hiccup)
   [_ _ section]
-  [:pre {:class [:tutorial--name :color--secondary :text--bold]}
+  [:pre {:class [:color--secondary :text--bold :text--wrap :tutorial--name]}
         (:label section)])
 
 (defn assemble-tutorial
@@ -469,7 +480,7 @@
   [state options section]
   (let [tutorial-id (-> section :name hiccup/value)]
        [:div {:id tutorial-id :class :tutorial--wrapper}
-             [:pre {:class [:text--xs :color--muted]} "Tutorial"]
+             [:pre {:class [:color--muted :text--xs]} "Tutorial"]
              (assemble-tutorial-label state options           section)
              (assemble-content-blocks state options (:content section))]))
 
@@ -505,7 +516,7 @@
   [:div {:id :namespace-header}
         [:pre {:id :namespace-header--title :class :text--bold}
               (-> file-data :ns-map :declaration :name)]
-        [:pre {:class [:text--xs :color--muted]}
+        [:pre {:class [:color--muted :text--xs]}
               (-> file-data :filepath io/filepath->extension
                   (case "clj" "Clojure namespace" "cljc" "Isomorphic namespace" "cljs" "ClojureScript namespace" "Unknown"))]])
 
@@ -526,7 +537,7 @@
           (f1 [%] (-> state (assemble.utils/filter-sections options file-data %)))
           (f2 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--secondary]} (-> % :label)]])]
          (if-let [tutorials (f1 :tutorial)]
-                 (-> [:div {:class :secondary-list--container} [:pre {:class [:text--xs :color--muted]} "Tutorials"]]
+                 (-> [:div {:class :secondary-list--container} [:pre {:class [:color--muted :text--xs]} "Tutorials"]]
                      (hiccup/put-with tutorials f2)))))
 
 (defn assemble-declaration-list
@@ -560,7 +571,7 @@
   [state options file-data]
   ; @note (#3901)
   [:div {:id :secondary-list}
-        [:div {:class :scroll-container}
+        [:div {:class :scroll-y}
               (assemble-tutorial-list    state options file-data)
               (assemble-declaration-list state options file-data)]])
 
@@ -585,7 +596,7 @@
           (f4 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--primary (if (f3 %) :button--active)]} (-> % :ns-map :declaration :name)]])]
          (if-let [namespaces (f1 extension)]
                  (let [label (case extension "clj" "Clojure namespaces" "cljc" "Isomorphic namespaces" "cljs" "ClojureScript namespaces")]
-                      (-> [:div {:class :primary-list--container} [:pre {:class [:text--xs :color--muted]} label]]
+                      (-> [:div {:class :primary-list--container} [:pre {:class [:color--muted :text--xs]} label]]
                           (hiccup/put-with (f2 namespaces) f4))))))
 
 (defn assemble-primary-list
@@ -602,7 +613,7 @@
   ; - Tutorial list items are displayed in their written order as they were placed in files (their written order could be important!).
   ; - The actual declaration and tutorial sections are displayed in their written order as they were placed in files (their written order could be important!).
   [:div {:id :primary-list}
-        [:div {:class :scroll-container}
+        [:div {:class :scroll-y}
               (assemble-namespace-list state options file-data "clj")
               (assemble-namespace-list state options file-data "cljc")
               (assemble-namespace-list state options file-data "cljs")]])

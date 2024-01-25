@@ -21,12 +21,20 @@ pre {
   display:        block;
   margin:         0;
   letter-spacing: .8px }
+/*** Body ***/
 
-.scroll-container {
+
+
+/*** Scroll ***/
+
+.scroll-x {
+  overflow-x: auto }
+
+.scroll-y {
   flex-grow:  1;
   overflow-y: auto }
 
-/*** Body ***/
+/*** Scroll ***/
 
 
 
@@ -90,6 +98,9 @@ a.inline-link:hover {
 .text--bold {
   font-weight: 600 }
 
+.text--wrap {
+  white-space: normal }
+
 /*** Text ***/
 
 
@@ -145,10 +156,10 @@ a.inline-link:hover {
 .collapsible-wrapper[data-expanded=\"true\"] .collapsible-button::after {
   content: '▲' }
 
-.collapsible-wrapper .content-block--box {
+.collapsible-wrapper .collapsible-content {
   display: none }
 
-.collapsible-wrapper[data-expanded=\"true\"] .content-block--box {
+.collapsible-wrapper[data-expanded=\"true\"] .collapsible-content {
   display: block }
 
 /*** Collapsible ***/
@@ -325,7 +336,7 @@ a.inline-link:hover {
 
 
 
-/*** Doc blocks ***/
+/*** Content blocks ***/
 
 .content-blocks {
   display: flex;
@@ -339,13 +350,6 @@ a.inline-link:hover {
   gap:         4px;
   line-height: 24px }
 
-.content-block--box {
-  background-color: #fafafa;
-  color:            #333;
-  line-height:      16px;
-  margin:           0;
-  padding:          12px 8px }
-
 .content-block--preview-image {
   border:     1px solid #dedede;
   display:    block;
@@ -354,4 +358,9 @@ a.inline-link:hover {
   min-height: 48px;
   min-width:  64px }
 
-/*** Doc blocks ***/")
+.content-block--boxed {
+  background-color: #fafafa;
+  color:            #333;
+  padding:          12px 8px }
+
+/*** Content blocks ***/")
