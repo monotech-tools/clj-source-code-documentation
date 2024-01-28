@@ -20,9 +20,12 @@
   ; @return (hiccup)
   [state options]
   ; Instead of displaying a cover page, it redirects to the first namespace in the namespace tree.
-  (let [file-data (or (-> state (assemble.utils/filter-namespaces options "clj")  vector/abc-items first)
-                      (-> state (assemble.utils/filter-namespaces options "cljc") vector/abc-items first)
-                      (-> state (assemble.utils/filter-namespaces options "cljs") vector/abc-items first))
+  (let [file-data (or (-> state (assemble.utils/filter-namespaces options "clj")
+                                (assemble.utils/sort-namespaces   options) first)
+                      (-> state (assemble.utils/filter-namespaces options "cljc")
+                                (assemble.utils/sort-namespaces   options) first)
+                      (-> state (assemble.utils/filter-namespaces options "cljs")
+                                (assemble.utils/sort-namespaces   options) first))
         extension (-> file-data :filepath io/filepath->extension)
         page-uri  (assemble.utils/namespace-uri state options file-data extension)]
        [:body {:onLoad (str "window.location.href = \"" page-uri "\"")}]))

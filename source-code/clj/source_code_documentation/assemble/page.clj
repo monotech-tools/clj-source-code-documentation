@@ -446,7 +446,7 @@
   ; @return (hiccup)
   [state options file-data]
   ; @note (#3901)
-  ; (vector/sort-items-by :name)
+  ; (vector/sort-items-by [...] :name)
   (letfn [(f0 [%] (-> state (assemble-declaration options %)))
           (f1 [%] (-> state (assemble.utils/filter-sections options file-data %)))]
          [:div {:id :declarations--wrapper}
@@ -494,7 +494,7 @@
   ; @return (hiccup)
   [state options file-data]
   ; @note (#3901)
-  ; (vector/sort-items-by :name)
+  ; (vector/sort-items-by [...] :name)
   (letfn [(f0 [%] (-> state (assemble-tutorial options %)))
           (f1 [%] (-> state (assemble.utils/filter-sections options file-data %)))]
          [:div {:id :tutorials--wrapper}
@@ -591,7 +591,7 @@
   ; @note (#3901)
   (letfn [(f0 [%] (-> state (assemble.utils/namespace-uri     options % extension)))
           (f1 [%] (-> state (assemble.utils/filter-namespaces options %)))
-          (f2 [%] (-> %     (vector/sort-items-by #(-> % :ns-map :declaration :name))))
+          (f2 [%] (-> %     (assemble.utils/sort-namespaces   options)))
           (f3 [%] (and (-> % :filepath io/filepath->extension (= extension)) (= file-data %)))
           (f4 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--primary (if (f3 %) :button--active)]} (-> % :ns-map :declaration :name)]])]
          (if-let [namespaces (f1 extension)]

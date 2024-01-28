@@ -32,8 +32,8 @@
   ; @return (string)
   [_ _ file-data extension]
   (-> file-data :ns-map :declaration :name (string/replace-part "." "/")
-                                           (string/prepend "/" extension "/")
-                                           (string/append ".html")))
+                                           (string/prepend      "/" extension "/")
+                                           (string/append       ".html")))
 
 (defn namespace-uri
   ; @ignore
@@ -101,6 +101,25 @@
          (-> state (vector/keep-items-by f0)
                    (vector/to-nil {:if-empty? true}))))
 
+(defn sort-namespaces
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ;
+  ; @usage
+  ; (sort-namespaces [{:ns-map {:declaration {:name "my-namespace"}}      ...}
+  ;                   {:ns-map {:declaration {:name "another-namespace"}} ...}]
+  ;                  {...})
+  ; =>
+  ; [{:ns-map {:declaration {:name "another-namespace"}} ...}
+  ;  {:ns-map {:declaration {:name "my-namespace"}}      ...}]
+  ;
+  ; @return (maps in vector)
+  [state _]
+  (letfn [(f0 [%] (-> % :ns-map :declaration :name))]
+         (-> state (vector/sort-items-by f0))))
+
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
@@ -122,7 +141,7 @@
          (let [link (-> n (string/keep-range position)
                           (string/to-first-occurence ")"))]
               [(string/keep-range n 0 position)
-               [:a {:class [:inline-link :color--primary] :href (f1 link)} (f0 link)]
+               [:a {:class [:inline-link :color--primary] :href (f1 link)} (-> link f0 string/trim)]
                (string/keep-range n (+ position (count link)))])))
 
 (defn parse-links
