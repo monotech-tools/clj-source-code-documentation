@@ -99,7 +99,9 @@ a.inline-link:hover {
   font-weight: 600 }
 
 .text--wrap {
-  white-space: normal }
+ -white-space: normal;
+  /* Wraps lines if necessary, but doesn't collapse multiple white-spaces. */
+  white-space: pre-wrap }
 
 /*** Text ***/
 
