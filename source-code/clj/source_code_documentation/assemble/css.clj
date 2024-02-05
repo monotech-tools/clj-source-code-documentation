@@ -264,7 +264,7 @@ a.inline-link:hover {
 
 #primary-list,
 #secondary-list {
-  /*  Relative positioned elements can overflow the sidebars in case of horizontal scrolling! */
+  /*  Relatively positioned elements can overflow the sidebars in case of horizontal scrolling! */
   z-index: 9999 }
 
 #primary-list .text--xs,
