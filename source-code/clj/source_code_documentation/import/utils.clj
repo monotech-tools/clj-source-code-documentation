@@ -69,6 +69,7 @@
   ; @description
   ; Imports the value of a specific def declaration.
   ;
+  ; @param (map) file-data
   ; @param (string) file-content
   ; @param (map) def
   ;
@@ -78,47 +79,49 @@
   ; ":my-value"
   ;
   ; @return (string)
-  [file-content {:keys [value]}]
+  [_ file-content {:keys [value]}]
   (string/keep-range file-content (-> value :bounds first)
                                   (-> value :bounds second)))
 
-(defn import-def-content
+(defn import-def-header
   ; @ignore
   ;
   ; @description
-  ; Imports the documentation content of a specific def declaration.
+  ; Imports the header (documentation content) of a specific def declaration.
   ;
+  ; @param (map) file-data
   ; @param (string) file-content
   ; @param (map) def
   ;
   ; @usage
-  ; (import-def-content "... \n; @constant (keyword)\n(def my-constant :my-value) ..." {...})
+  ; (import-def-header "... \n; @constant (keyword)\n(def my-constant :my-value) ..." {...})
   ; =>
   ; "; @constant (keyword)"
   ;
   ; @return (strings in vector)
-  [file-content {:keys [bounds]}]
+  [_ file-content {:keys [bounds]}]
   (-> file-content (string/keep-range 0 (first bounds))                   ; <- Cuts off the rest of the file content from the start position of the def.
                    (string/trim-end)                                      ; <- Removes the indent (if any) that precedes the def.
                    (regex/after-last-match #"\n[\h]*\n" {:return? false}) ; <- Keeps the part after the last empty row.
                    (last-coherent-comment-row-group)))                    ; <- Extracts the last coherent comment row group.
 
-(defn import-defn-content
+(defn import-defn-header
   ; @ignore
   ;
   ; @description
-  ; Imports the documentation content of a specific defn declaration.
+  ; Imports the header (documentation content) of a specific defn declaration.
   ;
+  ; @param (map) file-data
   ; @param (string) file-content
   ; @param (map) defn
   ;
   ; @usage
-  ; (import-defn-content "... (defn my-function\n; @param (map) my-param\n [my-param] ...) ..." {...})
+  ; (import-defn-header "... (defn my-function\n; @param (map) my-param\n [my-param] ...) ..." {...})
   ; =>
   ; "; @param (map) my-param"
   ;
   ; @return (strings in vector)
-  [file-content {:keys [bounds]}]
+  [_ file-content {:keys [bounds]}]
   (-> file-content (string/keep-range (first bounds) (last bounds))    ; <- Keeps the part of the file content from the start position of the defn - to its end position.
                    (regex/before-first-match #"\n[\h]+\[|\n[\h]+\(\[") ; <- Cuts off the part from the first (non-commented and non-quoted) argument list.
                    (last-coherent-comment-row-group)))                 ; <- Extracts the last coherent comment row group.
@@ -132,6 +135,7 @@
   ; @description
   ; Returns the source code of a specific def declaration.
   ;
+  ; @param (map) file-data
   ; @param (string) file-content
   ; @param (map) def
   ;
@@ -141,7 +145,7 @@
   ; "(def my-constant :my-value)"
   ;
   ; @return (string)
-  [file-content {:keys [bounds]}]
+  [_ file-content {:keys [bounds]}]
   (string/keep-range file-content (first bounds) (last bounds)))
 
 (defn import-defn-source-code
@@ -150,6 +154,7 @@
   ; @description
   ; Returns the source code of a specific defn declaration.
   ;
+  ; @param (map) file-data
   ; @param (string) file-content
   ; @param (map) defn
   ;
@@ -159,54 +164,117 @@
   ; "(defn my-function [] ...)"
   ;
   ; @return (string)
-  [file-content {:keys [bounds]}]
+  [_ file-content {:keys [bounds]}]
   (string/keep-range file-content (first bounds) (last bounds)))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn import-tutorial-name
+(defn import-def
   ; @ignore
   ;
-  ; @param (string) substring
-  ; @param (integer) position
+  ; @param (map) file-data
+  ; @param (string) file-content
+  ; @param (map) def
   ;
   ; @return (maps in vector)
-  [substring position]
-  (-> substring (string/keep-range position)
-                (first-coherent-comment-row-group)))
+  [file-data file-content def]
+  {:source-code (import-def-source-code file-data file-content def)
+   :content     (import-def-header      file-data file-content def)
+   :label       (-> def :name)
+   :name        (-> def :name)
+   :type        (->     :def)})
+
+(defn import-defn
+  ; @ignore
+  ;
+  ; @param (map) file-data
+  ; @param (string) file-content
+  ; @param (map) defn
+  ;
+  ; @return (maps in vector)
+  [file-data file-content defn]
+  {:source-code (import-defn-source-code file-data file-content defn)
+   :content     (import-defn-header      file-data file-content defn)
+   :label       (-> defn :name)
+   :name        (-> defn :name)
+   :type        (->      :defn)})
 
 (defn import-tutorial
   ; @ignore
   ;
+  ; @param (map) file-data
+  ; @param (string) file-content
   ; @param (string) substring
-  ; @param (integer) position
   ;
   ; @return (maps in vector)
-  [substring]
+  [_ _ substring]
   (letfn [(f0 [%] (regex/re-first % #"(?<=\@tutorial[\h]+)[^\n]+(?=\n)"))
           (f1 [%] (string/after-first-occurence % "\n"))]
-         {:name    (-> substring f0 normalize/clean-text)
+         {:content (-> substring f1 (first-coherent-comment-row-group))
           :label   (-> substring f0)
-          :content (-> substring f1 (first-coherent-comment-row-group))
+          :name    (-> substring f0 normalize/clean-text)
           :type    (-> :tutorial)}))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn import-def-values
+  ; @ignore
+  ;
+  ; @description
+  ; Imports symbol type values of defs (values are important for creating redirection traces).
+  ;
+  ; @param (map) file-data
+  ; @param (string) file-content
+  ;
+  ; @return (maps in vector)
+  [{{:keys [defs]} :ns-map :as file-data} file-content]
+  (letfn [(f0 [%] (import-def-value file-data file-content %))
+          (f1 [%] (-> % :value :type (= :symbol)))
+          (f2 [%] (-> % (assoc-in [:value :symbol] (f0 %))))]
+         (vector/update-items-by defs f1 f2)))
+
+(defn import-defs
+  ; @ignore
+  ;
+  ; @param (map) file-data
+  ; @param (string) file-content
+  ;
+  ; @return (maps in vector)
+  [{{:keys [defs]} :ns-map :as file-data} file-content]
+  (letfn [(f0 [%] (import-def file-data file-content %))]
+         (vector/->items defs f0)))
+
+(defn import-defns
+  ; @ignore
+  ;
+  ; @param (map) file-data
+  ; @param (string) file-content
+  ;
+  ; @return (maps in vector)
+  [{{:keys [defns]} :ns-map :as file-data} file-content]
+  (letfn [(f0 [%] (import-defn file-data file-content %))]
+         (vector/->items defns f0)))
 
 (defn import-tutorials
   ; @ignore
   ;
+  ; @param (map) file-data
   ; @param (string) file-content
   ;
   ; @return (maps in vector)
-  [file-content]
+  [file-data file-content]
   ; - The newline character could be in a positive lookbehind assertion within the regex pattern.
   ;   But unfortunatelly, the 'regex/first-dex-of' function would return incorrect positions.
   ; - The 'f1' function cuts off the part after the second match before passing the substring to
   ;   the 'first-coherent-comment-row-group' function, to prevent reading multiple tutorials
   ;   from one comment row group (if they are joined).
   (letfn [(f0 [%] (regex/first-dex-of       % #"\n[\h]*\;[\h]*\@tutorial"))
-          (f1 [%] (regex/before-first-match % #"\n[\h]*\;[\h]*\@tutorial" {:return? true}))]
+          (f1 [%] (regex/before-first-match % #"\n[\h]*\;[\h]*\@tutorial" {:return? true}))
+          (f2 [%] (import-tutorial file-data file-content %))]
          (loop [substring file-content tutorials []]
                (if-let [position (f0 substring)]
                        (let [substring (string/keep-range substring (inc position))]
-                            (recur substring (vector/conj-item tutorials (-> substring f1 import-tutorial))))
+                            (recur substring (vector/conj-item tutorials (-> substring f1 f2))))
                        (-> tutorials)))))

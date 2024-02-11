@@ -123,6 +123,81 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn sort-declaration-content
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; {:declaration-order (keywords in vector)(opt)}
+  ; @param (map) section
+  ; {:content (maps in vector)
+  ;  ...}
+  ;
+  ; @usage
+  ; (sort-declaration-content [...] {...} {:content [...] :declaration-order [...] ...})
+  ; =>
+  ; {:content [...]
+  ;  ...}
+  ;
+  ; @return (map)
+  [_ {:keys [declaration-order]} section]
+  (letfn [(f0 [%]   (vector/sort-items-by % f1 :type))
+          (f1 [a b] (vector/order-comparator declaration-order a b))]
+         (if declaration-order (-> section (update :content f0))
+                               (-> section))))
+
+(defn sort-tutorial-content
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; {:tutorial-order (keywords in vector)(opt)}
+  ; @param (map) section
+  ; {:content (maps in vector)
+  ;  ...}
+  ;
+  ; @usage
+  ; (sort-tutorial-content [...] {...} {:content [...] :tutorial-order [...] ...})
+  ; =>
+  ; {:content [...]
+  ;  ...}
+  ;
+  ; @return (map)
+  [_ {:keys [tutorial-order]} section]
+  (letfn [(f0 [%]   (vector/sort-items-by % f1 :type))
+          (f1 [a b] (vector/order-comparator tutorial-order a b))]
+         (if tutorial-order (-> section (update :content f0))
+                            (-> section))))
+
+(defn append-declaration-source-code
+  ; @ignore
+  ;
+  ; @description
+  ; Appends the imported source code of declaration as a content block of the given declaration.
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) section
+  ; {:content (maps in vector)
+  ;  :source-code (string)
+  ;  ...}
+  ;
+  ; @usage
+  ; (append-declaration-source-code [...] {...} {:content [...] :source-code "(defn ...)" :type :defn ...})
+  ; =>
+  ; {:content     [{:type :source-code :text ["(defn ...)"]} ...]
+  ;  :source-code "..."
+  ;  :type        :defn
+  ;  ...}
+  ;
+  ; @return (map)
+  [_ _ {:keys [source-code] :as section}]
+  (let [content-block {:type :source-code :text [source-code]}]
+       (-> section (update :content vector/cons-item content-block))))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn parse-link
   ; @ignore
   ;
@@ -141,7 +216,7 @@
          (let [link (-> n (string/keep-range position)
                           (string/to-first-occurence ")"))]
               [(string/keep-range n 0 position)
-               [:a {:class [:inline-link :color--primary] :href (f1 link)} (-> link f0 string/trim)]
+               [:a {:class [:inline-link :color--hard-blue] :href (f1 link)} (-> link f0 string/trim)]
                (string/keep-range n (+ position (count link)))])))
 
 (defn parse-links
@@ -162,13 +237,13 @@
                       (vector/conj-item    result %)))]
          (reduce f0 [] n)))
 
-(defn unparse-entities
+(defn unparse-html
   ; @ignore
   ;
   ; @param (vector) n
   ;
   ; @usage
-  ; (unparse-entities ["This is an HTML element: <img />" [:br] ...])
+  ; (unparse-html ["This is an HTML element: <img />" [:br] ...])
   ; =>
   ; ["This is an HTML element: &lt;img /&gt;" [:br] ...]
   ;
@@ -180,3 +255,17 @@
                         (string/replace-part ">" "&gt;"))
                   (-> %)))]
          (vector/->items n f0)))
+
+(defn gap-rows
+  ; @ignore
+  ;
+  ; @param (vector) n
+  ;
+  ; @usage
+  ; (gap-rows ["Row #1" "Row #2" ...])
+  ; =>
+  ; ["Row #1" [:br] "Row #2" [:br] ...]
+  ;
+  ; @param (vector)
+  [n]
+  (vector/gap-items n [:br]))

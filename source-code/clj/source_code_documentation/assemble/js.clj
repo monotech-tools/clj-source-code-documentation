@@ -10,8 +10,8 @@
 (def SCRIPTS "
 function toggleCollapsible (collapsibleId) {
   collapsible = document.getElementById ( collapsibleId );
-  if (collapsible.dataset.expanded === 'true') {
-     collapsible.dataset.expanded = 'false';
+  if (collapsible.dataset.collapsed === 'true') {
+     collapsible.dataset.collapsed = 'false';
   } else {
-     collapsible.dataset.expanded = 'true';
+     collapsible.dataset.collapsed = 'true';
   }}")

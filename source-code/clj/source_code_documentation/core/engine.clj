@@ -26,6 +26,8 @@
   ;   {:name (string)(opt)
   ;    :website (string)(opt)}
   ;  :base-uri (string)
+  ;  :declaration-order (keywords in vector)
+  ;   Order of content blocks within declaration sections (by type).
   ;  :filename-pattern (regex pattern)(opt)
   ;   Default: #"[a-z\_\d]+\.clj[cs]?"
   ;  :library (map)(opt)}
@@ -34,18 +36,21 @@
   ;    :website (string)(opt)}
   ;  :output-path (string)
   ;  :previews-uri (string)(opt)
-  ;  :source-paths (strings in vector)}
+  ;  :source-paths (strings in vector)
+  ;  :tutorial-order (keywords in vector)
+  ;   Order of content blocks within tutorial sections (by type).}
   ;
   ; @usage
   ; (generate-documentation! {...})
   ;
   ; @usage
-  ; (generate-documentation! {:author           {:name "Author" :website "https://author.com"}
-  ;                           :filename-pattern "[a-z\_]\.clj"
-  ;                           :library          {:name "my-library" :version "1.0.0" :website "https://github.com/author/my-library"}
-  ;                           :output-path      "docs"
-  ;                           :previews-uri     "https://github.com/author/my-library/blob/main/previews"
-  ;                           :source-paths     ["source-code"]})
+  ; (generate-documentation! {:author            {:name "Author" :website "https://author.com"}
+  ;                           :declaration-order [:source-code :description :usage ...]
+  ;                           :filename-pattern  "[a-z\_]\.clj"
+  ;                           :library           {:name "my-library" :version "1.0.0" :website "https://github.com/author/my-library"}
+  ;                           :output-path       "docs"
+  ;                           :previews-uri      "https://github.com/author/my-library/blob/main/previews"
+  ;                           :source-paths      ["source-code"]})
   [options]
   (if (v/valid? options core.tests/OPTIONS-TEST {:prefix "options"})
       (let [options (core.prototypes/options-prototype options)]

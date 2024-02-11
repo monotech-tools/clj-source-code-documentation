@@ -22,14 +22,18 @@
   ; @param (map) options
   ;
   ; @usage
-  ; (map-source-paths [] {:filename-pattern #"my\_namespace\_a\.clj"
-  ;                       :source-paths ["source-code"]})
+  ; (map-source-paths []
+  ;                   {:filename-pattern #"my\_namespace\_a\.clj" :source-paths ["source-code"]})
   ; =>
-  ; [{:filepath "source-code/my_namespace_a.clj" :ns-map {...} :create-documentation? true}
-  ;  {:filepath "source-code/my_namespace_b.clj" :ns-map {...} :create-documentation? false}
-  ;  {:filepath "source-code/my_namespace_c.clj" :ns-map {...} :create-documentation? false}]
+  ; [{:filepath "source-code/my_namespace_a.clj" :create-documentation? true  :ns-map {...}}
+  ;  {:filepath "source-code/my_namespace_b.clj" :create-documentation? false :ns-map {...}}
+  ;  {:filepath "source-code/my_namespace_c.clj" :create-documentation? false :ns-map {...}}]
   ;
   ; @return (maps in vector)
+  ; [(map) file-data
+  ;   {:create-documentation? (boolean)
+  ;    :filepath (string)
+  ;    :ns-map (map)}]
   [state {:keys [filename-pattern source-paths]}]
   (letfn [(f0 [filepath]    (-> filepath io/filepath->filename (regex/re-match? filename-pattern)))
           (f1 [source-path] (io/search-files source-path core.config/SOURCE-FILENAME-PATTERN))

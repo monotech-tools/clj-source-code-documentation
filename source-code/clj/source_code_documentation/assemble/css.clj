@@ -14,6 +14,16 @@ body {
   margin:  0 0 0 560px;
   padding: 60px 48px }
 
+button {
+  background-color: transparent;
+  border:           none;
+  cursor:           pointer;
+  padding:          0;
+  user-select:      none }
+
+button:hover {
+  opacity: .5 }
+
 div {
   box-sizing: border-box }
 
@@ -54,11 +64,11 @@ a.inline-link:hover {
   text-decoration: underline }
 
 .button {
-  font-size:      13px;
-  letter-spacing: .5px;
-  line-height:    18px;
-  padding:        3px 12px;
-  white-space:    inherit }
+  padding:     3px 12px;
+  white-space: inherit;
+
+  /* Shrinks buttons to make them display more text in narrow sidebars. */
+  letter-spacing: .5px }
 
 .button:hover {
   background-color: #f0f0f0 }
@@ -77,7 +87,7 @@ a.inline-link:hover {
 
 .text--xs {
   font-size:      10px;
-  line-height:    24px;
+  line-height:    18px;
   text-transform: uppercase }
 
 .text--s {
@@ -92,11 +102,22 @@ a.inline-link:hover {
   font-size:   14px;
   line-height: 18px }
 
+.text--xl {
+  font-size:   18px;
+  line-height: 24px }
+
 .text--semi-bold {
   font-weight: 500 }
 
 .text--bold {
   font-weight: 600 }
+
+.text--boxed {
+  background-color: #fafafa;
+  padding:          12px 8px }
+
+.text--hidden {
+  display: none }
 
 .text--wrap {
  -white-space: normal;
@@ -109,19 +130,25 @@ a.inline-link:hover {
 
 /*** Colors ***/
 
-.color--basic {
-  color: #303030 }
+.color--hard-grey {
+  color: #404040 }
 
-.color--primary {
+.color--soft-grey {
+  color: #808080 }
+
+.color--hard-blue {
   color: #0088cc }
 
-.color--secondary {
+.color--soft-blue {
+  color: #55aabb }
+
+.color--hard-purple {
   color: #8800cc }
 
-.color--muted {
-  color: #606060 }
+.color--soft-purple {
+  color: #aa55bb }
 
-.color--warning {
+.color--hard-red {
   color: #cc00aa }
 
 /*** Colors ***/
@@ -130,39 +157,21 @@ a.inline-link:hover {
 
 /*** Collapsible ***/
 
-.collapsible-wrapper {
-  display:        flex;
-  flex-direction: column }
+[data-collapsed=\"true\"] .content-block--text {
+  display: none }
 
-.collapsible-button {
-  cursor:      pointer;
-  position:    relative;
-  user-select: none;
-  width:       fit-content }
-
-.collapsible-button:hover {
-  color: #888 }
-
-.collapsible-button::after {
+[data-collapsible=\"true\"] .content-block--header::after {
   align-items:     center;
   content:         '▼';
   display:         flex;
   font-size:       8px;
   justify-content: center;
-  position:        absolute;
-  height:          24px;
-  right:           -24px;
-  top:             0;
-  width:           24px }
+  height:          18px;
+  width:           18px
+}
 
-.collapsible-wrapper[data-expanded=\"true\"] .collapsible-button::after {
+[data-collapsible=\"true\"][data-collapsed=\"false\"] .content-block--header::after {
   content: '▲' }
-
-.collapsible-wrapper .collapsible-content {
-  display: none }
-
-.collapsible-wrapper[data-expanded=\"true\"] .collapsible-content {
-  display: block }
 
 /*** Collapsible ***/
 
@@ -183,28 +192,20 @@ a.inline-link:hover {
   width:            100% }
 
 #top-bar--library-uri {
-  font-size:   12px;
-  line-height: 60px;
-  padding:     0 18px;
-  position:    absolute;
-  right:       0;
-  top:         0 }
+  padding:  21px 18px;
+  position: absolute;
+  right:    0;
+  top:      0 }
 
 #top-bar--library-uri:hover {
   background-color: #f0f0f0 }
 
 #top-bar--library-name {
-  font-size:      18px;
-  line-height:    60px;
+  padding:        18px 0;
   text-transform: uppercase }
 
-#top-bar--author-name {
-  font-size: 12px }
-
 #top-bar--library-version {
-  font-size:   12px;
-  line-height: 18px;
-  margin-top:  12px }
+  margin-top: 12px }
 
 /*** Top bar ***/
 
@@ -223,11 +224,7 @@ a.inline-link:hover {
   width:            100% }
 
 #bottom-bar--credits-link {
-  color:          #aa55bb;
-  font-size:      12px;
-  letter-spacing: .8px;
-  line-height:    42px;
-  padding:        0 18px }
+  padding: 12px 18px }
 
 #bottom-bar--credits-link:hover {
   background-color: #f0f0f0 }
@@ -288,69 +285,36 @@ a.inline-link:hover {
 /*** Namespace header ***/
 
 #namespace-header--title {
-  font-size:   18px;
-  line-height: 24px;
-  margin-top:  24px }
+  margin-top: 24px }
 
 /*** Namespace header ***/
 
 
 
-/*** Declarations ***/
+/*** Sections ***/
 
-#declarations {
-  display:        flex;
-  flex-direction: column }
+.section {
+  padding-top: 144px }
 
-/*** Declarations ***/
-
-
-
-/*** Declaration ***/
-
-.declaration--wrapper {
-  padding-top: 96px }
-
-.declaration--name {
+.section--header {
   border-bottom:  1px solid #e0e0e0;
-  font-size:      18px;
-  line-height:    18px;
   padding-bottom: 8px;
   margin-bottom:  12px }
 
-/*** Declaration ***/
-
-
-
-/*** Tutorial ***/
-
-.tutorial--wrapper {
-  padding-top: 96px }
-
-.tutorial--name {
-  border-bottom:  1px solid #e0e0e0;
-  font-size:      18px;
-  line-height:    18px;
-  padding-bottom: 8px;
-  margin-bottom:  12px }
-
-/*** Tutorial ***/
+/*** Sections ***/
 
 
 
 /*** Content blocks ***/
 
 .content-blocks {
+  display:        flex;
+  flex-direction: column;
+  gap:            24px }
+
+.content-block--header {
   display: flex;
-  flex-direction: column }
-
-.content-block--separator {
-  height: 12px }
-
-.content-block--label {
-  display:     flex;
-  gap:         4px;
-  line-height: 24px }
+  gap:     4px }
 
 .content-block--preview-image {
   border:     1px solid #dedede;
@@ -359,10 +323,5 @@ a.inline-link:hover {
   max-width:  640px;
   min-height: 48px;
   min-width:  64px }
-
-.content-block--boxed {
-  background-color: #fafafa;
-  color:            #333;
-  padding:          12px 8px }
 
 /*** Content blocks ***/")

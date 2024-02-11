@@ -21,7 +21,7 @@
   ; @usage
   ; (resolve-pointer [...] {...} :another-namespace/another-function "clj")
   ; =>
-  ; {:name "another-function" :content [{:type :param :meta ["map"] :value "my-param"}]}
+  ; {:name "another-function" :content [{:type :param :meta ["map"] :name "my-param"}]}
   ;
   ; @return (map)
   [state _ pointer extension]
@@ -52,7 +52,7 @@
   ; @usage
   ; (resolve-redirection [...] {...} {...} "another-namespace/another-function")
   ; =>
-  ; {:name "another-function" :content [{:type :param :meta ["map"] :value "my-param"}]}
+  ; {:name "another-function" :content [{:type :param :meta ["map"] :name "my-param"}]}
   ;
   ; @return (map)
   [state options file-data pointer]
@@ -94,13 +94,14 @@
   ; (resolve-redirections [...] {...} {...}
   ;                       {:name    "my-function"
   ;                        :type    :defn
-  ;                        :content [{:type :redirect    :meta       ["another-namespace/another-function"]                              :indent 1}
-  ;                                  {:type :description :additional ["This is the original description of the 'my-function' function."] :indent 1}]})
+  ;                        :content [{:type :redirect    :meta ["another-namespace/another-function"]                              :indent 1}
+  ;                                  {:type :description :text ["This is the original description of the 'my-function' function."] :indent 1}]})
   ; =>
-  ; {:name    "my-function"
+  ; {:label   "my-function"
+  ;  :name    "my-function"
   ;  :type    :defn
-  ;  :content [{:type :description          :additional ["This description is from the documentation of the 'another-function' function."]             :indent 1}
-  ;            {:type :return :meta ["map"] :additional ["This return description is also from the documentation of the 'another-function' function."] :indent 1}]}
+  ;  :content [{:type :description          :text ["This description is from the documentation of the 'another-function' function."]             :indent 1}
+  ;            {:type :return :meta ["map"] :text ["This return description is also from the documentation of the 'another-function' function."] :indent 1}]}
   ;
   ; @return (map)
   [state options file-data section]
@@ -127,14 +128,15 @@
   ; (resolve-links [...] {...} {...}
   ;                {:name    "my-function"
   ;                 :type    :defn
-  ;                 :content [{:type :link        :meta       ["another-namespace/another-function"]                              :indent 1}
-  ;                           {:type :description :additional ["This is the original description of the 'my-function' function."] :indent 1}]})
+  ;                 :content [{:type :link        :meta ["another-namespace/another-function"]                              :indent 1}
+  ;                           {:type :description :text ["This is the original description of the 'my-function' function."] :indent 1}]})
   ; =>
-  ; {:name    "my-function"
+  ; {:label   "my-function"
+  ;  :name    "my-function"
   ;  :type    :defn
-  ;  :content [{:type :description          :additional ["This description is from the documentation of the 'another-function' function."]             :indent 1}
-  ;            {:type :return :meta ["map"] :additional ["This return description is also from the documentation of the 'another-function' function."] :indent 1}
-  ;            {:type :description          :additional ["This is the original description of the 'my-function' function."]                            :indent 1}]}
+  ;  :content [{:type :description          :text ["This description is from the documentation of the 'another-function' function."]             :indent 1}
+  ;            {:type :return :meta ["map"] :text ["This return description is also from the documentation of the 'another-function' function."] :indent 1}
+  ;            {:type :description          :text ["This is the original description of the 'my-function' function."]                            :indent 1}]}
   ;
   ; @return (map)
   [state options file-data {:keys [content] :as section}]

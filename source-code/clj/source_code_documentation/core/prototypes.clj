@@ -18,7 +18,8 @@
   ;  :filename-pattern (regex pattern)
   ;  :output-path (string)
   ;  :previews-uri (string)
-  ;  :source-paths (strings in vector)}
+  ;  :source-paths (strings in vector)
+  ;  ...}
   [options]
   (merge {:filename-pattern core.config/DEFAULT-FILENAME-PATTERN}
          (-> options (update :base-uri     uri/valid-url)

@@ -71,7 +71,7 @@
 ; ; @---
 ; ;
 ; ; @usage
-; ; Usage blocks are simply code blocks with the title "Usage".
+; ; Usage and Example blocks are simply code blocks with the title "Usage" or "Example".
 ; ;
 ; ; @title My title
 ; ; Lorem ipsum dolor sit amet.
@@ -332,8 +332,8 @@
 ;
 ; @title Wildcards in link and redirection pointers
 ;
-; Wildcards work only if the pointer corresponds to a 'def' declaration, and the declaration has a symbol type value that can be used to
-; derive a name or namespace from it.
+; Wildcards work only if the pointer corresponds to a 'def' declaration, and the declaration has a symbol type value
+; that can be used to derive a name or namespace from it.
 ;
 ; @code
 ; ; @redirect (*)
