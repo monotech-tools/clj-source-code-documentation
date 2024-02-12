@@ -211,16 +211,16 @@
   ;
   ; @param (map) file-data
   ; @param (map) section
-  ; @param (map) content-block
+  ; @param (map) snippet
   ;
   ; @usage
-  ; (derive-pointer {...} {...} {:type :redirect :meta ["another-namespace/ANOTHER-CONSTANT"]})
+  ; (derive-pointer {...} {...} {:marker :redirect :meta ["another-namespace/ANOTHER-CONSTANT"]})
   ; =>
   ; :another-namespace/ANOTHER-CONSTANT
   ;
   ; @return (namespaced keyword)
-  [file-data section content-block]
-  (let [pointer (-> content-block :meta first)]
+  [file-data section snippet]
+  (let [pointer (-> snippet :meta first)]
        (keyword (-> file-data (derive-pointer-namespace section pointer))
                 (-> file-data (derive-pointer-name      section pointer)))))
 

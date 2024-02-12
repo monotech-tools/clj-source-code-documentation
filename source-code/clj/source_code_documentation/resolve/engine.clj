@@ -21,7 +21,7 @@
   ; @usage
   ; (resolve-pointer [...] {...} :another-namespace/another-function "clj")
   ; =>
-  ; {:name "another-function" :content [{:type :param :meta ["map"] :name "my-param"}]}
+  ; {:name "another-function" :content [{:marker :param :meta ["map"] :label "my-param"}]}
   ;
   ; @return (map)
   [state _ pointer extension]
@@ -52,7 +52,7 @@
   ; @usage
   ; (resolve-redirection [...] {...} {...} "another-namespace/another-function")
   ; =>
-  ; {:name "another-function" :content [{:type :param :meta ["map"] :name "my-param"}]}
+  ; {:name "another-function" :content [{:marker :param :meta ["map"] :label "my-param"}]}
   ;
   ; @return (map)
   [state options file-data pointer]
@@ -60,7 +60,7 @@
        (if-let [target-section (or (resolve-pointer state options pointer extension)
                                    (resolve-pointer state options pointer "cljc"))]
                (-> target-section)
-               {:content [{:type :error :description :unresolved-pointer-error :pointer pointer}]})))
+               {:content [{:marker :*error* :text [{:description :unresolved-pointer-error :pointer pointer}]}]})))
 
 (defn resolve-link
   ; @ignore
@@ -83,7 +83,7 @@
   ;
   ; @description
   ; Resolves the redirection (if any) in the documentation content of the given section.
-  ; If a redirection block is found. it resolves the pointer of it, overwriting the original content blocks with the target content's blocks.
+  ; If a redirection snippet is found. it resolves the pointer of it, overwriting the original snippets with the target sections's snippets.
   ;
   ; @param (maps in vector) state
   ; @param (map) options
@@ -94,20 +94,20 @@
   ; (resolve-redirections [...] {...} {...}
   ;                       {:name    "my-function"
   ;                        :type    :defn
-  ;                        :content [{:type :redirect    :meta ["another-namespace/another-function"]                              :indent 1}
-  ;                                  {:type :description :text ["This is the original description of the 'my-function' function."] :indent 1}]})
+  ;                        :content [{:marker :redirect    :meta ["another-namespace/another-function"]                              :indent 1}
+  ;                                  {:marker :description :text ["This is the original description of the 'my-function' function."] :indent 1}]})
   ; =>
   ; {:label   "my-function"
   ;  :name    "my-function"
   ;  :type    :defn
-  ;  :content [{:type :description          :text ["This description is from the documentation of the 'another-function' function."]             :indent 1}
-  ;            {:type :return :meta ["map"] :text ["This return description is also from the documentation of the 'another-function' function."] :indent 1}]}
+  ;  :content [{:marker :description          :text ["This description is from the documentation of the 'another-function' function."]             :indent 1}
+  ;            {:marker :return :meta ["map"] :text ["This return description is also from the documentation of the 'another-function' function."] :indent 1}]}
   ;
   ; @return (map)
   [state options file-data section]
-  (letfn [(f0 [trace %] (or (if-let [% (vector/first-match (:content %) #(= :redirect (:type %)))] (f2 trace %)) %)) ; <- ... takes the original section, returns the target section
-          (f1 [trace %] (resolve-redirection state options file-data (:pointer %)))                                  ; <- ... takes a content block, returns the target section
-          (f2 [trace %] (let [trace (resolve.utils/update-trace trace (:pointer %))] (f0 trace (f1 trace %))))]      ; <- ... takes a content block, returns the target section
+  (letfn [(f0 [trace %] (or (if-let [% (vector/first-match (:content %) #(= :redirect (:marker %)))] (f2 trace %)) %)) ; <- ... takes the original section, returns the target section
+          (f1 [trace %] (resolve-redirection state options file-data (:pointer %)))                                    ; <- ... takes a snippet, returns the target section
+          (f2 [trace %] (let [trace (resolve.utils/update-trace trace (:pointer %))] (f0 trace (f1 trace %))))]        ; <- ... takes a snippet, returns the target section
          (let [initial-trace [(resolve.utils/create-pointer file-data section)]]
               (-> section (merge (-> initial-trace (f0 section)))
                           (assoc :name (:name section)))))) ; <- The name of the section is not redirected.
@@ -117,7 +117,7 @@
   ;
   ; @description
   ; Resolves the links (if any) in the documentation content of the given section.
-  ; If a link block is found, it resolves the pointer of it, inserting the target content's blocks between the original content blocks (where the link was).
+  ; If a link snippet is found, it resolves the pointer of it, inserting the target section's snippets between the original snippets (where the link was).
   ;
   ; @param (maps in vector) state
   ; @param (map) options
@@ -128,21 +128,21 @@
   ; (resolve-links [...] {...} {...}
   ;                {:name    "my-function"
   ;                 :type    :defn
-  ;                 :content [{:type :link        :meta ["another-namespace/another-function"]                              :indent 1}
-  ;                           {:type :description :text ["This is the original description of the 'my-function' function."] :indent 1}]})
+  ;                 :content [{:marker :link        :meta ["another-namespace/another-function"]                              :indent 1}
+  ;                           {:marker :description :text ["This is the original description of the 'my-function' function."] :indent 1}]})
   ; =>
   ; {:label   "my-function"
   ;  :name    "my-function"
   ;  :type    :defn
-  ;  :content [{:type :description          :text ["This description is from the documentation of the 'another-function' function."]             :indent 1}
-  ;            {:type :return :meta ["map"] :text ["This return description is also from the documentation of the 'another-function' function."] :indent 1}
-  ;            {:type :description          :text ["This is the original description of the 'my-function' function."]                            :indent 1}]}
+  ;  :content [{:marker :description          :text ["This description is from the documentation of the 'another-function' function."]             :indent 1}
+  ;            {:marker :return :meta ["map"] :text ["This return description is also from the documentation of the 'another-function' function."] :indent 1}
+  ;            {:marker :description          :text ["This is the original description of the 'my-function' function."]                            :indent 1}]}
   ;
   ; @return (map)
   [state options file-data {:keys [content] :as section}]
-  (letfn [(f0 [trace %] (vector/->items-by % #(= :link (:type %)) #(f2 trace %)))                               ; <- Resolves all link blocks in the given documentation content.
+  (letfn [(f0 [trace %] (vector/->items-by % #(= :link (:marker %)) #(f2 trace %)))                             ; <- Resolves all link snippets in the given documentation content.
           (f1 [trace %] (:content (resolve-link state options file-data (:pointer %))))                         ; <- ...
-          (f2 [trace %] (let [trace (resolve.utils/update-trace trace (:pointer %))] (f0 trace (f1 trace %))))] ; <- Resolves the given link block and recursivelly resolves link blocks in the resolved target content also.
+          (f2 [trace %] (let [trace (resolve.utils/update-trace trace (:pointer %))] (f0 trace (f1 trace %))))] ; <- Resolves the given link snippet and recursivelly resolves link snippets in the resolved target section also.
          (let [initial-trace [(resolve.utils/create-pointer file-data section)]]
               (assoc section :content (-> initial-trace (f0 content) vector/flat-items)))))
 
@@ -167,14 +167,15 @@
   ; @ignore
   ;
   ; @description
-  ; - Resolves the traced links and redirections of defs and defns resolving documentation content link and redirection pointers (for all source files within the given source directories).
-  ; - Although the documentation generator creates documentation only for files that match the provided (or default)
-  ;   filename pattern, to handle links and redirections, it requires resolving them for all available source files.
+  ; Resolves the traced links and redirections of defs and defns resolving documentation content link and redirection pointers.
   ;
   ; @param (maps in vector) state
   ; @param (map) options
+  ; {:trace-redirections? (boolean)(opt)
+  ;  ...}
   ;
   ; @return (maps in vector)
-  [state options]
+  [state {:keys [trace-redirections?] :as options}]
   (letfn [(f0 [%] (resolve-imported-file state options %))]
-         (vector/->items state f0)))
+         (if trace-redirections? (-> state (vector/->items f0))
+                                 (-> state))))

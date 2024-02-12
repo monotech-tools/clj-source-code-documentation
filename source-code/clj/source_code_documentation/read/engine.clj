@@ -22,9 +22,7 @@
   ; @ignore
   ;
   ; @description
-  ; - Reads the imported source codes and documentation contents of defs and defns (from all source files within the given source directories).
-  ; - Although the documentation generator creates documentation only for files that match the provided (or default)
-  ;   filename pattern, to handle links and redirections, it requires reading source codes and documentation contents from all available source files.
+  ; Reads the imported source codes and documentation contents of defs and defns.
   ;
   ; @param (maps in vector) state
   ; @param (map) options

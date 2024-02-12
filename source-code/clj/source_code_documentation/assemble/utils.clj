@@ -9,6 +9,140 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn normalize-marker
+  ; @ignore
+  ;
+  ; @description
+  ; Normalizes internal markers (e.g., :*source-code*).
+  ;
+  ; @param (keyword) n
+  ;
+  ; @usage
+  ; (normalize-marker :*source-code*)
+  ; =>
+  ; :source-code
+  ;
+  ; @return (keyword)
+  [n]
+  (if (and (-> n name string/first-character (= "*"))
+           (-> n name string/last-character  (= "*")))
+      (-> n name string/remove-first-character string/remove-last-character keyword)
+      (-> n)))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn color-class
+  ; @ignore
+  ;
+  ; @param (keyword) n
+  ;
+  ; @usage
+  ; (overflow-class (:marker-color {...}))
+  ; =>
+  ; :color--hard-grey
+  ;
+  ; @return (keyword)
+  [n]
+  (case n :default   :color--hard-grey
+          :primary   :color--hard-blue
+          :secondary :color--hard-purple
+          :muted     :color--soft-grey
+          :success   :color--hard-green
+          :warning   :color--hard-red
+                     :color--hard-grey))
+
+(defn overflow-class
+  ; @ignore
+  ;
+  ; @param (keyword) n
+  ;
+  ; @usage
+  ; (overflow-class (:text-overflow {...}))
+  ; =>
+  ; :text-wrap
+  ;
+  ; @return (keyword)
+  [n]
+  (case n :scroll :scroll-x
+          :wrap   :text--wrap
+                  :text--wrap))
+
+(defn visibility-class
+  ; @ignore
+  ;
+  ; @param (boolean) n
+  ;
+  ; @usage
+  ; (visibility-class (:hide-marker? {...}))
+  ; =>
+  ; :text-hidden
+  ;
+  ; @return (keyword)
+  [n]
+  (if n :text--hidden))
+
+(defn config-snippet
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; {:snippet-config (map)(opt)
+  ;  ...}
+  ; @param (map) snippet
+  ; {:marker (keyword)
+  ;  :text (strings in vector)(opt)
+  ;  ...}
+  ;
+  ; @return (map)
+  [_ {:keys [snippet-config]} {:keys [marker text] :as x}]
+  {:collapsed?   (and (-> snippet-config marker :collapsed?))
+   :collapsible? (and (-> snippet-config marker :collapsible?)
+                      (-> text vector/not-empty?))
+   :meta-class   [:text--xs :text--uppercase :color--soft-grey]
+   :marker-class [:text--xs :text--uppercase             (-> snippet-config marker :marker-color  color-class)
+                                                         (-> snippet-config marker :hide-marker?  visibility-class)]
+   :label-class  [:text--xs :text--uppercase :text--bold (-> snippet-config marker :label-color   color-class)]
+   :text-class   [:text--s  :text--boxed                 (-> snippet-config marker :text-color    color-class)
+                                                         (-> snippet-config marker :text-overflow overflow-class)]})
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn extension->namespace-type
+  ; @ignore
+  ;
+  ; @param (string) extension
+  ; "clj", "cljc", "cljs"
+  ;
+  ; @usage
+  ; (extension->namespace-type "clj")
+  ; =>
+  ; "Clojure namespace"
+  ;
+  ; @return (string)
+  [extension]
+  (case extension "clj" "Clojure namespace" "cljc" "Isomorphic namespace" "cljs" "ClojureScript namespace" "Unknown"))
+
+(defn extension->namespaces-type
+  ; @ignore
+  ;
+  ; @param (string) extension
+  ; "clj", "cljc", "cljs"
+  ;
+  ; @usage
+  ; (extension->namespaces-type "clj")
+  ; =>
+  ; "Clojure namespaces"
+  ;
+  ; @return (string)
+  [extension]
+  (if-let [namespace-type (extension->namespace-type extension)]
+          (str namespace-type "s")))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn symbol-anchor
   ; @ignore
   ;
@@ -53,11 +187,11 @@
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; @param (map) content-block
+  ; @param (map) snippet
   ;
   ; @return (string)
-  [_ {:keys [previews-uri]} content-block]
-  (let [preview-path (-> content-block :meta first)]
+  [_ {:keys [previews-uri]} snippet]
+  (let [preview-path (-> snippet :meta first)]
        (str previews-uri "/" preview-path)))
 
 ;; ----------------------------------------------------------------------------
@@ -123,57 +257,40 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn sort-declaration-content
+(defn sort-section-content
   ; @ignore
   ;
   ; @param (maps in vector) state
   ; @param (map) options
-  ; {:declaration-order (keywords in vector)(opt)}
+  ; {:snippet-order (map)(opt)
+  ;   {:def (keywords in vector)(opt)
+  ;    :defn (keywords in vector)(opt)
+  ;    :tutorial (keywords in vector)(opt)}
+  ;  ...}
   ; @param (map) section
   ; {:content (maps in vector)
+  ;  :type (keyword)
   ;  ...}
   ;
   ; @usage
-  ; (sort-declaration-content [...] {...} {:content [...] :declaration-order [...] ...})
+  ; (sort-section-content [...] {...} {:content [...] :type :tutorial :snippet-order {:tutorial [...] ...} ...})
   ; =>
   ; {:content [...]
   ;  ...}
   ;
   ; @return (map)
-  [_ {:keys [declaration-order]} section]
-  (letfn [(f0 [%]   (vector/sort-items-by % f1 :type))
-          (f1 [a b] (vector/order-comparator declaration-order a b))]
-         (if declaration-order (-> section (update :content f0))
-                               (-> section))))
-
-(defn sort-tutorial-content
-  ; @ignore
-  ;
-  ; @param (maps in vector) state
-  ; @param (map) options
-  ; {:tutorial-order (keywords in vector)(opt)}
-  ; @param (map) section
-  ; {:content (maps in vector)
-  ;  ...}
-  ;
-  ; @usage
-  ; (sort-tutorial-content [...] {...} {:content [...] :tutorial-order [...] ...})
-  ; =>
-  ; {:content [...]
-  ;  ...}
-  ;
-  ; @return (map)
-  [_ {:keys [tutorial-order]} section]
-  (letfn [(f0 [%]   (vector/sort-items-by % f1 :type))
-          (f1 [a b] (vector/order-comparator tutorial-order a b))]
-         (if tutorial-order (-> section (update :content f0))
-                            (-> section))))
+  [_ {:keys [snippet-order]} {:keys [type] :as section}]
+  (letfn [(f0 [%]   (vector/sort-items-by % f1 :marker))
+          (f1 [a b] (vector/order-comparator (type snippet-order) a b))]
+         (if (-> snippet-order type vector?)
+             (-> section (update :content f0))
+             (-> section))))
 
 (defn append-declaration-source-code
   ; @ignore
   ;
   ; @description
-  ; Appends the imported source code of declaration as a content block of the given declaration.
+  ; Appends the imported source code of declaration as a snippet of the given declaration.
   ;
   ; @param (maps in vector) state
   ; @param (map) options
@@ -185,15 +302,15 @@
   ; @usage
   ; (append-declaration-source-code [...] {...} {:content [...] :source-code "(defn ...)" :type :defn ...})
   ; =>
-  ; {:content     [{:type :source-code :text ["(defn ...)"]} ...]
+  ; {:content     [{:marker :*source-code* :text ["(defn ...)"]} ...]
   ;  :source-code "..."
   ;  :type        :defn
   ;  ...}
   ;
   ; @return (map)
   [_ _ {:keys [source-code] :as section}]
-  (let [content-block {:type :source-code :text [source-code]}]
-       (-> section (update :content vector/cons-item content-block))))
+  (let [snippet {:marker :*source-code* :text [source-code]}]
+       (-> section (update :content vector/cons-item snippet))))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

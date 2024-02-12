@@ -6,28 +6,28 @@
               [syntax-interpreter.api :as syntax-interpreter]
               [syntax-reader.api      :as syntax-reader]))
 
-;; -- Content block nomenclature ----------------------------------------------
+;; -- Snippet nomenclature ----------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-; @my-block-type (my-meta)(my-meta) my-block-name
-; my-block-text
+; @my-marker (my-meta)(my-meta) My snippet label
+; My snippet text
 ; =>
-; {:type :my-block-type
-;  :meta ["my-meta" "my-meta"]
-;  :name "my-block-name"
-;  :text ["my-block-text"]}
+; {:marker :my-marker
+;  :meta   ["my-meta" "my-meta"]
+;  :label  "My snippet label"
+;  :text   ["My snippet text"]}
 
-;; -- Content block example ---------------------------------------------------
+;; -- Snippet example ---------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 ; @param (map)(opt) options
 ; {:return? (boolean)(opt)
 ;   Default: false}
 ; =>
-; {:type :param
-;  :meta ["map" "opt"]}
-;  :name "options"
-;  :text ["{:return? (boolean)(opt)" "  Default: false}"]
+; {:marker :param
+;  :meta   ["map" "opt"]}
+;  :label  "options"
+;  :text   ["{:return? (boolean)(opt)" "  Default: false}"]
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -58,78 +58,78 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn trim-section-content-block
+(defn trim-snippet
   ; @ignore
   ;
   ; @description
-  ; Removes the leading empty rows and trailing empty rows of the text of the given content block.
+  ; Removes the leading empty rows and trailing empty rows of the text of the given snippet.
   ;
-  ; @param (map) content-block
+  ; @param (map) snippet
   ; {:text (strings in vector)(opt)
   ;  ...}
   ;
   ; @usage
-  ; (trim-section-content-block {:text ["" "" "..." "" ""] ...}
+  ; (trim-snippet {:text ["" "" "..." "" ""] ...}
   ; =>
   ; {:text ["..."]
   ;  ...}
   ;
   ; @return (map)
-  [content-block]
-  (cond (-> content-block :text      empty?)  (-> content-block)
-        (-> content-block :text first empty?) (-> content-block (update :text vector/remove-first-item) trim-section-content-block)
-        (-> content-block :text last empty?)  (-> content-block (update :text vector/remove-last-item)  trim-section-content-block)
-        :return content-block))
+  [snippet]
+  (cond (-> snippet :text       empty?) (-> snippet)
+        (-> snippet :text first empty?) (-> snippet (update :text vector/remove-first-item) trim-snippet)
+        (-> snippet :text last  empty?) (-> snippet (update :text vector/remove-last-item)  trim-snippet)
+        :return snippet))
 
-(defn read-section-content-block
+(defn read-snippet
   ; @ignore
   ;
-  ; @param (strings in vector) content-block
+  ; @param (strings in vector) snippet
   ;
   ; @usage
-  ; (read-section-content-block ["; @param (map)(opt) my-map"  "; {...}"])
+  ; (read-snippet ["; @param (map)(opt) my-map"  "; {...}"])
   ; =>
-  ; {:type :param :meta ["map" "opt"] :name "my-map" :text [" {...}"] :indent 1}
+  ; {:marker :param :meta ["map" "opt"] :label "my-map" :text [" {...}"] :indent 1}
   ;
   ; @return (map)
-  [content-block]
-  (letfn [(f0 [       %] (keyword (regex/re-first % #"(?<=\;[\h]*\@)[a-z]+")))  ; <- Returns the block type, derived from the given comment row.
-          (f1 [       %]          (regex/re-all   % #"(?<=\()[^()]+(?=\))"))    ; <- Returns the block meta values (if any), derived from the given comment row.
-          (f2 [       %]          (regex/re-last  % #"(?<=\@.+[\h])[^\(\)]+$")) ; <- Returns the block name (if any), derived from the given comment row.
-          (f3 [       %] (count   (regex/re-first % #"(?<=\;)[\h]*(?=\@)")))    ; <- Returns the block indent length, derived from the given comment row.
-          (f4 [result %] (string/keep-range % (-> result :indent inc)))         ; <- Returns the given block text row, with adjusted indent.
-          (f5 [result %] (if (-> result empty?)                                                 ; <- The 'result' vector is empty when the iteration reads the first row of block.
-                             (-> result (merge {:type (f0 %) :indent (f3 %)}                    ; <- Every imported block starts with a block marker row.
-                                               (let [meta (f1 %)] (if (-> meta vector/not-empty?) {:meta meta}))   ; <- Meta values of blocks are optional.
-                                               (let [name (f2 %)] (if (-> name string/not-empty?) {:name name})))) ; <- Name of blocks are optional.
-                             (-> result (update :text vector/conj-item (f4 result %)))))] ; <- Rows following the first row (block marker row) are text rows of the block.
-         (reduce f5 {} content-block)))
+  [snippet]
+  (letfn [(f0 [       %] (keyword (regex/re-first % #"(?<=\;[\h]*\@)[a-z\-\d\*]+"))) ; <- Returns the snippet marker, derived from the given comment row.
+          (f1 [       %]          (regex/re-all   % #"(?<=\()[^()]+(?=\))"))         ; <- Returns the snippet meta values (if any), derived from the given comment row.
+          (f2 [       %]          (regex/re-last  % #"(?<=\@.+[\h])[^\(\)]+$"))      ; <- Returns the snippet label (if any), derived from the given comment row.
+          (f3 [       %] (count   (regex/re-first % #"(?<=\;)[\h]*(?=\@)")))         ; <- Returns the snippet indent length, derived from the given comment row.
+          (f4 [result %] (string/keep-range % (-> result :indent inc)))              ; <- Returns the given snippet text row, with adjusted indent.
+          (f5 [result %] (if (-> result empty?)                                                                        ; <- The 'result' vector is empty when the iteration reads the first row of the snippet text.
+                             (-> result (merge {:marker (f0 %) :indent (f3 %)}                                         ; <- Every imported snippet starts with a snippet marker row.
+                                               (let [meta  (f1 %)] (if (-> meta  vector/not-empty?) {:meta  meta}))    ; <- Meta values of snippets are optional.
+                                               (let [label (f2 %)] (if (-> label string/not-empty?) {:label label})))) ; <- Labels of snippets are optional.
+                             (-> result (update :text vector/conj-item (f4 result %)))))] ; <- Rows following the first row (snippet marker row) are text rows of the snippet.
+         (reduce f5 {} snippet)))
 
-(defn read-section-content-blocks
+(defn read-snippets
   ; @ignore
   ;
   ; @description
-  ; Reads the content blocks of the given section content.
+  ; Reads the snippets of the given section content.
   ;
   ; @param (strings in vectors in vector) section-content
   ;
   ; @usage
-  ; (read-section-content-blocks [["; @param (map)(opt) my-map"  "; {...}"]
-  ;                               ["; @param (vector) my-vector" "; [...]"]])
+  ; (read-snippets [["; @param (map)(opt) my-map"  "; {...}"]
+  ;                 ["; @param (vector) my-vector" "; [...]"]])
   ; =>
-  ; [{:type :param :meta ["map" "opt"] :name "my-map"    :text [" {...}"]}
-  ;  {:type :param :meta ["vector"]    :name "my-vector" :text [" [...]"]}]
+  ; [{:marker :param :meta ["map" "opt"] :label "my-map"    :text [" {...}"]}
+  ;  {:marker :param :meta ["vector"]    :label "my-vector" :text [" [...]"]}]
   ;
   ; @return (maps in vector)
   [section-content]
-  (-> section-content (vector/->items read-section-content-block)
-                      (vector/->items trim-section-content-block)))
+  (-> section-content (vector/->items read-snippet)
+                      (vector/->items trim-snippet)))
 
 (defn split-section-content-rows
   ; @ignore
   ;
   ; @description
-  ; Distributes the given section content rows into content blocks.
+  ; Distributes the given section content rows into snippets.
   ;
   ; @param (strings in vector) section-content
   ;
@@ -175,34 +175,46 @@
          ;(reduce-kv f8 [] section-content))
   ; Deprecated! (Previous version)
 
-  ; - Block marker row:     "; @usage", "; @param", etc.
+  ; - Snippet marker row:   "; @my-marker"
   ; - Empty comment row:    "; "
   ; - Nonempty comment row: "; abc..."
-  (letfn [(f0 [%] (-> % (regex/re-match? #"^[\h]*\;[\h]*\@"))) ; <- Returns TRUE if the given comment row is a block marker row.
-          (f1 [%] (-> % empty?))                               ; <- Returns TRUE if no block has been opened yet.
-          (f2 [result cursor row-content] (cond (f0 row-content)  (-> result (f4 cursor row-content))   ; <- Block marker row
-                                                :non-marker-row   (-> result (f3 cursor row-content)))) ; <- Not a block marker row
-          (f3 [result cursor row-content] (cond (f1 result)       (-> result (f4 cursor row-content))   ; <- No block has been opened yet
-                                                :any-block-opened (-> result (vector/update-last-item vector/conj-item row-content))))
-          (f4 [result cursor row-content] (cond (f0 row-content)  (-> result (vector/conj-item [           row-content]))    ; <- Opening a new block
-                                                :non-marker-row   (-> result (vector/conj-item ["; @plain" row-content]))))] ; <- Opening a new block
+  (letfn [(f0 [%] (-> % (regex/re-match? #"^[\h]*\;[\h]*\@"))) ; <- Returns TRUE if the given comment row is a snippet marker row.
+          (f1 [%] (-> % empty?))                               ; <- Returns TRUE if no snippet has been opened yet.
+          (f2 [result cursor row-content] (cond (f0 row-content)    (-> result (f4 cursor row-content))   ; <- Snippet marker row
+                                                :non-marker-row     (-> result (f3 cursor row-content)))) ; <- Not a snippet marker row
+          (f3 [result cursor row-content] (cond (f1 result)         (-> result (f4 cursor row-content))   ; <- No snippet has been opened yet
+                                                :any-snippet-opened (-> result (vector/update-last-item vector/conj-item row-content))))
+          (f4 [result cursor row-content] (cond (f0 row-content)    (-> result (vector/conj-item [             row-content]))    ; <- Opening a new snippet
+                                                :non-marker-row     (-> result (vector/conj-item ["; @*plain*" row-content]))))] ; <- Opening a new snippet
          ; ...
          (reduce-kv f2 [] section-content)))
 
-(defn clean-section-content-blocks
+(defn remove-ignored-snippets
   ; @ignore
   ;
   ; @description
-  ; Removes the ignored or empty content blocks of the given section content.
+  ; Removes ignored snippets of the given section content.
   ;
   ; @param (maps in vector) section-content
   ;
   ; @return (maps in vector)
   [section-content]
-  (letfn [(f0 [%] (-> % :type (= :ignore)))
-          (f1 [%] (-> % :text empty?))]
-         (-> section-content (vector/before-first-match f0 {:return? true})
-                             (vector/remove-items-by    f0))))
+  (letfn [(f0 [%] (-> % :marker (= :ignore)))]
+         (vector/before-first-match section-content f0 {:return? true})))
+
+(defn remove-empty-snippets
+  ; @ignore
+  ;
+  ; @description
+  ; Removes empty snippets of the given section content.
+  ;
+  ; @param (maps in vector) section-content
+  ;
+  ; @return (maps in vector)
+  [section-content]
+  (letfn [(f0 [%] (and (-> % :text empty?)
+                       (-> % :marker (= :*plain*))))]
+         (vector/remove-items-by section-content f0)))
 
 (defn read-section-content
   ; @ignore
@@ -215,11 +227,12 @@
   ; {:label   "my-function"
   ;  :name    "my-function"
   ;  :type    :defn
-  ;  :content [{:type :param  :meta ["map" "opt"] :name "options" :text [" {...}"]}
-  ;            {:type :return :meta ["map"]}]}
+  ;  :content [{:marker :param  :meta ["map" "opt"] :label "options" :text [" {...}"]}
+  ;            {:marker :return :meta ["map"]}]}
   ;
   ; @return (map)
   [section]
   (-> section (update :content split-section-content-rows)
-              (update :content read-section-content-blocks)
-              (update :content clean-section-content-blocks)))
+              (update :content read-snippets)
+              (update :content remove-ignored-snippets)
+              (update :content remove-empty-snippets)))

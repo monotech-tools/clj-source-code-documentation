@@ -18,11 +18,13 @@
   ;  :filename-pattern (regex pattern)
   ;  :output-path (string)
   ;  :previews-uri (string)
+  ;  :snippet-config (map)
   ;  :source-paths (strings in vector)
   ;  ...}
   [options]
   (merge {:filename-pattern core.config/DEFAULT-FILENAME-PATTERN}
-         (-> options (update :base-uri     uri/valid-url)
-                     (update :output-path  io/valid-absolute-path)
-                     (update :previews-uri uri/valid-url)
-                     (update :source-paths vector/->items io/valid-absolute-path))))
+         (-> options (update :base-uri      uri/valid-url)
+                     (update :output-path   io/valid-absolute-path)
+                     (update :previews-uri  uri/valid-url)
+                     (update :source-paths  vector/->items io/valid-absolute-path)
+                     (update :snippet-config merge core.config/PREDEFINED-SNIPPET-CONFIG))))

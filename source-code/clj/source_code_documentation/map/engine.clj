@@ -10,16 +10,68 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn map-source-paths
+(defn map-source-file
   ; @ignore
-  ;
-  ; @description
-  ; - Maps namespaces from all CLJ, CLJC, and CLJS source files within the given source directories.
-  ; - Although the documentation generator creates documentation only for files that match the provided (or default)
-  ;   filename pattern, to handle links and redirections, it requires mapping of namespaces in all available source files.
   ;
   ; @param (vector) state
   ; @param (map) options
+  ; {:filename-pattern (regex-pattern)
+  ;  ...}
+  ; @param (string) filepath
+  ;
+  ; @usage
+  ; (map-source-file [] {...} "source-code/my_namespace_a.clj")
+  ; =>
+  ; {:create-documentation? true
+  ;  :filepath              "source-code/my_namespace_a.clj"
+  ;  :ns-map                {...}}
+  ;
+  ; @return (map)
+  ; {:create-documentation? (boolean)
+  ;  :filepath (string)
+  ;  :ns-map (map)}
+  [_ {:keys [filename-pattern]} filepath]
+  (letfn [(f0 [filepath] (-> filepath io/filepath->filename (regex/re-match? filename-pattern)))]
+         (println "Mapping file:" filepath)
+         {:create-documentation? (f0 filepath)
+          :filepath              (-> filepath)
+          :ns-map                (-> filepath source-code-map/read-ns-map)}))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn search-source-files
+  ; @ignore
+  ;
+  ; @param (vector) state
+  ; @param (map) options
+  ; {:filename-pattern (regex-pattern)
+  ;  :trace-redirections? (boolean)(opt)
+  ;  ...}
+  ; @param (string) source-path
+  ;
+  ; @usage
+  ; (search-source-files [] {...} "source-code")
+  ; =>
+  ; ["source-code/my_namespace_a.clj"
+  ;  "source-code/my_namespace_b.clj"
+  ;  "source-code/my_namespace_c.clj"]
+  ;
+  ; @return (strings in vector)
+  [_ {:keys [filename-pattern trace-redirections?]} source-path]
+  (if trace-redirections? (io/search-files source-path core.config/SOURCE-FILENAME-PATTERN)
+                          (io/search-files source-path filename-pattern)))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn map-source-paths
+  ; @ignore
+  ;
+  ; @param (vector) state
+  ; @param (map) options
+  ; {:source-paths (strings in vector)
+  ;  ...}
   ;
   ; @usage
   ; (map-source-paths []
@@ -33,12 +85,11 @@
   ; [(map) file-data
   ;   {:create-documentation? (boolean)
   ;    :filepath (string)
-  ;    :ns-map (map)}]
-  [state {:keys [filename-pattern source-paths]}]
-  (letfn [(f0 [filepath]    (-> filepath io/filepath->filename (regex/re-match? filename-pattern)))
-          (f1 [source-path] (io/search-files source-path core.config/SOURCE-FILENAME-PATTERN))
-          (f2 [filepath]    (println "Mapping file:" filepath)
-                            {:filepath filepath :ns-map (source-code-map/read-ns-map filepath) :create-documentation? (f0 filepath)})]
-         (-> source-paths (vector/->items f1)
+  ;    :ns-map (map)}
+  ;  ...]
+  [state {:keys [source-paths] :as options}]
+  (letfn [(f0 [source-path] (search-source-files state options source-path))
+          (f1 [filepath]    (map-source-file     state options filepath))]
+         (-> source-paths (vector/->items f0)
                           (vector/flat-items)
-                          (vector/->items f2))))
+                          (vector/->items f1))))

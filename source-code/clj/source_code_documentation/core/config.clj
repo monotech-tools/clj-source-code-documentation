@@ -13,3 +13,10 @@
 ;
 ; @constant (regex pattern)
 (def DEFAULT-FILENAME-PATTERN SOURCE-FILENAME-PATTERN)
+
+; @ignore
+;
+; @constant (map)
+(def PREDEFINED-SNIPPET-CONFIG {:*error*       {:marker-color :warning}
+                                :*plain*       {:hide-marker? true :text-overflow :wrap}
+                                :*source-code* {:collapsed? true :collapsible? true}})

@@ -47,11 +47,6 @@
 (defn import-source-files
   ; @ignore
   ;
-  ; @description
-  ; - Imports the source codes and documentation contents of defs and defns (from all mapped source files within the given source directories).
-  ; - Although the documentation generator creates documentation only for files that match the provided (or default)
-  ;   filename pattern, to handle links and redirections, it requires importing source codes and documentation contents from all available source files.
-  ;
   ; @param (maps in vector) state
   ; @param (map) options
   ;

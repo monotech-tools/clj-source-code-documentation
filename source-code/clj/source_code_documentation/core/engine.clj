@@ -26,8 +26,6 @@
   ;   {:name (string)(opt)
   ;    :website (string)(opt)}
   ;  :base-uri (string)
-  ;  :declaration-order (keywords in vector)
-  ;   Order of content blocks within declaration sections (by type).
   ;  :filename-pattern (regex pattern)(opt)
   ;   Default: #"[a-z\_\d]+\.clj[cs]?"
   ;  :library (map)(opt)}
@@ -36,21 +34,40 @@
   ;    :website (string)(opt)}
   ;  :output-path (string)
   ;  :previews-uri (string)(opt)
+  ;  :snippet-config (map)(opt)
+  ;   {:my-marker (map)
+  ;     {:collapsed? (boolean)(opt)
+  ;      :collapsible? (boolean)(opt)
+  ;      :hide-marker? (boolean)(opt)
+  ;      :label-color (keyword)(opt)
+  ;       :default, :muted, :primary, :secondary, :success, :warning
+  ;      :marker-color (keyword)(opt)
+  ;       :default, :muted, :primary, :secondary, :success, :warning
+  ;      :text-color (keyword)(opt)
+  ;       :default, :muted, :primary, :secondary, :success, :warning
+  ;      :text-overflow (keyword)(opt)
+  ;       :scroll, :wrap}}
+  ;  :snippet-order (map)(opt)
+  ;   Order of snippets within sections (sorted by marker name).
+  ;   {:def (keywords in vector)(opt)
+  ;    :defn (keywords in vector)(opt)
+  ;    :tutorial (keywords in vector)(opt)}
   ;  :source-paths (strings in vector)
-  ;  :tutorial-order (keywords in vector)
-  ;   Order of content blocks within tutorial sections (by type).}
+  ;  :trace-redirections? (boolean)(opt)
+  ;   Default: true}
   ;
   ; @usage
   ; (generate-documentation! {...})
   ;
   ; @usage
-  ; (generate-documentation! {:author            {:name "Author" :website "https://author.com"}
-  ;                           :declaration-order [:source-code :description :usage ...]
-  ;                           :filename-pattern  "[a-z\_]\.clj"
-  ;                           :library           {:name "my-library" :version "1.0.0" :website "https://github.com/author/my-library"}
-  ;                           :output-path       "docs"
-  ;                           :previews-uri      "https://github.com/author/my-library/blob/main/previews"
-  ;                           :source-paths      ["source-code"]})
+  ; (generate-documentation! {:author           {:name "Author" :website "https://author.com"}
+  ;                           :filename-pattern "[a-z\_]\.clj"
+  ;                           :library          {:name "my-library" :version "1.0.0" :website "https://github.com/author/my-library"}
+  ;                           :output-path      "docs"
+  ;                           :previews-uri     "https://github.com/author/my-library/blob/main/previews"
+  ;                           :snippet-config   {:my-marker {:text-overflow :wrap ...} ...}
+  ;                           :snippet-order    {:defn [:*source-code* :description :usage ...] ...}
+  ;                           :source-paths     ["source-code"]})
   [options]
   (if (v/valid? options core.tests/OPTIONS-TEST {:prefix "options"})
       (let [options (core.prototypes/options-prototype options)]

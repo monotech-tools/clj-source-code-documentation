@@ -11,7 +11,7 @@
 /*** Body ***/
 
 body {
-  margin:  0 0 0 560px;
+  margin:  12px 0 0 560px;
   padding: 60px 48px }
 
 button {
@@ -87,8 +87,7 @@ a.inline-link:hover {
 
 .text--xs {
   font-size:      10px;
-  line-height:    18px;
-  text-transform: uppercase }
+  line-height:    18px }
 
 .text--s {
   font-size:   12px;
@@ -112,6 +111,9 @@ a.inline-link:hover {
 .text--bold {
   font-weight: 600 }
 
+.text--uppercase {
+  text-transform: uppercase }
+
 .text--boxed {
   background-color: #fafafa;
   padding:          12px 8px }
@@ -128,7 +130,20 @@ a.inline-link:hover {
 
 
 
+/*** Image ***/
+
+.image--boxed {
+  background-color: #fafafa;
+  padding:          12px 8px }
+
+/*** Image ***/
+
+
+
 /*** Colors ***/
+
+.color--black {
+  color: #000000 }
 
 .color--hard-grey {
   color: #404040 }
@@ -157,10 +172,10 @@ a.inline-link:hover {
 
 /*** Collapsible ***/
 
-[data-collapsed=\"true\"] .content-block--text {
+[data-collapsed=\"true\"] .snippet--text {
   display: none }
 
-[data-collapsible=\"true\"] .content-block--header::after {
+[data-collapsible=\"true\"] .snippet--header::after {
   align-items:     center;
   content:         '▼';
   display:         flex;
@@ -170,7 +185,7 @@ a.inline-link:hover {
   width:           18px
 }
 
-[data-collapsible=\"true\"][data-collapsed=\"false\"] .content-block--header::after {
+[data-collapsible=\"true\"][data-collapsed=\"false\"] .snippet--header::after {
   content: '▲' }
 
 /*** Collapsible ***/
@@ -282,19 +297,10 @@ a.inline-link:hover {
 
 
 
-/*** Namespace header ***/
-
-#namespace-header--title {
-  margin-top: 24px }
-
-/*** Namespace header ***/
-
-
-
 /*** Sections ***/
 
 .section {
-  padding-top: 144px }
+  padding: 72px 0 }
 
 .section--header {
   border-bottom:  1px solid #e0e0e0;
@@ -305,18 +311,18 @@ a.inline-link:hover {
 
 
 
-/*** Content blocks ***/
+/*** Snippets ***/
 
-.content-blocks {
+.snippets {
   display:        flex;
   flex-direction: column;
   gap:            24px }
 
-.content-block--header {
+.snippet--header {
   display: flex;
   gap:     4px }
 
-.content-block--preview-image {
+.snippet--preview-image {
   border:     1px solid #dedede;
   display:    block;
   max-height: 480px;
@@ -324,4 +330,4 @@ a.inline-link:hover {
   min-height: 48px;
   min-width:  64px }
 
-/*** Content blocks ***/")
+/*** Snippets ***/")
