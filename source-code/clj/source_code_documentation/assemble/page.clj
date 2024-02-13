@@ -401,9 +401,10 @@
   ; @param (map) file-data
   ;
   ; @return (hiccup)
-  [_ _ _]
+  [state options file-data]
   [:head [:style  {:type "text/css"}        (asset-compressor/compress-css assemble.css/STYLES)]
-         [:script {:type "text/javascript"} (asset-compressor/compress-js  assemble.js/SCRIPTS)]])
+         [:script {:type "text/javascript"} (asset-compressor/compress-js  assemble.js/SCRIPTS)]
+         [:title  (assemble.utils/page-title state options file-data)]])
 
 (defn assemble-page
   ; @ignore

@@ -170,6 +170,25 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn page-title
+  ; @ignore
+  ;
+  ; @param (maps in vector) state
+  ; @param (map) options
+  ; @param (map) file-data
+  ;
+  ; @usage
+  ; (page-title [...] {:library {:name "my-library" :version "1.0.0" ...} ...} {...})
+  ; =>
+  ; "my-library 1.0.0 documentation"
+  ;
+  ; @return (string)
+  [_ options _]
+  (string/join [(-> options :library :name)
+                (-> options :library :version)
+                (-> "documentation")]
+               " " {:join-empty? false}))
+
 (defn symbol-anchor
   ; @ignore
   ;
