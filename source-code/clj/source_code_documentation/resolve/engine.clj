@@ -110,7 +110,8 @@
           (f2 [trace %] (let [trace (resolve.utils/update-trace trace (:pointer %))] (f0 trace (f1 trace %))))]        ; <- ... takes a snippet, returns the target section
          (let [initial-trace [(resolve.utils/create-pointer file-data section)]]
               (-> section (merge (-> initial-trace (f0 section)))
-                          (assoc :name (:name section)))))) ; <- The name of the section is not redirected.
+                          (assoc :label (:label section))     ; <- Redirects the label of the section.
+                          (assoc :name  (:name  section)))))) ; <- Redirects the name of the section.
 
 (defn resolve-links
   ; @ignore

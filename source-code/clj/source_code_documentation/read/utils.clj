@@ -38,7 +38,7 @@
   ; @param (map) section
   ;
   ; @usage
-  ; (read-section-source-code {:name "my-function" :type :defn :content [...] :source-code "(defn my-function [])"})
+  ; (read-section-source-code {:name "my-function" :type :defn :content [...] :source-code "(defn my-function [])" ...})
   ; =>
   ; {:label       "my-function"
   ;  :name        "my-function"
@@ -134,10 +134,10 @@
   ; @param (strings in vector) section-content
   ;
   ; @usage
-  ; (split-section-content-rows ["; @param (map) my-map" "; {...}" "; @param (vector) my-vector" "; [...]"])
+  ; (split-section-content-rows ["; @param (map) my-map" "; {...}" "; @param (vector) my-vector" "; [...]" ...])
   ; =>
   ; [["; @param (map) my-map"       "; {...}"]
-  ;  ["; @param (vector) my-vector" "; [...]"]]
+  ;  ["; @param (vector) my-vector" "; [...]"] ...]
   ;
   ; @return (strings in vectors in vector)
   [section-content]
@@ -222,7 +222,7 @@
   ; @param (map) section
   ;
   ; @usage
-  ; (read-section-content {:name "my-function" :type :defn :content ["; Row #1" "; @param (map)(opt) options" ";  {...}" ";" "; @return (map)"]})
+  ; (read-section-content {:name "my-function" :type :defn :content ["; Row #1" "; @param (map)(opt) options" ";  {...}" ";" "; @return (map)"] ...})
   ; =>
   ; {:label   "my-function"
   ;  :name    "my-function"

@@ -68,6 +68,27 @@
           :wrap   :text--wrap
                   :text--wrap))
 
+(defn size-class
+  ; @ignore
+  ;
+  ; @param (keyword) n
+  ;
+  ; @usage
+  ; (size-class (:marker-size {...}))
+  ; =>
+  ; :text--xs
+  ;
+  ; @return (keyword)
+  [n]
+  (case n :xxs :text--xxs
+          :xs  :text--xs
+          :s   :text--s
+          :m   :text--m
+          :l   :text--l
+          :xl  :text--xl
+          :xxl :text--xxl
+               :text--xxs))
+
 (defn visibility-class
   ; @ignore
   ;
@@ -99,12 +120,18 @@
   {:collapsed?   (and (-> snippet-config marker :collapsed?))
    :collapsible? (and (-> snippet-config marker :collapsible?)
                       (-> text vector/not-empty?))
-   :meta-class   [:text--xs :text--uppercase :color--soft-grey]
-   :marker-class [:text--xs :text--uppercase             (-> snippet-config marker :marker-color  color-class)
-                                                         (-> snippet-config marker :hide-marker?  visibility-class)]
-   :label-class  [:text--xs :text--uppercase :text--bold (-> snippet-config marker :label-color   color-class)]
-   :text-class   [:text--s  :text--boxed                 (-> snippet-config marker :text-color    color-class)
-                                                         (-> snippet-config marker :text-overflow overflow-class)]})
+   :image-class  [:image--boxed]
+   :meta-class   [:text--uppercase             (-> snippet-config marker :meta-color    color-class)
+                                               (-> snippet-config marker :meta-size     size-class)
+                                               (-> snippet-config marker :hide-meta?    visibility-class)]
+   :marker-class [:text--uppercase             (-> snippet-config marker :marker-color  color-class)
+                                               (-> snippet-config marker :marker-size   size-class)
+                                               (-> snippet-config marker :hide-marker?  visibility-class)]
+   :label-class  [:text--uppercase :text--bold (-> snippet-config marker :label-color   color-class)
+                                               (-> snippet-config marker :label-size    size-class)]
+   :text-class   [:text--boxed                 (-> snippet-config marker :text-color    color-class)
+                                               (-> snippet-config marker :text-size     size-class)
+                                               (-> snippet-config marker :text-overflow overflow-class)]})
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

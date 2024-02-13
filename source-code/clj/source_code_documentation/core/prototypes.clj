@@ -2,6 +2,7 @@
 (ns source-code-documentation.core.prototypes
     (:require [fruits.uri.api                        :as uri]
               [fruits.vector.api                     :as vector]
+              [fruits.map.api :as map]
               [io.api                                :as io]
               [source-code-documentation.core.config :as core.config]))
 
@@ -27,4 +28,4 @@
                      (update :output-path   io/valid-absolute-path)
                      (update :previews-uri  uri/valid-url)
                      (update :source-paths  vector/->items io/valid-absolute-path)
-                     (update :snippet-config merge core.config/PREDEFINED-SNIPPET-CONFIG))))
+                     (update :snippet-config map/reversed-merge core.config/PREDEFINED-SNIPPET-CONFIG))))

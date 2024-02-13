@@ -39,12 +39,23 @@
   ;     {:collapsed? (boolean)(opt)
   ;      :collapsible? (boolean)(opt)
   ;      :hide-marker? (boolean)(opt)
+  ;      :hide-meta? (boolean)(opt)
   ;      :label-color (keyword)(opt)
   ;       :default, :muted, :primary, :secondary, :success, :warning
+  ;      :label-size (keyword)(opt)
+  ;       :xxs, :xs, :s, :m, :l, :xl, :xxl
   ;      :marker-color (keyword)(opt)
   ;       :default, :muted, :primary, :secondary, :success, :warning
+  ;      :marker-size (keyword)(opt)
+  ;       :xxs, :xs, :s, :m, :l, :xl, :xxl
+  ;      :meta-color (keyword)(opt)
+  ;       :default, :muted, :primary, :secondary, :success, :warning
+  ;      :meta-size (keyword)(opt)
+  ;       :xxs, :xs, :s, :m, :l, :xl, :xxl
   ;      :text-color (keyword)(opt)
   ;       :default, :muted, :primary, :secondary, :success, :warning
+  ;      :text-size (keyword)(opt)
+  ;       :xxs, :xs, :s, :m, :l, :xl, :xxl
   ;      :text-overflow (keyword)(opt)
   ;       :scroll, :wrap}}
   ;  :snippet-order (map)(opt)

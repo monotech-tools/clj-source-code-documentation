@@ -17,8 +17,8 @@
   ; @param (map) section
   ;
   ; @usage
-  ; (def-value-symbol {:ns-map {:defs [{:name "MY-CONSTANT" :value {:symbol "another-namespace/ANOTHER-CONSTANT"}}]}}
-  ;                   {:name "MY-CONSTANT" :type :def :content [...]})
+  ; (def-value-symbol {:ns-map {:defs [{:name "MY-CONSTANT" :value {:symbol "another-namespace/ANOTHER-CONSTANT"} ...} ...] ...} ...}
+  ;                   {:name "MY-CONSTANT" :type :def :content [...] ...})
   ; =>
   ; "another-namespace/ANOTHER-CONSTANT"
   ;
@@ -34,7 +34,7 @@
   ; @param (map) section
   ;
   ; @usage
-  ; (def-value-symbol-namespace {:ns-map {:defs [{:name "MY-CONSTANT" :value {:symbol "another-namespace/ANOTHER-CONSTANT"}}]}}
+  ; (def-value-symbol-namespace {:ns-map {:defs [{:name "MY-CONSTANT" :value {:symbol "another-namespace/ANOTHER-CONSTANT"} ...} ...] ...} ...}
   ;                             {:name "MY-CONSTANT" :type :def :content [...]})
   ; =>
   ; "another-namespace"
@@ -52,7 +52,7 @@
   ; @param (map) section
   ;
   ; @usage
-  ; (def-value-symbol-name {:ns-map {:defs [{:name "MY-CONSTANT" :value {:symbol "another-namespace/ANOTHER-CONSTANT"}}]}}
+  ; (def-value-symbol-name {:ns-map {:defs [{:name "MY-CONSTANT" :value {:symbol "another-namespace/ANOTHER-CONSTANT"} ...} ...] ...} ...}
   ;                        {:name "MY-CONSTANT" :type :def :content [...]})
   ; =>
   ; "ANOTHER-CONSTANT"

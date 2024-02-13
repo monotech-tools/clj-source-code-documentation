@@ -40,7 +40,7 @@
         (if-let [meta   (-> snippet :meta second)] [:pre {:class meta-class}   (-> meta)])
         (if-let [label  (-> snippet :label)]       [:pre {:class label-class}  (-> label)])]))
 
-(defn assemble-snippet-image
+(defn assemble-snippet-preview
   ; @ignore
   ;
   ; @param (maps in vector) state
@@ -87,6 +87,7 @@
   ; @param (map) snippet-props
   ; {:collapsed? (boolean)(opt)
   ;  :collapsible? (boolean)(opt)
+  ;  :image-class (keyword or keywords in vector)(opt)
   ;  :label-class (keyword or keywords in vector)(opt)
   ;  :marker-class (keyword or keywords in vector)(opt)
   ;  :meta-class (keyword or keywords in vector)(opt)
@@ -97,9 +98,9 @@
   (let [data-collapsed   (-> snippet-props :collapsed?   boolean str)
         data-collapsible (-> snippet-props :collapsible? boolean str)]
        [:div {:class [:snippet] :id snippet-id :data-collapsed data-collapsed :data-collapsible data-collapsible}
-             (assemble-snippet-header state options snippet snippet-id snippet-props)
-             (assemble-snippet-image  state options snippet snippet-id snippet-props)
-             (assemble-snippet-text   state options snippet snippet-id snippet-props)]))
+             (assemble-snippet-header  state options snippet snippet-id snippet-props)
+             (assemble-snippet-preview state options snippet snippet-id snippet-props)
+             (assemble-snippet-text    state options snippet snippet-id snippet-props)]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -150,8 +151,8 @@
   ; @return (hiccup)
   [_ _ section {:keys [label-class]}]
   [:div {:class [:section--header]}
-        [:pre {:class [:color--soft-grey :text--xs :text--uppercase]} (:type  section)]
-        [:pre {:class label-class}                                    (:label section)]])
+        [:pre {:class [:color--soft-grey :text--xxs :text--uppercase]} (:type  section)]
+        [:pre {:class label-class}                                     (:label section)]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -169,7 +170,7 @@
         section        (->> section (assemble.utils/sort-section-content           state options))
         declaration-id (->> section :name hiccup/value)]
        [:div {:id declaration-id :class [:section]}
-             (assemble-section-header state options section {:label-class [:color--hard-blue :text--xl :text--bold]})
+             (assemble-section-header state options section {:label-class [:color--hard-blue :text--xxl :text--bold]})
              (assemble-snippets       state options section)]))
 
 (defn assemble-declarations
@@ -204,7 +205,7 @@
   (let [section     (->> section (assemble.utils/sort-section-content state options))
         tutorial-id (->> section :name hiccup/value)]
        [:div {:id tutorial-id :class [:section]}
-             (assemble-section-header state options section {:label-class [:color--hard-purple :text--xl :text--wrap :text--bold]})
+             (assemble-section-header state options section {:label-class [:color--hard-purple :text--xxl :text--wrap :text--bold]})
              (assemble-snippets       state options section)]))
 
 (defn assemble-tutorials
@@ -239,7 +240,7 @@
         namespace-type (-> file-data :filepath io/filepath->extension assemble.utils/extension->namespace-type)]
        (assemble-section-header state options {:label namespace-name
                                                :type  namespace-type}
-                                              {:label-class [:color--black :text--xl :text--wrap :text--bold]})))
+                                              {:label-class [:color--black :text--xxl :text--wrap :text--bold]})))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -258,7 +259,7 @@
           (f1 [%] (-> state (assemble.utils/filter-sections options file-data %)))
           (f2 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--hard-purple :text--m]} (-> % :label)]])]
          (if-let [tutorials (f1 :tutorial)]
-                 (-> [:div {:class [:secondary-list--container]} [:pre {:class [:color--soft-grey :text--xs :text--uppercase]} "Tutorials"]]
+                 (-> [:div {:class [:secondary-list--container]} [:pre {:class [:label :color--soft-grey :text--xxs :text--uppercase]} "Tutorials"]]
                      (hiccup/put-with tutorials f2)))))
 
 (defn assemble-declaration-list
@@ -277,7 +278,7 @@
           (f3 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--hard-blue :text--m]} (-> % :name)]])]
          (let [defs (f1 :def) defns (f1 :defn)]
               (if (or defs defns)
-                  (-> [:div {:class [:secondary-list--container]} [:pre {:class [:color--soft-grey :text--xs :text--uppercase]} "Declarations"]]
+                  (-> [:div {:class [:secondary-list--container]} [:pre {:class [:label :color--soft-grey :text--xxs :text--uppercase]} "Declarations"]]
                       (hiccup/put-with (f2 defs)  f3)
                       (hiccup/put-with (f2 defns) f3))))))
 
@@ -317,7 +318,7 @@
           (f4 [%] [:a {:href (f0 %)} [:pre {:class [:button :color--hard-blue :text--m (if (f3 %) :button--active)]} (-> % :ns-map :declaration :name)]])]
          (if-let [namespaces (f1 extension)]
                  (let [namespaces-type (assemble.utils/extension->namespaces-type extension)]
-                      (-> [:div {:class [:primary-list--container]} [:pre {:class [:color--soft-grey :text--xs :text--uppercase]} namespaces-type]]
+                      (-> [:div {:class [:primary-list--container]} [:pre {:class [:label :color--soft-grey :text--xxs :text--uppercase]} namespaces-type]]
                           (hiccup/put-with (f2 namespaces) f4))))))
 
 (defn assemble-primary-list
@@ -352,7 +353,7 @@
   ; @return (hiccup)
   [_ options _]
   [:div {:id :top-bar}
-        [:pre {:id :top-bar--library-name    :class [:text--xl :text--bold]}      (-> options :library :name)]
+        [:pre {:id :top-bar--library-name    :class [:text--xxl :text--bold]}     (-> options :library :name)]
         [:pre {:id :top-bar--library-version :class [:color--soft-grey :text--s]} (-> options :library :version)]
         (let [library-website-pretty-url (-> options :library :website uri/pretty-url)
               library-website-valid-url  (-> options :library :website uri/valid-url)]

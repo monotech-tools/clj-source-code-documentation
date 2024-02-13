@@ -17,8 +17,8 @@
   ;
   ; @usage
   ; (trace-redirection [...] {...} {...}
-  ;                    {:name "my-function" :type :defn :content [{:marker :redirect :meta ["..."] :indent 1}]}
-  ;                    {:marker :redirect :meta ["..."] :indent 1})
+  ;                    {:name "my-function" :type :defn :content [{:marker :redirect :meta ["..."] :indent 1 ...} ...] ...}
+  ;                    {:marker :redirect :meta ["..."] :indent 1 ...})
   ; =>
   ; {:marker :redirect :meta ["..."] :indent 1 :pointer "another-namespace/another-function"}
   ;
@@ -55,10 +55,10 @@
   ;
   ; @usage
   ; (trace-section [...] {...} {...}
-  ;                {:name "my-function" :type :defn :content [{:marker :redirect :meta ["..."] :indent 1}]})
+  ;                {:name "my-function" :type :defn :content [{:marker :redirect :meta ["..."] :indent 1 ...} ...] ...})
   ; =>
   ; {:name    "my-function"
-  ;  :content [{:marker :redirect :meta ["..."] :indent 1 :pointer "another-namespace/another-function"}]}
+  ;  :content [{:marker :redirect :meta ["..."] :indent 1 :pointer "another-namespace/another-function" ...} ...] ...}
   ;
   ; @return (map)
   [state options file-data section]

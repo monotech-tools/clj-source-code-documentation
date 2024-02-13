@@ -64,11 +64,10 @@ a.inline-link:hover {
   text-decoration: underline }
 
 .button {
-  padding:     3px 12px;
-  white-space: inherit;
-
   /* Shrinks buttons to make them display more text in narrow sidebars. */
-  letter-spacing: .5px }
+  letter-spacing: .5px;
+
+  white-space: inherit }
 
 .button:hover {
   background-color: #f0f0f0 }
@@ -85,8 +84,12 @@ a.inline-link:hover {
 
 /*** Text ***/
 
-.text--xs {
+.text--xxs {
   font-size:      10px;
+  line-height:    18px }
+
+.text--xs {
+  font-size:      11px;
   line-height:    18px }
 
 .text--s {
@@ -102,6 +105,10 @@ a.inline-link:hover {
   line-height: 18px }
 
 .text--xl {
+  font-size:   16px;
+  line-height: 24px }
+
+.text--xxl {
   font-size:   18px;
   line-height: 24px }
 
@@ -286,6 +293,14 @@ a.inline-link:hover {
 .primary-list--container,
 .secondary-list--container {
   margin-bottom: 12px }
+  
+#primary-list .button,
+#secondary-list .button {
+  padding: 3px 12px }
+
+#primary-list .label,
+#secondary-list .label {
+  padding: 0 12px }
 
 /*** Primary list, secondary list ***/
 

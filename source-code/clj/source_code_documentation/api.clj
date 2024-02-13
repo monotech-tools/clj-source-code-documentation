@@ -87,7 +87,7 @@
 ; ; @my-marker123
 ;
 ; @---
-; Predifined markers:
+; Predifined (reserved) markers:
 ;
 ; ; @redirect
 ; ; @link
@@ -305,7 +305,7 @@
 
 ; @tutorial Wildcards in pointers
 ;
-; Wildcards work only if the pointer corresponds to a 'def' declaration, and the declaration has a symbol type value
+; Wildcards work only if the redirection corresponds to a 'def' declaration, and the declaration has a symbol type value
 ; that can be used to derive a name or namespace from it.
 ;
 ; @---
