@@ -18,5 +18,5 @@
 ;
 ; @constant (map)
 (def PREDEFINED-SNIPPET-CONFIG {:*error*       {:text-size :s :marker-color :warning}
-                                :*plain*       {:text-size :s :hide-marker? true :text-overflow :wrap}
-                                :*source-code* {:text-size :s :collapsed? true :collapsible? true}})
+                                :*plain*       {:text-size :s :text-overflow :wrap :hide-marker? true}
+                                :*source-code* {:text-size :s :text-overflow :scroll :collapsed? true :collapsible? true}})

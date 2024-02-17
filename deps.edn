@@ -5,10 +5,10 @@
          bithandshake/cljc-io             {:git/url "https://github.com/bithandshake/cljc-io"
                                            :sha     "772ffc87d86fa3bde18061794ebbb758a9dbea1a"}
          mt-devtools/clj-asset-compressor {:git/url "https://github.com/mt-devtools/clj-asset-compressor"
-                                           :sha     "c3a7524d8e36c29b69bee099423ffc015741780f"}
+                                           :sha     "64f166e29ca182b614414cc6c44e234d1f66a142"}
          mt-devtools/clj-source-code-map  {:git/url "https://github.com/mt-devtools/clj-source-code-map"
-                                           :sha     "c3a7524d8e36c29b69bee099423ffc015741780f"}
+                                           :sha     "64f166e29ca182b614414cc6c44e234d1f66a142"}
          mt-devtools/clj-syntax-reader    {:git/url "https://github.com/mt-devtools/clj-syntax-reader"
-                                           :sha     "c3a7524d8e36c29b69bee099423ffc015741780f"}
+                                           :sha     "64f166e29ca182b614414cc6c44e234d1f66a142"}
          hiccup/hiccup                    {:mvn/version "1.0.5"}
          org.clojure/clojure              {:mvn/version "1.10.1"}}}
