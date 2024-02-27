@@ -58,6 +58,53 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn wrap-snippet-comments
+  ; @ignore
+  ;
+  ; @description
+  ; Wraps each commented (with double semicolon) part of content rows within the given snippet with a SPAN tag.
+  ;
+  ; @usage
+  ; (wrap-snippet-comments {:text ["My row #1 ;; My comment"] ...})
+  ; =>
+  ; {:text ["My row #1 " [:span ";; My comment"]]}
+  ;
+  ; @return (map)
+  [snippet]
+  (letfn [(f0 [%] (reduce f1 [] %))
+          (f1 [result row] (if-let [comment-starts-at (string/first-dex-of row ";;")]
+                                   (vector/concat-items result [(string/keep-range row 0 comment-starts-at) [:span (string/keep-range row comment-starts-at)]])
+                                   (vector/conj-item    result row)))]
+         (-> snippet (update :text f0))))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn break-snippet
+  ; @ignore
+  ;
+  ; @description
+  ; Inserts HICCUP breaks between each content row.
+  ;
+  ; @param (map) snippet
+  ; {:text (strings in vector)(opt)
+  ;  ...}
+  ;
+  ; @usage
+  ; (break-snippet {:text ["My row #1" "My row #2"] ...}
+  ; =>
+  ; {:text ["My row #1" [:br] "My row #2"]
+  ;  ...}
+  ;
+  ; @return (map)
+  ; {:text (vector)
+  ;  ...}
+  [snippet]
+  (-> snippet (update :text vector/gap-items [:br])))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn trim-snippet
   ; @ignore
   ;
@@ -69,9 +116,9 @@
   ;  ...}
   ;
   ; @usage
-  ; (trim-snippet {:text ["" "" "..." "" ""] ...}
+  ; (trim-snippet {:text ["" "" "My row #1" "" ""] ...}
   ; =>
-  ; {:text ["..."]
+  ; {:text ["My row #1"]
   ;  ...}
   ;
   ; @return (map)
@@ -80,6 +127,9 @@
         (-> snippet :text first empty?) (-> snippet (update :text vector/remove-first-item) trim-snippet)
         (-> snippet :text last  empty?) (-> snippet (update :text vector/remove-last-item)  trim-snippet)
         :return snippet))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn read-snippet
   ; @ignore
@@ -117,13 +167,18 @@
   ; (read-snippets [["; @param (map)(opt) my-map"  "; {...}"]
   ;                 ["; @param (vector) my-vector" "; [...]"]])
   ; =>
-  ; [{:marker :param :meta ["map" "opt"] :label "my-map"    :text [" {...}"]}
-  ;  {:marker :param :meta ["vector"]    :label "my-vector" :text [" [...]"]}]
+  ; [{:marker :param :meta ["map" "opt"] :label "my-map"    :text [[" {...}"]]}
+  ;  {:marker :param :meta ["vector"]    :label "my-vector" :text [[" [...]"]]}]
   ;
   ; @return (maps in vector)
   [section-content]
   (-> section-content (vector/->items read-snippet)
-                      (vector/->items trim-snippet)))
+                      (vector/->items trim-snippet)
+                      (vector/->items break-snippet)
+                      (vector/->items wrap-snippet-comments)))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn split-section-content-rows
   ; @ignore
@@ -189,6 +244,9 @@
          ; ...
          (reduce-kv f2 [] section-content)))
 
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
 (defn remove-ignored-snippets
   ; @ignore
   ;
@@ -215,6 +273,9 @@
   (letfn [(f0 [%] (and (-> % :text empty?)
                        (-> % :marker (= :*plain*))))]
          (vector/remove-items-by section-content f0)))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn read-section-content
   ; @ignore

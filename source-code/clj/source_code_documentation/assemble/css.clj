@@ -241,9 +241,9 @@ a.inline-link:hover {
   bottom:           0;
   display:          flex;
   justify-content:  right;
-  left:             0;
   position:         fixed;
-  width:            100% }
+  right:            0;
+  width:            calc(100% - 560px) }
 
 #bottom-bar--credits-link {
   padding: 12px 18px }
@@ -264,7 +264,7 @@ a.inline-link:hover {
   flex-direction:   column;
   height:           calc(100vh - 60px);
   left:             0;
-  padding:          12px 0 54px 0;
+  padding:          12px 0;
   position:         fixed;
   top:              60px;
   width:            280px }
@@ -276,7 +276,7 @@ a.inline-link:hover {
   flex-direction:   column;
   height:           calc(100vh - 60px);
   left:             280px;
-  padding:          12px 0 54px 0;
+  padding:          12px 0;
   position:         fixed;
   top:              60px;
   width:            280px }
@@ -293,7 +293,7 @@ a.inline-link:hover {
 .primary-list--container,
 .secondary-list--container {
   margin-bottom: 12px }
-  
+
 #primary-list .button,
 #secondary-list .button {
   padding: 3px 12px }
@@ -344,5 +344,9 @@ a.inline-link:hover {
   max-width:  640px;
   min-height: 48px;
   min-width:  64px }
+
+.snippet--text span {
+  /* SPAN tags in snippet text are commented parts */
+  opacity: .65 }
 
 /*** Snippets ***/")

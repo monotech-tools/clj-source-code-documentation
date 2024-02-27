@@ -38,7 +38,7 @@
   ; @param (keyword) n
   ;
   ; @usage
-  ; (overflow-class (:marker-color {...}))
+  ; (color-class (:marker-color {...}))
   ; =>
   ; :color--hard-grey
   ;
@@ -50,23 +50,7 @@
           :muted     :color--soft-grey
           :success   :color--hard-green
           :warning   :color--hard-red
-                     :color--hard-grey))
-
-(defn overflow-class
-  ; @ignore
-  ;
-  ; @param (keyword) n
-  ;
-  ; @usage
-  ; (overflow-class (:text-overflow {...}))
-  ; =>
-  ; :text-wrap
-  ;
-  ; @return (keyword)
-  [n]
-  (case n :scroll :scroll-x
-          :wrap   :text--wrap
-                  :text--wrap))
+                     nil))
 
 (defn size-class
   ; @ignore
@@ -76,7 +60,7 @@
   ; @usage
   ; (size-class (:marker-size {...}))
   ; =>
-  ; :text--xs
+  ; :text--s
   ;
   ; @return (keyword)
   [n]
@@ -87,7 +71,7 @@
           :l   :text--l
           :xl  :text--xl
           :xxl :text--xxl
-               :text--xxs))
+               nil))
 
 (defn visibility-class
   ; @ignore
@@ -121,17 +105,16 @@
    :collapsible? (and (-> snippet-config marker :collapsible?)
                       (-> text vector/not-empty?))
    :image-class  [:image--boxed]
-   :meta-class   [:text--uppercase             (-> snippet-config marker :meta-color    color-class)
-                                               (-> snippet-config marker :meta-size     size-class)
-                                               (-> snippet-config marker :hide-meta?    visibility-class)]
-   :marker-class [:text--uppercase             (-> snippet-config marker :marker-color  color-class)
-                                               (-> snippet-config marker :marker-size   size-class)
-                                               (-> snippet-config marker :hide-marker?  visibility-class)]
-   :label-class  [:text--uppercase :text--bold (-> snippet-config marker :label-color   color-class)
-                                               (-> snippet-config marker :label-size    size-class)]
-   :text-class   [:text--boxed                 (-> snippet-config marker :text-color    color-class)
-                                               (-> snippet-config marker :text-size     size-class)
-                                               (-> snippet-config marker :text-overflow overflow-class)]})
+   :meta-class   [:text--uppercase             (-> snippet-config marker :meta-color    color-class      (or :color--soft-grey))
+                                               (-> snippet-config marker :meta-size     size-class       (or :text--xxs))
+                                               (-> snippet-config marker :hide-meta?    visibility-class (or nil))]
+   :marker-class [:text--uppercase             (-> snippet-config marker :marker-color  color-class      (or :color--soft-grey))
+                                               (-> snippet-config marker :marker-size   size-class       (or :text--xxs))
+                                               (-> snippet-config marker :hide-marker?  visibility-class (or nil))]
+   :label-class  [:text--uppercase :text--bold (-> snippet-config marker :label-color   color-class      (or :color--hard-grey))
+                                               (-> snippet-config marker :label-size    size-class       (or :text--xxs))]
+   :text-class   [:text--boxed :scroll-x       (-> snippet-config marker :text-color    color-class      (or :color--hard-grey))
+                                               (-> snippet-config marker :text-size     size-class       (or :text--s))]})
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -395,7 +378,7 @@
   ; @param (vector)
   [n]
   (letfn [(f0 [result %]
-              (if-let [position (regex/first-dex-of % #"\[[^\[\]]+\]\([^\(\)]+\)")]
+              (if-let [position (regex/first-dex-of % #"\[[^\[\]]+\]\([^\(\)\h]+\)")]
                       (vector/concat-items result (parse-links (parse-link % position)))
                       (vector/conj-item    result %)))]
          (reduce f0 [] n)))
@@ -418,17 +401,3 @@
                         (string/replace-part ">" "&gt;"))
                   (-> %)))]
          (vector/->items n f0)))
-
-(defn gap-rows
-  ; @ignore
-  ;
-  ; @param (vector) n
-  ;
-  ; @usage
-  ; (gap-rows ["Row #1" "Row #2" ...])
-  ; =>
-  ; ["Row #1" [:br] "Row #2" [:br] ...]
-  ;
-  ; @param (vector)
-  [n]
-  (vector/gap-items n [:br]))

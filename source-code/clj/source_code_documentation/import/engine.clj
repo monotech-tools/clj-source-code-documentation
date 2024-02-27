@@ -31,9 +31,9 @@
   ; {:create-documentation? true
   ;  :filepath              "source-code/my_namespace_a.clj"
   ;  :ns-map                {...}
-  ;  :sections [{:name "MY-CONSTANT" :label "MY-CONSTANT" :content ["Row #1" "Row #2" ...] :type :def  :source-code "..."}
-  ;             {:name "my-function" :label "my-function" :content ["Row #1" "Row #2" ...] :type :defn :source-code "..."}
-  ;             {:name "my-tutorial" :label "My tutorial" :content ["Row #1" "Row #2" ...] :type :tutorial}
+  ;  :sections [{:name "MY-CONSTANT" :label "MY-CONSTANT" :content ["My row #1" "My row #2" ...] :type :def  :source-code "..."}
+  ;             {:name "my-function" :label "my-function" :content ["My row #1" "My row #2" ...] :type :defn :source-code "..."}
+  ;             {:name "my-tutorial" :label "My tutorial" :content ["My row #1" "My row #2" ...] :type :tutorial}
   ;             ...]}
   ;
   ; @return (map)

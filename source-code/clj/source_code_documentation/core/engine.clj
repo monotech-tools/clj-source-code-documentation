@@ -17,6 +17,10 @@
   ; @important
   ; This function ereases the output directory before exporting the documentation files!
   ;
+  ; @important
+  ; The ':trace-redirections?' option increases processing time due to the importing
+  ; of every source file found within the given source paths.
+  ;
   ; @description
   ; Reads source files from the given source paths that match the given filename pattern,
   ; and generates a HTML documentation book to the given output path.
@@ -55,9 +59,7 @@
   ;      :text-color (keyword)(opt)
   ;       :default, :muted, :primary, :secondary, :success, :warning
   ;      :text-size (keyword)(opt)
-  ;       :xxs, :xs, :s, :m, :l, :xl, :xxl
-  ;      :text-overflow (keyword)(opt)
-  ;       :scroll, :wrap}}
+  ;       :xxs, :xs, :s, :m, :l, :xl, :xxl}
   ;  :snippet-order (map)(opt)
   ;   Order of snippets within sections (sorted by marker name).
   ;   {:def (keywords in vector)(opt)
@@ -65,7 +67,7 @@
   ;    :tutorial (keywords in vector)(opt)}
   ;  :source-paths (strings in vector)
   ;  :trace-redirections? (boolean)(opt)
-  ;   Default: true}
+  ;   Default: false}
   ;
   ; @usage
   ; (generate-documentation! {...})
@@ -76,7 +78,7 @@
   ;                           :library          {:name "my-library" :version "1.0.0" :website "https://github.com/author/my-library"}
   ;                           :output-path      "docs"
   ;                           :previews-uri     "https://github.com/author/my-library/blob/main/previews"
-  ;                           :snippet-config   {:my-marker {:text-overflow :wrap ...} ...}
+  ;                           :snippet-config   {:my-marker {:text-size :s ...} ...}
   ;                           :snippet-order    {:defn [:*source-code* :description :usage ...] ...}
   ;                           :source-paths     ["source-code"]})
   [options]

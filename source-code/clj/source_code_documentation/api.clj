@@ -8,13 +8,13 @@
 ; @tutorial Constant headers
 ;
 ; @---
-; The last coherent comment row groups preceding constant declarations are constant headers.
+; Last coherent comment row groups preceding constant declarations are constant headers.
 ;
 ; @example
-; ; @description
-; ; Lorem ipsum dolor sit amet.
-; ;
-; ; @constant (string)
+; ;; @description
+; ;; Lorem ipsum dolor sit amet.
+; ;;
+; ;; @constant (string)
 ; (def MY-CONSTANT ...)
 
 ;; ----------------------------------------------------------------------------
@@ -23,17 +23,17 @@
 ; @tutorial Function headers
 ;
 ; @---
-; The last coherent comment row groups preceding function argument lists are function headers.
+; Last coherent comment row groups preceding function argument lists are function headers.
 ;
 ; @example
 ; (defn my-function
-;   ; @description
-;   ; Lorem ipsum dolor sit amet.
-;   ;
-;   ; @param (integer) a
-;   ; @param (integer)(opt) b
-;   ;
-;   ; @return (integer)
+;   ;; @description
+;   ;; Lorem ipsum dolor sit amet.
+;   ;;
+;   ;; @param (integer) a
+;   ;; @param (integer)(opt) b
+;   ;;
+;   ;; @return (integer)
 ;   [_] ...)
 
 ;; ----------------------------------------------------------------------------
@@ -42,17 +42,17 @@
 ; @tutorial Tutorials
 ;
 ; @---
-; The first coherent comment row groups following tutorial markers are tutorial contents.
+; First coherent comment row groups following tutorial markers are tutorial contents.
 ;
 ; @example
 ; (ns my-namespace)
 ;
-; ; @tutorial My tutorial
-; ;
-; ; Lorem ipsum dolor sit amet.
-; ;
-; ; @usage
-; ; (my-function ...)
+; ;; @tutorial My tutorial
+; ;;
+; ;; Lorem ipsum dolor sit amet.
+; ;;
+; ;; @usage
+; ;; (my-function ...)
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -79,19 +79,19 @@
 ; @my-marker (meta#1)(meta#2) My snippet
 ; The marker of this very snippet:
 ;
-; ; @my-marker (meta#1)(meta#2) My snippet
+; ;; @my-marker (meta#1)(meta#2) My snippet
 ;
 ; @---
 ; Markers can contain digits, hyphens and lowercase letters:
 ;
-; ; @my-marker123
+; ;; @my-marker123
 ;
 ; @---
 ; Predifined (reserved) markers:
 ;
-; ; @redirect
-; ; @link
-; ; @ignore
+; ;; @redirect
+; ;; @link
+; ;; @ignore
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -100,8 +100,8 @@
 ;
 ; @---
 ; (defn my-function
-;   ; @my-marker
-;   ; Lorem ipsum dolor sit amet.
+;   ;; @my-marker
+;   ;; Lorem ipsum dolor sit amet.
 ;   [_] ...)
 ;
 ; @---
@@ -117,11 +117,11 @@
 ;
 ; @---
 ; (defn my-function
-;   ; @my-marker
-;   ; Lorem ipsum dolor sit amet.
-;   ;
-;   ; @another-marker
-;   ; Lorem ipsum dolor sit amet.
+;   ;; @my-marker
+;   ;; Lorem ipsum dolor sit amet.
+;   ;;
+;   ;; @another-marker
+;   ;; Lorem ipsum dolor sit amet.
 ;   [_] ...)
 ;
 ; @---
@@ -136,16 +136,17 @@
 ; @tutorial Preview images
 ;
 ; @---
-; Each snippets can display one preview image if the first meta value of the snippet is a filepath that ends with an image extension.
+; Snippets can display a preview image.
+; The URI of the preview image must be provided as the first meta value of the snippet that must end with an image type extension.
 ;
 ; @---
 ; (defn my-function
-;   ; @my-marker (my-image.png)
-;   ; Lorem ipsum dolor sit amet.
+;   ;; @my-marker (my-image.png)
+;   ;; Lorem ipsum dolor sit amet.
 ;   [_] ...)
 ;
 ; @---
-; The optional ':previews-uri' property is prepended to preview paths as a base URI.
+; The ':previews-uri' property (optional) is prepended to preview paths as a base URI.
 ;
 ; (generate-documentation! {:previews-uri "https://github.com/author/my-library/blob/main/previews"
 ;                           ...}})
@@ -160,14 +161,14 @@
 ;
 ; @---
 ; (defn my-function
-;   ; @description
-;   ; Lorem ipsum dolor sit amet.
-;   ;
-;   ; @ignore
-;   ; Everything below this marker is ignored.
-;   ;
-;   ; @return (map)
-;   ; This snippet is ignored as well.
+;   ;; @description
+;   ;; Lorem ipsum dolor sit amet.
+;   ;;
+;   ;; @ignore
+;   ;; Everything below this marker is ignored.
+;   ;;
+;   ;; @return (map)
+;   ;; This snippet is ignored as well.
 ;   [_] ...)
 
 ;; ----------------------------------------------------------------------------
@@ -178,53 +179,47 @@
 ; Redirected sections are replaced with the content of the target section.
 ;
 ; @--- Redirected tutorial within the same namespace:
-; ; @tutorial My tutorial
-; ; Lorem ipsum dolor sit amet.
+; ;; @tutorial My tutorial
+; ;; Lorem ipsum dolor sit amet.
 ;
-;
-; ; @tutorial Another tutorial
-; ; @redirect (my-tutorial)
+; ;; @tutorial Another tutorial
+; ;; @redirect (my-tutorial)
 ;
 ; @--- Redirected constant header within the same namespace:
-; ; @description
-; ; Lorem ipsum dolor sit amet.
+; ;; @description
+; ;; Lorem ipsum dolor sit amet.
 ; (def MY-CONSTANT {})
 ;
-;
-; ; @redirect (MY-CONSTANT)
+; ;; @redirect (MY-CONSTANT)
 ; (def ANOTHER-CONSTANT {})
 ;
 ; @--- Redirected function header within the same namespace:
 ; (defn my-function
-;   ; @description
-;   ; Lorem ipsum dolor sit amet.
+;   ;; @description
+;   ;; Lorem ipsum dolor sit amet.
 ;   [_] ...)
 ;
-;
 ; (defn another-function
-;   ; @redirect (my-function)
+;   ;; @redirect (my-function)
 ;   [_] ...)
 ;
 ; @--- Redirected tutorial from remote namespace:
 ; (ns my-namespace)
 ;
-;
-; ; @tutorial My tutorial
-; ; @redirect (another-namespace/another-tutorial)
+; ;; @tutorial My tutorial
+; ;; @redirect (another-namespace/another-tutorial)
 ;
 ; @--- Redirected constant header from remote namespace:
 ; (ns my-namespace)
 ;
-;
-; ; @redirect (another-namespace/ANOTHER-CONSTANT)
+; ;; @redirect (another-namespace/ANOTHER-CONSTANT)
 ; (def MY-CONSTANT {})
 ;
 ; @--- Redirected function header from remote namespace:
 ; (ns my-namespace)
 ;
-;
 ; (defn my-function
-;   ; @redirect (another-namespace/another-function)
+;   ;; @redirect (another-namespace/another-function)
 ;   [_] ...)
 
 ;; ----------------------------------------------------------------------------
@@ -235,69 +230,63 @@
 ; Linked sections are insterted into the original section where the '@link' marker was placed.
 ;
 ; @--- Linked tutorial within the same namespace:
-; ; @tutorial My tutorial
-; ; Lorem ipsum dolor sit amet.
+; ;; @tutorial My tutorial
+; ;; Lorem ipsum dolor sit amet.
 ;
-;
-; ; @tutorial Another tutorial
-; ; Consectetur adipisicing elit.
-; ;
-; ; @link (my-tutorial)
+; ;; @tutorial Another tutorial
+; ;; Consectetur adipisicing elit.
+; ;;
+; ;; @link (my-tutorial)
 ;
 ; @--- Linked constant header within the same namespace:
-; ; @description
-; ; Lorem ipsum dolor sit amet.
+; ;; @description
+; ;; Lorem ipsum dolor sit amet.
 ; (def MY-CONSTANT {})
 ;
-;
-; ; @description
-; ; Consectetur adipisicing elit.
-; ;
-; ; @link (MY-CONSTANT)
+; ;; @description
+; ;; Consectetur adipisicing elit.
+; ;;
+; ;; @link (MY-CONSTANT)
 ; (def ANOTHER-CONSTANT {})
 ;
 ; @--- Linked function header within the same namespace:
 ; (defn my-function
-;   ; @description
-;   ; Lorem ipsum dolor sit amet.
+;   ;; @description
+;   ;; Lorem ipsum dolor sit amet.
 ;   [_] ...)
 ;
-;
 ; (defn another-function
-;   ; @description
-;   ; Consectetur adipisicing elit.
-;   ;
-;   ; @link (my-function)
+;   ;; @description
+;   ;; Consectetur adipisicing elit.
+;   ;;
+;   ;; @link (my-function)
 ;   [_] ...)
 ;
 ; @--- Linked tutorial from remote namespace:
 ; (ns my-namespace)
 ;
-;
-; ; @tutorial My tutorial
-; ; Lorem ipsum dolor sit amet.
-; ;
-; ; @link (another-namespace/another-tutorial)
+; ;; @tutorial My tutorial
+; ;; Lorem ipsum dolor sit amet.
+; ;;
+; ;; @link (another-namespace/another-tutorial)
 ;
 ; @--- Linked constant header from remote namespace:
 ; (ns my-namespace)
 ;
-;
-; ; @description
-; ; Lorem ipsum dolor sit amet.
-; ;
-; ; @link (another-namespace/ANOTHER-CONSTANT)
+; ;; @description
+; ;; Lorem ipsum dolor sit amet.
+; ;;
+; ;; @link (another-namespace/ANOTHER-CONSTANT)
 ; (def MY-CONSTANT {})
 ;
 ; @--- Linked function header from remote namespace:
 ; (ns my-namespace)
 ;
-;
 ; (defn my-function
-;   ; @description
-;   ; Lorem ipsum dolor sit amet.
-;   ;
-;   ; @link (another-namespace/another-function)
+;   ;; @description
+;   ;; Lorem ipsum dolor sit amet.
+;   ;;
+;   ;; @link (another-namespace/another-function)
 ;   [_] ...)
 
 ;; ----------------------------------------------------------------------------
@@ -311,30 +300,43 @@
 ; @---
 ; (ns my-namespace)
 ;
-; ; @redirect (*)
-; ; '*' => 'my-namespace/ANOTHER-CONSTANT'
+; ;; @redirect (*)
+; ;; '*' => 'my-namespace/ANOTHER-CONSTANT'
 ; (def MY-CONSTANT another-namespace/ANOTHER-CONSTANT)
 ;
 ; @---
 ; (ns my-namespace)
 ;
-; ; @redirect (*/*)
-; ; '*/*' => 'another-namespace/ANOTHER-CONSTANT'
+; ;; @redirect (*/*)
+; ;; '*/*' => 'another-namespace/ANOTHER-CONSTANT'
 ; (def MY-CONSTANT another-namespace/ANOTHER-CONSTANT)
 ;
 ; @---
 ; (ns my-namespace)
 ;
-; ; @redirect (*/bar)
-; ; '*/bar' => 'another-namespace/bar'
+; ;; @redirect (*/bar)
+; ;; '*/bar' => 'another-namespace/bar'
 ; (def MY-CONSTANT another-namespace/ANOTHER-CONSTANT)
 ;
 ; @---
 ; (ns my-namespace)
 ;
-; ; @redirect (foo/*)
-; ; 'foo/*' => 'foo/ANOTHER-CONSTANT'
+; ;; @redirect (foo/*)
+; ;; 'foo/*' => 'foo/ANOTHER-CONSTANT'
 ; (def MY-CONSTANT another-namespace/ANOTHER-CONSTANT)
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+; @tutorial Highlighted comments
+;
+; @---
+; Parts of snippet rows that are commented with a double semicolon are highlighted in the output.
+;
+; Lorem ipsum ;; dolor sit amet
+;
+; @---
+; There is no requirement to use double semicolons in declaration headers or tutorial contents.
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -342,14 +344,16 @@
 ; @tutorial Links and anchors
 ;
 ; @---
+; Place external links and anchors anywhere in your documentation content.
+;
 ; (defn my-function
-;   ; @description
-;   ; Place an [external link](https://mt-devtools.github.io/clj-source-code-documentation) or an [anchor](#links-and-anchors) anywhere in your documentation content.
-;   ;
-;   ; [Link label](...
-;   ;         ...](https://...)
-;   ;
-;   ; @return (integer)
+;   ;; @description
+;   ;; Lorem ipsum dolor set amit.
+;   ;;
+;   ;; [Link label](https://... )
+;   ;; [Anchor label](#... )
+;   ;;
+;   ;; @return (integer)
 ;   [_] ...)
 
 ;; ----------------------------------------------------------------------------

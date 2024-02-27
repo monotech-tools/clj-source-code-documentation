@@ -75,7 +75,7 @@
   (if (-> snippet :text vector/not-empty?)
       [:div {:class [:snippet--text]}
             (vector/concat-items [:pre {:class text-class}]
-                                 (-> snippet :text assemble.utils/gap-rows assemble.utils/parse-links assemble.utils/unparse-html))]))
+                                 (-> snippet :text assemble.utils/parse-links assemble.utils/unparse-html))]))
 
 (defn assemble-snippet-wrapper
   ; @ignore
