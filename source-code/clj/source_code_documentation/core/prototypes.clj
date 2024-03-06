@@ -1,8 +1,8 @@
 
 (ns source-code-documentation.core.prototypes
-    (:require [fruits.uri.api                        :as uri]
+    (:require [fruits.map.api                        :as map]
+              [fruits.uri.api                        :as uri]
               [fruits.vector.api                     :as vector]
-              [fruits.map.api :as map]
               [io.api                                :as io]
               [source-code-documentation.core.config :as core.config]))
 
