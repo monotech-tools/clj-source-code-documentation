@@ -130,7 +130,7 @@ a.inline-link:hover {
 
 .text--wrap {
  -white-space: normal;
-  /* Wraps lines if necessary, but doesn't collapse multiple white-spaces. */
+  /* Wraps lines if necessary, but does not collapse multiple white-spaces. */
   white-space: pre-wrap }
 
 /*** Text ***/
