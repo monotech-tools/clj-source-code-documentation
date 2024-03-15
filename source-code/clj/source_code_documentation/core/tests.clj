@@ -7,8 +7,8 @@
 
 ; @ignore
 ;
-; @note
-; https://github.com/bithandshake/cljc-validator
+; @links
+; [cljc-validator](mt-utilities.github.io/cljc-validator)
 ;
 ; @constant (map)
 (def OPTIONS-TEST
