@@ -20,6 +20,7 @@
                           :defn     {:opt* true :and* [vector? #(every? keyword? %)] :e* ":snippet-order/defn must be a vector with keyword items!"}
                           :tutorial {:opt* true :and* [vector? #(every? keyword? %)] :e* ":snippet-order/tutorial must be a vector with keyword items!"}
                           :opt* true}
+      :favicon-uri       {:opt* true  :f* string?                          :e* ":favicon must be a string!"}
       :filename-pattern  {:opt* true  :f* regex/pattern?                   :e* ":filename-pattern must be a regex pattern!"}
       :library           {:opt* true  :f* map?                             :e* ":library must be a map!"
                           :name    {:opt* true :f* string? :e* ":name must be a string!"}

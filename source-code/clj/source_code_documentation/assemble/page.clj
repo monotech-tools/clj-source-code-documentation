@@ -398,13 +398,16 @@
   ;
   ; @param (maps in vector) state
   ; @param (map) options
+  ; {:favicon-uri (string)(opt)
+  ;  ...}
   ; @param (map) file-data
   ;
   ; @return (hiccup)
-  [state options file-data]
+  [state {:keys [favicon-uri] :as options} file-data]
   [:head [:style  {:type "text/css"}        (asset-compressor/compress-css assemble.css/STYLES)]
          [:script {:type "text/javascript"} (asset-compressor/compress-js  assemble.js/SCRIPTS)]
-         [:title  (assemble.utils/page-title state options file-data)]])
+         [:title  (assemble.utils/page-title state options file-data)]
+         [:link   {:rel "icon" :type "image/png" :href (or favicon-uri "unknown.png")}]])
 
 (defn assemble-page
   ; @ignore

@@ -17,7 +17,7 @@
   [state options file-data]
   (let [page            (assemble.page/assemble-page state options file-data)
         page-print-path (print.utils/page-print-path state options file-data)]
-       (io/write-file! page-print-path page {:ensure-eol? true :create? true})))
+       (io/write-file! page-print-path page {:create? true})))
 
 (defn print-pages!
   ; @ignore
@@ -38,7 +38,7 @@
   [state options]
   (let [cover            (assemble.cover/assemble-cover state options)
         cover-print-path (print.utils/cover-print-path  state options)]
-       (io/write-file! cover-print-path cover {:ensure-eol? true :create? true})))
+       (io/write-file! cover-print-path cover {:create? true})))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

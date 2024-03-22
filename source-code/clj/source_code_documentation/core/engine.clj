@@ -30,6 +30,7 @@
   ;   {:name (string)(opt)
   ;    :website (string)(opt)}
   ;  :base-uri (string)
+  ;  :favicon-uri (string)(opt)
   ;  :filename-pattern (regex pattern)(opt)
   ;   Default: #"[a-z\_\d]+\.clj[cs]?"
   ;  :library (map)(opt)}
