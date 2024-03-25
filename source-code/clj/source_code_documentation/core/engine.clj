@@ -83,7 +83,7 @@
   ;                           :snippet-order    {:defn [:*source-code* :description :usage ...] ...}
   ;                           :source-paths     ["source-code"]})
   [options]
-  (if (v/valid? options core.tests/OPTIONS-TEST {:prefix "options"})
+  (if (v/valid? options [core.tests/OPTIONS-TEST] {:prefix "options"})
       (let [options (core.prototypes/options-prototype options)]
            (-> [] (map.engine/map-source-paths           options)
                   (import.engine/import-source-files     options)
