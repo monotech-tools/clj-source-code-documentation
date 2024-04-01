@@ -18,7 +18,7 @@
   ; This function ereases the output directory before exporting the documentation files!
   ;
   ; @important
-  ; The ':trace-redirections?' option increases processing time due to the importing
+  ; The ':trace-redirections?' option increments processing time due to the importing
   ; of every source file found within the given source paths.
   ;
   ; @description

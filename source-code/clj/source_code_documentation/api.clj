@@ -82,7 +82,7 @@
 ; ;; @my-marker (meta#1)(meta#2) My snippet
 ;
 ; @---
-; Markers can contain digits, hyphens and lowercase letters:
+; Marker names can contain digits, hyphens and lowercase letters:
 ;
 ; ;; @my-marker123
 ;
@@ -97,6 +97,8 @@
 ;; ----------------------------------------------------------------------------
 
 ; @tutorial Customizing snippets
+;
+; Read more about snippet configuration options [here](#generate-documentation_).
 ;
 ; @---
 ; (defn my-function
@@ -125,6 +127,7 @@
 ;   [_] ...)
 ;
 ; @---
+; ;; Snippet order within different types of sections ('defn', 'def', 'tutorial'):
 ; (generate-documentation! {:snippet-order {:defn     [:*source-code* :another-marker :my-marker ...]
 ;                                           :def      [:*source-code* :another-marker :my-marker ...]
 ;                                           :tutorial [               :another-marker :my-marker ...]}
@@ -137,7 +140,7 @@
 ;
 ; @---
 ; Snippets can display a preview image.
-; The URI of the preview image must be provided as the first meta value of the snippet that must end with an image type extension.
+; The URI of the preview image must be provided as the first meta value of the snippet, and must end with an image type extension.
 ;
 ; @---
 ; (defn my-function
@@ -146,8 +149,7 @@
 ;   [_] ...)
 ;
 ; @---
-; The ':previews-uri' property (optional) is prepended to preview paths as a base URI.
-;
+; ;; The ':previews-uri' property (optional) is prepended to preview paths as a base URI.
 ; (generate-documentation! {:previews-uri "https://github.com/author/my-library/blob/main/previews"
 ;                           ...}})
 
@@ -203,19 +205,19 @@
 ;   ;; @redirect (my-function)
 ;   [_] ...)
 ;
-; @--- Redirected tutorial from remote namespace:
+; @--- Redirected tutorial from another namespace:
 ; (ns my-namespace)
 ;
 ; ;; @tutorial My tutorial
 ; ;; @redirect (another-namespace/another-tutorial)
 ;
-; @--- Redirected constant header from remote namespace:
+; @--- Redirected constant header from another namespace:
 ; (ns my-namespace)
 ;
 ; ;; @redirect (another-namespace/ANOTHER-CONSTANT)
 ; (def MY-CONSTANT {})
 ;
-; @--- Redirected function header from remote namespace:
+; @--- Redirected function header from another namespace:
 ; (ns my-namespace)
 ;
 ; (defn my-function
@@ -294,8 +296,8 @@
 
 ; @tutorial Wildcards in pointers
 ;
-; Wildcards work only if the redirection corresponds to a 'def' declaration, and the declaration has a symbol type value
-; that can be used to derive a name or namespace from it.
+; Wildcards in redirection and link pointers work only if the redirection corresponds to a 'def' declaration,
+; and the declaration has a symbol type value that can be used to derive a name or namespace from it.
 ;
 ; @---
 ; (ns my-namespace)
@@ -344,7 +346,7 @@
 ; @tutorial Links and anchors
 ;
 ; @---
-; Place external links and anchors anywhere in your documentation content.
+; External links and anchors can be placed anywhere in the documentation content.
 ;
 ; (defn my-function
 ;   ;; @description
